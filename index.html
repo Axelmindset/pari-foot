@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor V7 - Précision Totale</title>
+    <title>IA Predictor V8 - Cohérence Totale</title>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
         .container { max-width: 1100px; margin: auto; }
-        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
+        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .team-col { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .team-name { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .team-col { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+        .team-name { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         .field { display: flex; flex-direction: column; }
-        label { font-size: 9px; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
-        input[type="number"] { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 6px; }
+        label { font-size: 8px; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
+        input[type="number"] { padding: 8px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 12px; }
 
-        .btn-analyze { width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
+        .btn-analyze { width: 100%; padding: 15px; background: var(--green); color: #0f172a; border: none; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
 
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
-        .card-title { font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .val { font-size: 20px; font-weight: 800; color: var(--green); }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .res-card { background: var(--card); padding: 12px; border-radius: 10px; border-top: 3px solid var(--green); }
+        .card-title { font-size: 9px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+        .val { font-size: 18px; font-weight: 800; color: var(--green); }
         .perc { color: var(--gold); font-weight: bold; }
-        .team-label { font-size: 11px; font-weight: bold; color: var(--blue); margin-top: 5px; display: block; }
+        .team-label { font-size: 10px; font-weight: bold; color: var(--blue); margin-top: 4px; display: block; }
+        .score-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 
-        .tactical-box { background: rgba(52, 152, 219, 0.1); border: 1px solid var(--blue); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .copy-btn { background: var(--gold); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .copy-btn { background: var(--gold); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
 
         @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
@@ -36,75 +36,73 @@
 <body>
 
 <div class="container">
-    <h1>🎯 IA PREDICTOR V7 - ANALYSE RENTABLE</h1>
+    <h1>🚀 IA PREDICTOR V8 - COHÉRENCE EXPERTE</h1>
     
     <div class="main-grid">
         <div class="team-col">
-            <input type="text" id="nameA" class="team-name" placeholder="Équipe Domicile" oninput="saveData()">
+            <input type="text" id="nameA" class="team-name" placeholder="Domicile" oninput="saveData()">
             <div class="stats-grid" id="inputsA"></div>
         </div>
         <div class="team-col" style="border-color: var(--blue);">
-            <input type="text" id="nameB" class="team-name" placeholder="Équipe Extérieur" oninput="saveData()" style="border-color: var(--blue);">
+            <input type="text" id="nameB" class="team-name" placeholder="Extérieur" oninput="saveData()" style="border-color: var(--blue);">
             <div class="stats-grid" id="inputsB"></div>
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE EXPERTE</button>
+    <button class="btn-analyze" onclick="runAnalysis()">GÉNÉRER L'ANALYSE</button>
 
     <div id="results" style="display: none;">
         <div class="res-grid">
+            <div class="res-card" style="border-color: #9b59b6;">
+                <span class="card-title">Top Scores Probables</span>
+                <div class="score-line"><span>1er Choix : <b class="val" id="sc1">--</b></span> <span class="perc" id="psc1">--%</span></div>
+                <div class="score-line"><span>2ème Choix : <b class="val" id="sc2" style="color:#bdc3c7">--</b></span> <span class="perc" id="psc2">--%</span></div>
+                <p style="font-size:10px; margin-top:8px; border-top:1px solid var(--border); padding-top:5px;">
+                    1: <span id="p1"></span> | N: <span id="pN"></span> | 2: <span id="p2"></span>
+                </p>
+            </div>
+
             <div class="res-card">
-                <span class="card-title">Marché des Buts (%)</span>
-                <p>Over 2.5 : <span class="val" id="vO25">--%</span></p>
-                <p>BTTS : <span class="val" id="vBtts">--%</span></p>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:5px;">
-                    <span class="team-label" id="lbl3A"></span> 3+ buts : <b class="perc" id="v3A">--%</b><br>
-                    <span class="team-label" id="lbl3B"></span> 3+ buts : <b class="perc" id="v3B">--%</b>
+                <span class="card-title">Paliers de Buts (%)</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <span class="team-label" id="lblA_goals"></span>
+                        <small>2+ buts :</small> <b class="perc" id="v2A">--%</b><br>
+                        <small>3+ buts :</small> <b class="perc" id="v3A">--%</b>
+                    </div>
+                    <div>
+                        <span class="team-label" id="lblB_goals"></span>
+                        <small>2+ buts :</small> <b class="perc" id="v2B">--%</b><br>
+                        <small>3+ buts :</small> <b class="perc" id="v3B">--%</b>
+                    </div>
                 </div>
+                <p style="margin-top:10px; border-top:1px solid var(--border); padding-top:5px;">
+                    Over 2.5 Match : <span class="val" id="vO25">--%</span>
+                </p>
             </div>
 
             <div class="res-card" style="border-color: var(--blue);">
                 <span class="card-title">Tirs Cadrés (SoT)</span>
-                <div>
-                    <span class="team-label" id="lblSotA"></span> Over 3.5 : <span class="val" id="pSotA">--%</span><br>
-                    <small>Moyenne attendue : <b id="avgSotA"></b></small>
-                </div>
-                <div style="margin-top:10px;">
-                    <span class="team-label" id="lblSotB"></span> Over 3.5 : <span class="val" id="pSotB">--%</span><br>
-                    <small>Moyenne attendue : <b id="avgSotB"></b></small>
-                </div>
+                <span class="team-label" id="lblSotA"></span> Over 3.5 : <span class="val" id="pSotA">--%</span><br>
+                <span class="team-label" id="lblSotB"></span> Over 3.5 : <span class="val" id="pSotB">--%</span>
             </div>
 
             <div class="res-card" style="border-color: var(--gold);">
                 <span class="card-title">Corners Individuels</span>
-                <div>
-                    <span class="team-label" id="lblCornA"></span> Over 4.5 : <span class="val" id="pCornA" style="color: var(--gold)">--%</span><br>
-                    <small>Total estimé : <b id="avgCornA"></b></small>
-                </div>
-                <div style="margin-top:10px;">
-                    <span class="team-label" id="lblCornB"></span> Over 4.5 : <span class="val" id="pCornB" style="color: var(--gold)">--%</span><br>
-                    <small>Total estimé : <b id="avgCornB"></b></small>
-                </div>
-                <p style="margin-top:10px; font-weight:bold;">Total Match : <span id="vTotalCorn"></span></p>
+                <span class="team-label" id="lblCornA"></span> Over 4.5 : <span class="val" id="pCornA" style="color:var(--gold)">--%</span><br>
+                <span class="team-label" id="lblCornB"></span> Over 4.5 : <span class="val" id="pCornB" style="color:var(--gold)">--%</span>
+                <p style="margin-top:8px; font-weight:bold;">Total : <span id="vTotalCorn"></span></p>
             </div>
         </div>
-        
-        <div class="res-card" style="width:100%; border-top:4px solid var(--gold); margin-bottom:20px;">
-            <span class="card-title">Conseil Double Chance</span>
-            <span class="val" id="vDc">--</span>
-        </div>
 
-        <button class="copy-btn" onclick="copySummary()">📲 COPIER POUR WHATSAPP</button>
+        <button class="copy-btn" onclick="copySummary()">📲 COPIER LE PRONO (WHATSAPP)</button>
     </div>
 </div>
 
 <script>
     const fields = [
-        { id: 'poss', label: 'Possession %' }, { id: 'pass', label: 'Passes' },
-        { id: 'shots', label: 'Tirs' }, { id: 'sot', label: 'Tirs Cadrés' },
-        { id: 'xg', label: 'xG Attaque' }, { id: 'corn', label: 'Corners' },
-        { id: 'scon', label: 'Tirs Conc.' }, { id: 'sotcon', label: 'Cadrés Conc.' },
-        { id: 'xga', label: 'xGA Défense' }, { id: 'corncon', label: 'Corners Conc.' }
+        { id: 'xg', label: 'xG Attaque' }, { id: 'sot', label: 'Tirs Cadrés' },
+        { id: 'corn', label: 'Corners' }, { id: 'xga', label: 'xGA Défense' }
     ];
 
     function setup() {
@@ -120,11 +118,11 @@
     function saveData() {
         const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
         ['A', 'B'].forEach(p => fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }));
-        localStorage.setItem('predictor_v7_data', JSON.stringify(data));
+        localStorage.setItem('predictor_v8_db', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('predictor_v7_data');
+        const saved = localStorage.getItem('predictor_v8_db');
         if(!saved) return;
         const data = JSON.parse(saved);
         document.getElementById('nameA').value = data.nameA || "";
@@ -132,58 +130,60 @@
         for(let key in data.stats) if(document.getElementById(key)) document.getElementById(key).value = data.stats[key];
     }
 
-    // Loi de Poisson : P(X >= k) = 1 - P(X < k)
+    function poisson(lambda, k) { return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k); }
     function poissonGe(lambda, k) {
-        let probLessThanK = 0;
-        for(let i=0; i < k; i++) {
-            probLessThanK += (Math.exp(-lambda) * Math.pow(lambda, i)) / factorial(i);
-        }
-        return (1 - probLessThanK) * 100;
+        let prob = 0;
+        for(let i=0; i < k; i++) { prob += poisson(lambda, i); }
+        return Math.max(0, Math.min(100, (1 - prob) * 100));
     }
     function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 
     function runAnalysis() {
         const getS = (p) => { let s = {}; fields.forEach(f => s[f.id] = parseFloat(document.getElementById(p + '_' + f.id).value || 0)); return s; };
         const sA = getS('A'); const sB = getS('B');
-        const nA = document.getElementById('nameA').value || "A"; const nB = document.getElementById('nameB').value || "B";
+        const nA = document.getElementById('nameA').value || "Dom."; const nB = document.getElementById('nameB').value || "Ext.";
 
         document.getElementById('results').style.display = "block";
 
-        // 1. Logique des Buts (Correction Poisson stricte)
-        const pO25 = poissonGe(sA.xg + sB.xg, 3);
-        const p3A = poissonGe(sA.xg, 3);
-        const p3B = poissonGe(sB.xg, 3);
+        // 1. Scores Exacts & 1N2
+        let scores = [];
+        let pWinA = 0, pDraw = 0, pWinB = 0;
+        for(let i=0; i<=5; i++) {
+            for(let j=0; j<=5; j++) {
+                let p = poisson(sA.xg, i) * poisson(sB.xg, j) * 100;
+                scores.push({ s: `${i}-${j}`, p: p });
+                if(i > j) pWinA += p; else if(i === j) pDraw += p; else pWinB += p;
+            }
+        }
+        scores.sort((a,b) => b.p - a.p);
+        document.getElementById('sc1').innerText = scores[0].s; document.getElementById('psc1').innerText = scores[0].p.toFixed(1) + "%";
+        document.getElementById('sc2').innerText = scores[1].s; document.getElementById('psc2').innerText = scores[1].p.toFixed(1) + "%";
+        document.getElementById('p1').innerText = pWinA.toFixed(0) + "%";
+        document.getElementById('pN').innerText = pDraw.toFixed(0) + "%";
+        document.getElementById('p2').innerText = pWinB.toFixed(0) + "%";
+
+        // 2. Buts (2+ et 3+)
+        document.getElementById('lblA_goals').innerText = nA;
+        document.getElementById('v2A').innerText = poissonGe(sA.xg, 2).toFixed(1) + "%";
+        document.getElementById('v3A').innerText = poissonGe(sA.xg, 3).toFixed(1) + "%";
         
-        document.getElementById('vO25').innerText = pO25.toFixed(1) + "%";
-        document.getElementById('vBtts').innerText = (sA.xg > 0.8 && sB.xg > 0.8 ? 75 : 30) + "%";
-        document.getElementById('lbl3A').innerText = nA; document.getElementById('v3A').innerText = p3A.toFixed(1) + "%";
-        document.getElementById('lbl3B').innerText = nB; document.getElementById('v3B').innerText = p3B.toFixed(1) + "%";
+        document.getElementById('lblB_goals').innerText = nB;
+        document.getElementById('v2B').innerText = poissonGe(sB.xg, 2).toFixed(1) + "%";
+        document.getElementById('v3B').innerText = poissonGe(sB.xg, 3).toFixed(1) + "%";
+        document.getElementById('vO25').innerText = poissonGe(sA.xg + sB.xg, 3).toFixed(1) + "%";
 
-        // 2. Tirs Cadrés (Seuil Over 3.5)
-        const psotA = poissonGe(sA.sot, 4);
-        const psotB = poissonGe(sB.sot, 4);
-        document.getElementById('lblSotA').innerText = nA; document.getElementById('pSotA').innerText = psotA.toFixed(1) + "%";
-        document.getElementById('avgSotA').innerText = sA.sot;
-        document.getElementById('lblSotB').innerText = nB; document.getElementById('pSotB').innerText = psotB.toFixed(1) + "%";
-        document.getElementById('avgSotB').innerText = sB.sot;
-
-        // 3. Corners (Seuil Over 4.5)
-        const pcornA = poissonGe(sA.corn, 5);
-        const pcornB = poissonGe(sB.corn, 5);
-        document.getElementById('lblCornA').innerText = nA; document.getElementById('pCornA').innerText = pcornA.toFixed(1) + "%";
-        document.getElementById('avgCornA').innerText = sA.corn;
-        document.getElementById('lblCornB').innerText = nB; document.getElementById('pCornB').innerText = pcornB.toFixed(1) + "%";
-        document.getElementById('avgCornB').innerText = sB.corn;
+        // 3. Spéciaux (Tirs/Corners)
+        document.getElementById('lblSotA').innerText = nA; document.getElementById('pSotA').innerText = poissonGe(sA.sot, 4).toFixed(1) + "%";
+        document.getElementById('lblSotB').innerText = nB; document.getElementById('pSotB').innerText = poissonGe(sB.sot, 4).toFixed(1) + "%";
+        document.getElementById('lblCornA').innerText = nA; document.getElementById('pCornA').innerText = poissonGe(sA.corn, 5).toFixed(1) + "%";
+        document.getElementById('lblCornB').innerText = nB; document.getElementById('pCornB').innerText = poissonGe(sB.corn, 5).toFixed(1) + "%";
         document.getElementById('vTotalCorn').innerText = (sA.corn + sB.corn).toFixed(1);
-
-        // Double Chance
-        const winA = (sA.xg / (sA.xg + sB.xg)) * 100;
-        document.getElementById('vDc').innerText = winA > 55 ? nA + " ou Nul (1X)" : (winA < 45 ? nB + " ou Nul (X2)" : "12 (Pas de nul)");
     }
 
     function copySummary() {
-        const text = `📊 ANALYSE IA PRO\n🔥 Over 2.5 : ${document.getElementById('vO25').innerText}\n🎯 SoT ${document.getElementById('nameA').value} (>3.5) : ${document.getElementById('pSotA').innerText}\n🚩 Corners ${document.getElementById('nameA').value} (>4.5) : ${document.getElementById('pCornA').innerText}\n💎 Conseil : ${document.getElementById('vDc').innerText}`;
-        navigator.clipboard.writeText(text); alert("Résumé copié !");
+        const nA = document.getElementById('nameA').value;
+        const text = `📊 ANALYSE IA V8\n⚽ Score : ${document.getElementById('sc1').innerText} (${document.getElementById('psc1').innerText})\n🔥 Over 2.5 : ${document.getElementById('vO25').innerText}\n🎯 ${nA} 2+ buts : ${document.getElementById('v2A').innerText}\n🚩 Total Corners : ${document.getElementById('vTotalCorn').innerText}`;
+        navigator.clipboard.writeText(text); alert("Prono copié !");
     }
     setup();
 </script>
