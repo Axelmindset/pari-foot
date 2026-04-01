@@ -3,92 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor - One Match Edition</title>
+    <title>IA Predictor V4 - Persistence & Scores</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
         .container { max-width: 1100px; margin: auto; }
-        h1 { text-align: center; color: var(--green); font-size: 22px; text-transform: uppercase; margin: 15px 0; }
+        h1 { text-align: center; color: var(--green); font-size: 20px; text-transform: uppercase; margin: 15px 0; letter-spacing: 1px; }
         
-        /* Grille de Saisie */
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .team-col { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .team-name { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
+        .team-name { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
         
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .field { display: flex; flex-direction: column; }
-        label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
-        input[type="number"] { padding: 8px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 5px; }
+        label { font-size: 10px; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; }
+        input[type="number"] { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 6px; font-size: 14px; }
 
-        .btn-analyze { width: 100%; padding: 18px; background: var(--green); color: #0f172a; border: none; border-radius: 10px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 25px; }
+        .btn-analyze { width: 100%; padding: 18px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
 
-        /* Dashboard Résultats */
-        .results-area { display: none; }
         .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
-        .res-title { display: block; font-size: 12px; font-weight: bold; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; }
-        .val { font-size: 22px; font-weight: 800; color: var(--green); }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 10px; }
-        .oui { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
-        .non { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .res-card { background: var(--card); padding: 18px; border-radius: 12px; border-top: 4px solid var(--green); position: relative; }
+        .res-title { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .val { font-size: 24px; font-weight: 800; color: var(--green); }
+        .sub-val { font-size: 14px; color: #cbd5e1; margin-bottom: 8px; }
 
-        .chart-container { background: var(--card); border-radius: 12px; padding: 15px; height: 350px; margin-top: 15px; }
-        
+        .history-section { margin-top: 40px; background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .history-table th { text-align: left; color: #94a3b8; padding: 10px; border-bottom: 1px solid var(--border); }
+        .history-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
         @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🚀 Predictor Pro - Mode Rapide</h1>
+    <h1>⚽ IA Predictor Pro V4</h1>
     
     <div class="main-grid">
         <div class="team-col">
-            <input type="text" id="nameA" class="team-name" placeholder="Nom Équipe Domicile">
+            <input type="text" id="nameA" class="team-name" placeholder="Équipe Domicile" oninput="saveInputs()">
             <div class="stats-grid" id="inputsA"></div>
         </div>
-
         <div class="team-col" style="border-color: var(--blue);">
-            <input type="text" id="nameB" class="team-name" placeholder="Nom Équipe Extérieur" style="border-color: var(--blue);">
+            <input type="text" id="nameB" class="team-name" placeholder="Équipe Extérieur" oninput="saveInputs()" style="border-color: var(--blue);">
             <div class="stats-grid" id="inputsB"></div>
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE EXPERTE</button>
+    <button class="btn-analyze" onclick="runAnalysis()">ANALYSER & ENREGISTRER</button>
 
-    <div id="results" class="results-area">
+    <div id="results" style="display: none;">
         <div class="res-grid">
             <div class="res-card">
-                <span class="res-title">Probabilités 1N2</span>
-                <p>Victoire <span id="outA">A</span> : <span class="val" id="p1">--%</span></p>
-                <p>Match Nul : <span class="val" id="pN">--%</span></p>
-                <p>Victoire <span id="outB">B</span> : <span class="val" id="p2">--%</span></p>
-                <p style="border-top: 1px solid var(--border); padding-top: 10px;">
-                    Double Chance : <span class="val" id="dc" style="color: var(--blue)">--</span>
-                </p>
+                <span class="res-title">Scores les plus probables</span>
+                <p>1er : <span class="val" id="score1" style="color: var(--gold)">--</span> <small id="probScore1"></small></p>
+                <p>2ème : <span class="val" id="score2" style="color: #bdc3c7">--</span> <small id="probScore2"></small></p>
+                <div style="margin-top:15px; font-size: 13px;">
+                    Probabilité 1 : <b id="p1">--</b> | N : <b id="pN">--</b> | 2 : <b id="p2">--</b>
+                </div>
             </div>
 
             <div class="res-card" style="border-color: var(--blue);">
-                <span class="res-title">Analyse des Buts</span>
-                <p>Les deux marquent (BTTS) : <span id="btts">--</span></p>
-                <p>Over 2.5 : <span id="o25">--</span> | Under 2.5 : <span id="u25">--</span></p>
-                <p>Over 3.5 : <span id="o35">--</span> | Under 3.5 : <span id="u35">--</span></p>
-                <p style="border-top: 1px solid var(--border); padding-top: 10px;">
-                    Une équipe marque 3+ buts : <span id="team3plus">--</span>
-                </p>
+                <span class="res-title">Marché des Buts (%)</span>
+                <p class="sub-val">Over 2.5 : <b id="o25">--%</b> | Under : <b id="u25">--%</b></p>
+                <p class="sub-val">Over 3.5 : <b id="o35">--%</b> | Under : <b id="u35">--%</b></p>
+                <p class="sub-val">Les deux marquent : <b id="btts">--%</b></p>
+                <p class="sub-val">Une équipe marque 3+ : <b id="team3">--%</b></p>
             </div>
 
-            <div class="res-card" style="border-color: #f1c40f;">
-                <span class="res-title">Conseils Stratégiques</span>
-                <p>Scénario Probable : <br><small id="aiSummary" style="color: #cbd5e1;">--</small></p>
-                <p style="margin-top: 15px;">Corners attendus : <span class="val" id="corn" style="color: #f1c40f;">--</span></p>
+            <div class="res-card" style="border-color: var(--gold);">
+                <span class="res-title">Expert Double Chance</span>
+                <p class="val" id="dc">--</p>
+                <p class="sub-val">Corners attendus : <b id="corn" style="color: var(--gold)">--</b></p>
             </div>
         </div>
+    </div>
 
-        <div class="chart-container">
-            <canvas id="radarChart"></canvas>
-        </div>
+    <div class="history-section">
+        <h3 style="margin-top:0; font-size: 14px; color: var(--green);">📜 Historique des Analyses</h3>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Match</th>
+                    <th>Score Prédit</th>
+                    <th>Conseil</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+        <button onclick="clearHistory()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 10px; margin-top: 10px;">Effacer l'historique</button>
     </div>
 </div>
 
@@ -101,15 +107,39 @@
         { id: 'xga', label: 'xGA (Défense)' }, { id: 'corncon', label: 'Corners Conc.' }
     ];
 
+    // Initialisation & Chargement
     function setup() {
         ['A', 'B'].forEach(p => {
             const container = document.getElementById('inputs' + p);
             fields.forEach(f => {
-                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" value="0"></div>`;
+                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" oninput="saveInputs()"></div>`;
             });
         });
+        loadInputs();
+        loadHistory();
     }
-    setup();
+
+    // Persistence : Sauvegarde
+    function saveInputs() {
+        const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
+        ['A', 'B'].forEach(p => { fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }); });
+        localStorage.setItem('predictor_data', JSON.stringify(data));
+    }
+
+    function loadInputs() {
+        const saved = localStorage.getItem('predictor_data');
+        if(!saved) return;
+        const data = JSON.parse(saved);
+        document.getElementById('nameA').value = data.nameA || "";
+        document.getElementById('nameB').value = data.nameB || "";
+        for(let key in data.stats) { if(document.getElementById(key)) document.getElementById(key).value = data.stats[key]; }
+    }
+
+    // Calcul Poisson simplifié pour scores
+    function poisson(lambda, k) {
+        return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k);
+    }
+    function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 
     function runAnalysis() {
         const getS = (p) => {
@@ -117,12 +147,11 @@
             fields.forEach(f => s[f.id] = parseFloat(document.getElementById(p + '_' + f.id).value || 0));
             return s;
         };
-
         const sA = getS('A'); const sB = getS('B');
         const nA = document.getElementById('nameA').value || "Dom.";
         const nB = document.getElementById('nameB').value || "Ext.";
 
-        // Algorithme 30/30/20/20
+        // Algo 30/30/20/20
         const calc = (s) => {
             const att = (s.xg * 0.7 + (s.sot / (s.shots || 1)) * 3) * 10;
             const def = (10 - (s.xga * 0.7 + (s.sotcon / (s.scon || 1)) * 3)) * 10;
@@ -137,48 +166,64 @@
         const p2 = (rB.score / total) * 100;
         const pN = 100 - p1 - p2;
 
-        // Logique des Buts
-        const sumXG = sA.xg + sB.xg;
-        const probO25 = Math.min(95, (sumXG / 2.8) * 100);
-        const probO35 = Math.min(90, (sumXG / 3.8) * 100);
-        const isBTTS = (sA.xg > 0.9 && sB.xg > 0.9) || (sumXG > 2.8);
-        const isTeam3 = (sA.xg > 2.4 || sB.xg > 2.4);
+        // Scores Exacts
+        let scores = [];
+        for(let i=0; i<=4; i++) {
+            for(let j=0; j<=4; j++) {
+                let prob = poisson(sA.xg, i) * poisson(sB.xg, j);
+                scores.push({ s: `${i} - ${j}`, p: prob * 100 });
+            }
+        }
+        scores.sort((a,b) => b.p - a.p);
 
-        // Affichage
+        // Marchés Buts
+        const pO25 = Math.min(98, ( (sA.xg+sB.xg) / 2.8) * 100);
+        const pO35 = Math.min(95, ( (sA.xg+sB.xg) / 3.8) * 100);
+        const pBTTS = Math.min(95, (poisson(sA.xg, 0) + poisson(sB.xg, 0)) < 0.5 ? 75 : 30);
+
+        // UI Update
         document.getElementById('results').style.display = "block";
-        document.getElementById('outA').innerText = nA; document.getElementById('outB').innerText = nB;
-        document.getElementById('p1').innerText = p1.toFixed(1) + "%";
-        document.getElementById('p2').innerText = p2.toFixed(1) + "%";
-        document.getElementById('pN').innerText = pN.toFixed(1) + "%";
-        document.getElementById('dc').innerText = p1 > p2 ? "1X" : "X2";
-
-        const badge = (cond) => cond ? '<span class="status-badge oui">OUI</span>' : '<span class="status-badge non">NON</span>';
-        document.getElementById('btts').innerHTML = badge(isBTTS);
-        document.getElementById('o25').innerHTML = badge(probO25 > 50);
-        document.getElementById('u25').innerHTML = badge(probO25 <= 50);
-        document.getElementById('o35').innerHTML = badge(probO35 > 50);
-        document.getElementById('u35').innerHTML = badge(probO35 <= 50);
-        document.getElementById('team3plus').innerHTML = badge(isTeam3);
-        document.getElementById('corn').innerText = (sA.corn + sB.corn).toFixed(1);
+        document.getElementById('score1').innerText = scores[0].s;
+        document.getElementById('probScore1').innerText = `(${scores[0].p.toFixed(1)}%)`;
+        document.getElementById('score2').innerText = scores[1].s;
+        document.getElementById('probScore2').innerText = `(${scores[1].p.toFixed(1)}%)`;
         
-        document.getElementById('aiSummary').innerText = `Le match oppose une force offensive de ${rA.att.toFixed(0)} (${nA}) contre ${rB.att.toFixed(0)} (${nB}). ${sumXG > 3 ? 'Scénario ouvert attendu.' : 'Match potentiellement fermé.'}`;
+        document.getElementById('p1').innerText = p1.toFixed(1) + "%";
+        document.getElementById('pN').innerText = pN.toFixed(1) + "%";
+        document.getElementById('p2').innerText = p2.toFixed(1) + "%";
+        
+        document.getElementById('o25').innerText = pO25.toFixed(1) + "%";
+        document.getElementById('u25').innerText = (100 - pO25).toFixed(1) + "%";
+        document.getElementById('o35').innerText = pO35.toFixed(1) + "%";
+        document.getElementById('u35').innerText = (100 - pO35).toFixed(1) + "%";
+        document.getElementById('btts').innerText = pBTTS.toFixed(1) + "%";
+        document.getElementById('team3').innerText = (Math.max(sA.xg, sB.xg) > 2.2 ? 65 : 15) + "%";
+        
+        const dcVal = p1 > p2 ? "1X" : "X2";
+        document.getElementById('dc').innerText = dcVal;
+        document.getElementById('corn').innerText = (sA.corn + sB.corn).toFixed(1);
 
-        // Graphique
-        const ctx = document.getElementById('radarChart').getContext('2d');
-        if(window.myRadar) window.myRadar.destroy();
-        window.myRadar = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['Attaque', 'Défense', 'Domination', 'Pression'],
-                datasets: [
-                    { label: nA, data: [rA.att, rA.def, rA.dom, rA.pres], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)' },
-                    { label: nB, data: [rB.att, rB.def, rB.dom, rB.pres], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)' }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } } } }
-        });
+        addHistory(nA, nB, scores[0].s, dcVal);
     }
-</script>
 
+    function addHistory(a, b, score, dc) {
+        let history = JSON.parse(localStorage.getItem('predictor_history') || "[]");
+        const entry = { date: new Date().toLocaleDateString(), match: `${a} vs ${b}`, score, dc };
+        history.unshift(entry);
+        if(history.length > 10) history.pop();
+        localStorage.setItem('predictor_history', JSON.stringify(history));
+        loadHistory();
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('predictor_history') || "[]");
+        const body = document.getElementById('historyBody');
+        body.innerHTML = history.map(h => `<tr><td>${h.date}</td><td>${h.match}</td><td>${h.score}</td><td>${h.dc}</td></tr>`).join('');
+    }
+
+    function clearHistory() { localStorage.removeItem('predictor_history'); loadHistory(); }
+
+    setup();
+</script>
 </body>
 </html>
