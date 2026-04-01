@@ -3,34 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor V4 - Persistence & Scores</title>
+    <title>IA Predictor V5 - Tactique & Mémoire</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .container { max-width: 1100px; margin: auto; }
-        h1 { text-align: center; color: var(--green); font-size: 20px; text-transform: uppercase; margin: 15px 0; letter-spacing: 1px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
+        .container { max-width: 1000px; margin: auto; }
+        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 20px; text-transform: uppercase; }
         
+        /* Formulaire */
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .team-col { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .team-name { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
-        
+        .team-name { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .field { display: flex; flex-direction: column; }
-        label { font-size: 10px; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; }
-        input[type="number"] { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 6px; font-size: 14px; }
+        label { font-size: 9px; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
+        input[type="number"] { padding: 8px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 5px; }
 
-        .btn-analyze { width: 100%; padding: 18px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
+        .btn-analyze { width: 100%; padding: 18px; background: var(--green); color: #0f172a; border: none; border-radius: 10px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; }
 
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .res-card { background: var(--card); padding: 18px; border-radius: 12px; border-top: 4px solid var(--green); position: relative; }
-        .res-title { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .val { font-size: 24px; font-weight: 800; color: var(--green); }
-        .sub-val { font-size: 14px; color: #cbd5e1; margin-bottom: 8px; }
+        /* Résultats */
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
+        .val { font-size: 22px; font-weight: 800; color: var(--green); }
+        
+        /* Analyse Tactique */
+        .tactical-box { background: rgba(52, 152, 219, 0.1); border-left: 4px solid var(--blue); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .tactical-title { color: var(--blue); font-weight: bold; text-transform: uppercase; font-size: 11px; margin-bottom: 10px; display: block; }
+        .style-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; }
 
-        .history-section { margin-top: 40px; background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .history-table th { text-align: left; color: #94a3b8; padding: 10px; border-bottom: 1px solid var(--border); }
+        /* Historique */
+        .history-section { background: var(--card); border-radius: 12px; padding: 15px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .history-table th { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); color: #94a3b8; }
         .history-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
         @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
@@ -39,62 +44,67 @@
 <body>
 
 <div class="container">
-    <h1>⚽ IA Predictor Pro V4</h1>
+    <h1>🏆 IA Predictor V5 - Tactique</h1>
     
     <div class="main-grid">
         <div class="team-col">
-            <input type="text" id="nameA" class="team-name" placeholder="Équipe Domicile" oninput="saveInputs()">
+            <input type="text" id="nameA" class="team-name" placeholder="Équipe Domicile" oninput="saveData()">
             <div class="stats-grid" id="inputsA"></div>
         </div>
         <div class="team-col" style="border-color: var(--blue);">
-            <input type="text" id="nameB" class="team-name" placeholder="Équipe Extérieur" oninput="saveInputs()" style="border-color: var(--blue);">
+            <input type="text" id="nameB" class="team-name" placeholder="Équipe Extérieur" oninput="saveData()" style="border-color: var(--blue);">
             <div class="stats-grid" id="inputsB"></div>
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">ANALYSER & ENREGISTRER</button>
+    <button class="btn-analyze" onclick="runAnalysis()">ANALYSER & SAUVEGARDER</button>
 
     <div id="results" style="display: none;">
-        <div class="res-grid">
-            <div class="res-card">
-                <span class="res-title">Scores les plus probables</span>
-                <p>1er : <span class="val" id="score1" style="color: var(--gold)">--</span> <small id="probScore1"></small></p>
-                <p>2ème : <span class="val" id="score2" style="color: #bdc3c7">--</span> <small id="probScore2"></small></p>
-                <div style="margin-top:15px; font-size: 13px;">
-                    Probabilité 1 : <b id="p1">--</b> | N : <b id="pN">--</b> | 2 : <b id="p2">--</b>
+        <div class="tactical-box">
+            <span class="tactical-title">🧠 Décryptage Tactique de l'IA</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <b id="tactNameA">--</b> : <span id="styleA" class="style-tag" style="background: var(--green); color: #0f172a;">--</span>
+                    <p id="descA" style="font-size: 12px; opacity: 0.8;"></p>
+                </div>
+                <div>
+                    <b id="tactNameB">--</b> : <span id="styleB" class="style-tag" style="background: var(--blue); color: white;">--</span>
+                    <p id="descB" style="font-size: 12px; opacity: 0.8;"></p>
                 </div>
             </div>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+            <p id="matchDynamics" style="font-style: italic; font-size: 13px; color: var(--gold);"></p>
+        </div>
 
-            <div class="res-card" style="border-color: var(--blue);">
-                <span class="res-title">Marché des Buts (%)</span>
-                <p class="sub-val">Over 2.5 : <b id="o25">--%</b> | Under : <b id="u25">--%</b></p>
-                <p class="sub-val">Over 3.5 : <b id="o35">--%</b> | Under : <b id="u35">--%</b></p>
-                <p class="sub-val">Les deux marquent : <b id="btts">--%</b></p>
-                <p class="sub-val">Une équipe marque 3+ : <b id="team3">--%</b></p>
+        <div class="res-grid">
+            <div class="res-card">
+                <span class="tactical-title">Scores Probables</span>
+                <p>1er : <span class="val" id="s1" style="color: var(--gold)">--</span> <small id="ps1"></small></p>
+                <p>2ème : <span class="val" id="s2">--</span> <small id="ps2"></small></p>
             </div>
-
+            <div class="res-card" style="border-color: var(--blue);">
+                <span class="tactical-title">Probabilités Buts</span>
+                <p>BTTS (Les deux marquent) : <b id="btts">--%</b></p>
+                <p>Over 2.5 : <b id="o25">--%</b> | Over 3.5 : <b id="o35">--%</b></p>
+                <p>Equipe marque 3+ : <b id="team3">--%</b></p>
+            </div>
             <div class="res-card" style="border-color: var(--gold);">
-                <span class="res-title">Expert Double Chance</span>
-                <p class="val" id="dc">--</p>
-                <p class="sub-val">Corners attendus : <b id="corn" style="color: var(--gold)">--</b></p>
+                <span class="tactical-title">Conseil 1N2 / DC</span>
+                <p class="val" id="p12">--</p>
+                <p>Double Chance : <b id="dc">--</b></p>
             </div>
         </div>
     </div>
 
     <div class="history-section">
-        <h3 style="margin-top:0; font-size: 14px; color: var(--green);">📜 Historique des Analyses</h3>
+        <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--green);">📜 Historique Local</h3>
         <table class="history-table">
             <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Match</th>
-                    <th>Score Prédit</th>
-                    <th>Conseil</th>
-                </tr>
+                <tr><th>Date</th><th>Affiche</th><th>Score IA</th><th>Analyse</th></tr>
             </thead>
             <tbody id="historyBody"></tbody>
         </table>
-        <button onclick="clearHistory()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 10px; margin-top: 10px;">Effacer l'historique</button>
+        <button onclick="clearHistory()" style="background:none; border:none; color:#e74c3c; font-size:10px; cursor:pointer; margin-top:10px;">Vider l'historique</button>
     </div>
 </div>
 
@@ -102,43 +112,38 @@
     const fields = [
         { id: 'poss', label: 'Possession %' }, { id: 'pass', label: 'Passes' },
         { id: 'shots', label: 'Tirs' }, { id: 'sot', label: 'Tirs Cadrés' },
-        { id: 'xg', label: 'xG (Attaque)' }, { id: 'corn', label: 'Corners' },
+        { id: 'xg', label: 'xG Attaque' }, { id: 'corn', label: 'Corners' },
         { id: 'scon', label: 'Tirs Conc.' }, { id: 'sotcon', label: 'Cadrés Conc.' },
-        { id: 'xga', label: 'xGA (Défense)' }, { id: 'corncon', label: 'Corners Conc.' }
+        { id: 'xga', label: 'xGA Défense' }, { id: 'corncon', label: 'Corners Conc.' }
     ];
 
-    // Initialisation & Chargement
     function setup() {
         ['A', 'B'].forEach(p => {
             const container = document.getElementById('inputs' + p);
             fields.forEach(f => {
-                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" oninput="saveInputs()"></div>`;
+                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" oninput="saveData()"></div>`;
             });
         });
-        loadInputs();
+        loadData();
         loadHistory();
     }
 
-    // Persistence : Sauvegarde
-    function saveInputs() {
+    function saveData() {
         const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
-        ['A', 'B'].forEach(p => { fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }); });
-        localStorage.setItem('predictor_data', JSON.stringify(data));
+        ['A', 'B'].forEach(p => fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }));
+        localStorage.setItem('predictor_v5_data', JSON.stringify(data));
     }
 
-    function loadInputs() {
-        const saved = localStorage.getItem('predictor_data');
+    function loadData() {
+        const saved = localStorage.getItem('predictor_v5_data');
         if(!saved) return;
         const data = JSON.parse(saved);
         document.getElementById('nameA').value = data.nameA || "";
         document.getElementById('nameB').value = data.nameB || "";
-        for(let key in data.stats) { if(document.getElementById(key)) document.getElementById(key).value = data.stats[key]; }
+        for(let key in data.stats) if(document.getElementById(key)) document.getElementById(key).value = data.stats[key];
     }
 
-    // Calcul Poisson simplifié pour scores
-    function poisson(lambda, k) {
-        return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k);
-    }
+    function poisson(lambda, k) { return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k); }
     function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 
     function runAnalysis() {
@@ -151,78 +156,68 @@
         const nA = document.getElementById('nameA').value || "Dom.";
         const nB = document.getElementById('nameB').value || "Ext.";
 
-        // Algo 30/30/20/20
-        const calc = (s) => {
-            const att = (s.xg * 0.7 + (s.sot / (s.shots || 1)) * 3) * 10;
-            const def = (10 - (s.xga * 0.7 + (s.sotcon / (s.scon || 1)) * 3)) * 10;
-            const dom = (s.poss * 0.5 + (s.pass / 800) * 50);
-            const pres = (s.corn * 2 - s.corncon);
-            return { att, def, dom, pres, score: (att*0.3 + def*0.3 + dom*0.2 + pres*0.2) };
+        // Tactique Logic
+        const analyzeStyle = (s, name) => {
+            if (s.poss > 58 && s.pass > 500) return { tag: "POSSESSION DOMINANTE", desc: `${name} contrôle le milieu avec un gros volume de passes.` };
+            if (s.xg > 2 && s.shots < 12) return { tag: "ATTAQUE CLINIQUE", desc: `${name} crée peu d'occasions mais elles sont extrêmement dangereuses.` };
+            if (s.xga < 0.8 && s.sotcon < 3) return { tag: "MUR DÉFENSIF", desc: `${name} concède très peu d'espaces et de tirs cadrés.` };
+            if (s.shots > 15 && s.xg < 1.2) return { tag: "BOMBARDEMENT INOFFENSIF", desc: `${name} tire beaucoup de loin sans réelle précision.` };
+            return { tag: "ÉQUILIBRÉ", desc: `${name} alterne entre phases de possession et contres.` };
         };
 
-        const rA = calc(sA); const rB = calc(sB);
-        const total = rA.score + rB.score;
-        const p1 = (rA.score / total) * 100;
-        const p2 = (rB.score / total) * 100;
-        const pN = 100 - p1 - p2;
-
-        // Scores Exacts
+        const stA = analyzeStyle(sA, nA); const stB = analyzeStyle(sB, nB);
+        
+        // Résultats Probabilités
         let scores = [];
         for(let i=0; i<=4; i++) {
             for(let j=0; j<=4; j++) {
-                let prob = poisson(sA.xg, i) * poisson(sB.xg, j);
-                scores.push({ s: `${i} - ${j}`, p: prob * 100 });
+                let prob = poisson(sA.xg, i) * poisson(sB.xg, j) * 100;
+                scores.push({ s: `${i} - ${j}`, p: prob });
             }
         }
         scores.sort((a,b) => b.p - a.p);
 
-        // Marchés Buts
-        const pO25 = Math.min(98, ( (sA.xg+sB.xg) / 2.8) * 100);
-        const pO35 = Math.min(95, ( (sA.xg+sB.xg) / 3.8) * 100);
-        const pBTTS = Math.min(95, (poisson(sA.xg, 0) + poisson(sB.xg, 0)) < 0.5 ? 75 : 30);
+        const pO25 = Math.min(98, ((sA.xg+sB.xg)/2.8)*100);
+        const pO35 = Math.min(95, ((sA.xg+sB.xg)/3.8)*100);
+        const pBTTS = Math.min(95, (sA.xg > 0.8 && sB.xg > 0.8) ? 78 : 35);
 
         // UI Update
         document.getElementById('results').style.display = "block";
-        document.getElementById('score1').innerText = scores[0].s;
-        document.getElementById('probScore1').innerText = `(${scores[0].p.toFixed(1)}%)`;
-        document.getElementById('score2').innerText = scores[1].s;
-        document.getElementById('probScore2').innerText = `(${scores[1].p.toFixed(1)}%)`;
+        document.getElementById('tactNameA').innerText = nA; document.getElementById('tactNameB').innerText = nB;
+        document.getElementById('styleA').innerText = stA.tag; document.getElementById('descA').innerText = stA.desc;
+        document.getElementById('styleB').innerText = stB.tag; document.getElementById('descB').innerText = stB.desc;
         
-        document.getElementById('p1').innerText = p1.toFixed(1) + "%";
-        document.getElementById('pN').innerText = pN.toFixed(1) + "%";
-        document.getElementById('p2').innerText = p2.toFixed(1) + "%";
-        
-        document.getElementById('o25').innerText = pO25.toFixed(1) + "%";
-        document.getElementById('u25').innerText = (100 - pO25).toFixed(1) + "%";
-        document.getElementById('o35').innerText = pO35.toFixed(1) + "%";
-        document.getElementById('u35').innerText = (100 - pO35).toFixed(1) + "%";
-        document.getElementById('btts').innerText = pBTTS.toFixed(1) + "%";
-        document.getElementById('team3').innerText = (Math.max(sA.xg, sB.xg) > 2.2 ? 65 : 15) + "%";
-        
-        const dcVal = p1 > p2 ? "1X" : "X2";
-        document.getElementById('dc').innerText = dcVal;
-        document.getElementById('corn').innerText = (sA.corn + sB.corn).toFixed(1);
+        let dyn = `DYNAMIQUE : ${sA.xg + sB.xg > 3 ? "On attend un match ouvert avec beaucoup de transitions." : "Bataille tactique fermée attendue au milieu de terrain."}`;
+        document.getElementById('matchDynamics').innerText = dyn;
 
-        addHistory(nA, nB, scores[0].s, dcVal);
+        document.getElementById('s1').innerText = scores[0].s; document.getElementById('ps1').innerText = `(${scores[0].p.toFixed(1)}%)`;
+        document.getElementById('s2').innerText = scores[1].s; document.getElementById('ps2').innerText = `(${scores[1].p.toFixed(1)}%)`;
+        document.getElementById('btts').innerText = pBTTS.toFixed(1);
+        document.getElementById('o25').innerText = pO25.toFixed(1);
+        document.getElementById('o35').innerText = pO35.toFixed(1);
+        document.getElementById('team3').innerText = (Math.max(sA.xg, sB.xg) > 2.4 ? 68 : 12);
+        
+        const p1 = (sA.xg / (sA.xg + sB.xg)) * 100;
+        document.getElementById('p12').innerText = p1 > 55 ? nA : (p1 < 45 ? nB : "Match Nul");
+        document.getElementById('dc').innerText = p1 > 50 ? "1X" : "X2";
+
+        addHistory(nA, nB, scores[0].s, stA.tag);
     }
 
-    function addHistory(a, b, score, dc) {
-        let history = JSON.parse(localStorage.getItem('predictor_history') || "[]");
-        const entry = { date: new Date().toLocaleDateString(), match: `${a} vs ${b}`, score, dc };
-        history.unshift(entry);
-        if(history.length > 10) history.pop();
-        localStorage.setItem('predictor_history', JSON.stringify(history));
+    function addHistory(a, b, score, style) {
+        let history = JSON.parse(localStorage.getItem('pred_hist_v5') || "[]");
+        history.unshift({ date: new Date().toLocaleDateString(), match: `${a} vs ${b}`, score, style });
+        if(history.length > 8) history.pop();
+        localStorage.setItem('pred_hist_v5', JSON.stringify(history));
         loadHistory();
     }
 
     function loadHistory() {
-        const history = JSON.parse(localStorage.getItem('predictor_history') || "[]");
-        const body = document.getElementById('historyBody');
-        body.innerHTML = history.map(h => `<tr><td>${h.date}</td><td>${h.match}</td><td>${h.score}</td><td>${h.dc}</td></tr>`).join('');
+        const history = JSON.parse(localStorage.getItem('pred_hist_v5') || "[]");
+        document.getElementById('historyBody').innerHTML = history.map(h => `<tr><td>${h.date}</td><td>${h.match}</td><td><b>${h.score}</b></td><td>${h.style}</td></tr>`).join('');
     }
 
-    function clearHistory() { localStorage.removeItem('predictor_history'); loadHistory(); }
-
+    function clearHistory() { localStorage.removeItem('pred_hist_v5'); loadHistory(); }
     setup();
 </script>
 </body>
