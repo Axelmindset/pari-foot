@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor V6 - Expert Total</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>IA Predictor V7 - Précision Totale</title>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; --red: #e74c3c; }
+        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
         .container { max-width: 1100px; margin: auto; }
         h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
@@ -21,23 +20,15 @@
 
         .btn-analyze { width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
 
-        /* Dashboard de Résultats */
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); position: relative; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
         .card-title { font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .val { font-size: 22px; font-weight: 800; color: var(--green); }
-        .sub-text { font-size: 12px; color: #cbd5e1; margin: 5px 0; }
+        .val { font-size: 20px; font-weight: 800; color: var(--green); }
         .perc { color: var(--gold); font-weight: bold; }
+        .team-label { font-size: 11px; font-weight: bold; color: var(--blue); margin-top: 5px; display: block; }
 
-        /* Tactique & Dynamique */
         .tactical-box { background: rgba(52, 152, 219, 0.1); border: 1px solid var(--blue); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .style-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; background: var(--blue); color: white; margin-bottom: 5px; }
-
-        .history-section { background: var(--card); border-radius: 12px; padding: 15px; margin-top: 20px; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .history-table td, th { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-        .copy-btn { background: var(--gold); color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; float: right; }
+        .copy-btn { background: var(--gold); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
 
         @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
@@ -45,7 +36,7 @@
 <body>
 
 <div class="container">
-    <h1>🚀 IA PREDICTOR V6 - EXPERT BETTING</h1>
+    <h1>🎯 IA PREDICTOR V7 - ANALYSE RENTABLE</h1>
     
     <div class="main-grid">
         <div class="team-col">
@@ -58,47 +49,52 @@
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">GÉNÉRER L'ANALYSE COMPLÈTE</button>
+    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE EXPERTE</button>
 
     <div id="results" style="display: none;">
-        <div class="tactical-box">
-            <span class="card-title" style="color: var(--blue);">Analyse des Identités Tactiques</span>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div><b id="tNameA">--</b> : <span id="sA" class="style-tag">--</span><p id="dA" style="font-size:11px;"></p></div>
-                <div><b id="tNameB">--</b> : <span id="sB" class="style-tag">--</span><p id="dB" style="font-size:11px;"></p></div>
-            </div>
-            <p id="matchDyn" style="color: var(--gold); font-style: italic; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;"></p>
-        </div>
-
         <div class="res-grid">
             <div class="res-card">
-                <span class="card-title">Scores Exacts Probables</span>
-                <p class="sub-text">1er : <span class="val" id="score1">--</span> <span class="perc" id="pScore1"></span></p>
-                <p class="sub-text">2ème : <span class="val" id="score2" style="color: #bdc3c7">--</span> <span class="perc" id="pScore2"></span></p>
-                <p class="sub-text" style="font-size:10px; margin-top:10px;">1: <span id="prob1"></span> | N: <span id="probN"></span> | 2: <span id="prob2"></span></p>
+                <span class="card-title">Marché des Buts (%)</span>
+                <p>Over 2.5 : <span class="val" id="vO25">--%</span></p>
+                <p>BTTS : <span class="val" id="vBtts">--%</span></p>
+                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:5px;">
+                    <span class="team-label" id="lbl3A"></span> 3+ buts : <b class="perc" id="v3A">--%</b><br>
+                    <span class="team-label" id="lbl3B"></span> 3+ buts : <b class="perc" id="v3B">--%</b>
+                </div>
             </div>
 
             <div class="res-card" style="border-color: var(--blue);">
-                <span class="card-title">Marché des Buts (%)</span>
-                <p class="sub-text">BTTS (Deux marquent) : <span class="val" id="vBtts">--%</span></p>
-                <p class="sub-text">Over 2.5 : <b class="perc" id="vO25">--%</b> | Under : <b id="vU25">--%</b></p>
-                <p class="sub-text">Over 3.5 : <b class="perc" id="vO35">--%</b> | Under : <b id="vU35">--%</b></p>
-                <p class="sub-text">Équipe marque 3+ : <b class="perc" id="vTeam3">--%</b></p>
+                <span class="card-title">Tirs Cadrés (SoT)</span>
+                <div>
+                    <span class="team-label" id="lblSotA"></span> Over 3.5 : <span class="val" id="pSotA">--%</span><br>
+                    <small>Moyenne attendue : <b id="avgSotA"></b></small>
+                </div>
+                <div style="margin-top:10px;">
+                    <span class="team-label" id="lblSotB"></span> Over 3.5 : <span class="val" id="pSotB">--%</span><br>
+                    <small>Moyenne attendue : <b id="avgSotB"></b></small>
+                </div>
             </div>
 
             <div class="res-card" style="border-color: var(--gold);">
-                <span class="card-title">Corners & Spéciaux</span>
-                <p class="sub-text">Total Corners estimé :</p>
-                <span class="val" id="vCorn" style="color: var(--gold)">--</span>
-                <p class="sub-text" style="margin-top:15px;">Double Chance : <b class="val" id="vDc" style="font-size:18px;">--</b></p>
+                <span class="card-title">Corners Individuels</span>
+                <div>
+                    <span class="team-label" id="lblCornA"></span> Over 4.5 : <span class="val" id="pCornA" style="color: var(--gold)">--%</span><br>
+                    <small>Total estimé : <b id="avgCornA"></b></small>
+                </div>
+                <div style="margin-top:10px;">
+                    <span class="team-label" id="lblCornB"></span> Over 4.5 : <span class="val" id="pCornB" style="color: var(--gold)">--%</span><br>
+                    <small>Total estimé : <b id="avgCornB"></b></small>
+                </div>
+                <p style="margin-top:10px; font-weight:bold;">Total Match : <span id="vTotalCorn"></span></p>
             </div>
         </div>
-        <button class="copy-btn" onclick="copySummary()">Copier le résumé WhatsApp</button>
-    </div>
+        
+        <div class="res-card" style="width:100%; border-top:4px solid var(--gold); margin-bottom:20px;">
+            <span class="card-title">Conseil Double Chance</span>
+            <span class="val" id="vDc">--</span>
+        </div>
 
-    <div class="history-section">
-        <h3 style="margin: 0 0 10px 0; font-size: 14px;">📜 Dernières Analyses Sauvegardées</h3>
-        <table class="history-table"><tbody id="hBody"></tbody></table>
+        <button class="copy-btn" onclick="copySummary()">📲 COPIER POUR WHATSAPP</button>
     </div>
 </div>
 
@@ -118,17 +114,17 @@
                 container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" oninput="saveData()"></div>`;
             });
         });
-        loadData(); loadHistory();
+        loadData();
     }
 
     function saveData() {
         const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
         ['A', 'B'].forEach(p => fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }));
-        localStorage.setItem('predictor_v6_memory', JSON.stringify(data));
+        localStorage.setItem('predictor_v7_data', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('predictor_v6_memory');
+        const saved = localStorage.getItem('predictor_v7_data');
         if(!saved) return;
         const data = JSON.parse(saved);
         document.getElementById('nameA').value = data.nameA || "";
@@ -136,83 +132,59 @@
         for(let key in data.stats) if(document.getElementById(key)) document.getElementById(key).value = data.stats[key];
     }
 
-    function poisson(l, k) { return (Math.exp(-l) * Math.pow(l, k)) / factorial(k); }
+    // Loi de Poisson : P(X >= k) = 1 - P(X < k)
+    function poissonGe(lambda, k) {
+        let probLessThanK = 0;
+        for(let i=0; i < k; i++) {
+            probLessThanK += (Math.exp(-lambda) * Math.pow(lambda, i)) / factorial(i);
+        }
+        return (1 - probLessThanK) * 100;
+    }
     function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 
     function runAnalysis() {
         const getS = (p) => { let s = {}; fields.forEach(f => s[f.id] = parseFloat(document.getElementById(p + '_' + f.id).value || 0)); return s; };
         const sA = getS('A'); const sB = getS('B');
-        const nA = document.getElementById('nameA').value || "Dom."; const nB = document.getElementById('nameB').value || "Ext.";
+        const nA = document.getElementById('nameA').value || "A"; const nB = document.getElementById('nameB').value || "B";
 
-        // Tactique
-        const style = (s) => {
-            if (s.poss > 58) return { t: "POSSESSION", d: "Contrôle le rythme." };
-            if (s.xg > 2 && s.shots < 12) return { t: "CLINIQUE", d: "Efficacité maximale." };
-            if (s.xga < 0.9) return { t: "MUR", d: "Défense imperméable." };
-            return { t: "ÉQUILIBRÉ", d: "Jeu de transition." };
-        };
-        const stA = style(sA); const stB = style(sB);
-
-        // Probabilités & Scores
-        let scores = [];
-        for(let i=0; i<=4; i++) {
-            for(let j=0; j<=4; j++) {
-                let p = poisson(sA.xg, i) * poisson(sB.xg, j) * 100;
-                scores.push({ s: `${i}-${j}`, p: p });
-            }
-        }
-        scores.sort((a,b) => b.p - a.p);
-
-        const pO25 = Math.min(99, ((sA.xg+sB.xg)/2.8)*100);
-        const pO35 = Math.min(99, ((sA.xg+sB.xg)/3.8)*100);
-        const pBtts = Math.min(99, (sA.xg > 0.8 && sB.xg > 0.8) ? 82 : 28);
-        const pT3 = Math.max(poisson(sA.xg, 3), poisson(sB.xg, 3)) * 200;
-
-        // UI
         document.getElementById('results').style.display = "block";
-        document.getElementById('tNameA').innerText = nA; document.getElementById('tNameB').innerText = nB;
-        document.getElementById('sA').innerText = stA.t; document.getElementById('sB').innerText = stB.t;
-        document.getElementById('dA').innerText = stA.d; document.getElementById('dB').innerText = stB.d;
-        document.getElementById('matchDyn').innerText = `Dynamique : ${sA.xg + sB.xg > 2.8 ? "Match ouvert, transitions rapides." : "Duel tactique serré."}`;
-        
-        document.getElementById('score1').innerText = scores[0].s; document.getElementById('pScore1').innerText = scores[0].p.toFixed(1) + "%";
-        document.getElementById('score2').innerText = scores[1].s; document.getElementById('pScore2').innerText = scores[1].p.toFixed(1) + "%";
-        
-        document.getElementById('vBtts').innerText = pBtts.toFixed(1) + "%";
-        document.getElementById('vO25').innerText = pO25.toFixed(1) + "%"; document.getElementById('vU25').innerText = (100-pO25).toFixed(1) + "%";
-        document.getElementById('vO35').innerText = pO35.toFixed(1) + "%"; document.getElementById('vU35').innerText = (100-pO35).toFixed(1) + "%";
-        document.getElementById('vTeam3').innerText = Math.min(95, pT3).toFixed(1) + "%";
-        
-        document.getElementById('vCorn').innerText = (sA.corn + sB.corn).toFixed(1);
-        const p1 = (sA.xg / (sA.xg + sB.xg)) * 100;
-        document.getElementById('vDc').innerText = p1 > 52 ? "1X" : (p1 < 48 ? "X2" : "12");
-        
-        document.getElementById('prob1').innerText = p1.toFixed(0) + "%";
-        document.getElementById('prob2').innerText = (100-p1).toFixed(0) + "%";
-        document.getElementById('probN').innerText = (Math.abs(p1-50) < 10 ? "25%" : "15%");
 
-        addHistory(nA, nB, scores[0].s);
-    }
+        // 1. Logique des Buts (Correction Poisson stricte)
+        const pO25 = poissonGe(sA.xg + sB.xg, 3);
+        const p3A = poissonGe(sA.xg, 3);
+        const p3B = poissonGe(sB.xg, 3);
+        
+        document.getElementById('vO25').innerText = pO25.toFixed(1) + "%";
+        document.getElementById('vBtts').innerText = (sA.xg > 0.8 && sB.xg > 0.8 ? 75 : 30) + "%";
+        document.getElementById('lbl3A').innerText = nA; document.getElementById('v3A').innerText = p3A.toFixed(1) + "%";
+        document.getElementById('lbl3B').innerText = nB; document.getElementById('v3B').innerText = p3B.toFixed(1) + "%";
 
-    function addHistory(a, b, s) {
-        let h = JSON.parse(localStorage.getItem('h_v6') || "[]");
-        h.unshift({ d: new Date().toLocaleDateString(), m: `${a}-${b}`, s: s });
-        if(h.length > 5) h.pop();
-        localStorage.setItem('h_v6', JSON.stringify(h)); loadHistory();
-    }
+        // 2. Tirs Cadrés (Seuil Over 3.5)
+        const psotA = poissonGe(sA.sot, 4);
+        const psotB = poissonGe(sB.sot, 4);
+        document.getElementById('lblSotA').innerText = nA; document.getElementById('pSotA').innerText = psotA.toFixed(1) + "%";
+        document.getElementById('avgSotA').innerText = sA.sot;
+        document.getElementById('lblSotB').innerText = nB; document.getElementById('pSotB').innerText = psotB.toFixed(1) + "%";
+        document.getElementById('avgSotB').innerText = sB.sot;
 
-    function loadHistory() {
-        const h = JSON.parse(localStorage.getItem('h_v6') || "[]");
-        document.getElementById('hBody').innerHTML = h.map(i => `<tr><td>${i.d}</td><td>${i.m}</td><td><b>${i.s}</b></td></tr>`).join('');
+        // 3. Corners (Seuil Over 4.5)
+        const pcornA = poissonGe(sA.corn, 5);
+        const pcornB = poissonGe(sB.corn, 5);
+        document.getElementById('lblCornA').innerText = nA; document.getElementById('pCornA').innerText = pcornA.toFixed(1) + "%";
+        document.getElementById('avgCornA').innerText = sA.corn;
+        document.getElementById('lblCornB').innerText = nB; document.getElementById('pCornB').innerText = pcornB.toFixed(1) + "%";
+        document.getElementById('avgCornB').innerText = sB.corn;
+        document.getElementById('vTotalCorn').innerText = (sA.corn + sB.corn).toFixed(1);
+
+        // Double Chance
+        const winA = (sA.xg / (sA.xg + sB.xg)) * 100;
+        document.getElementById('vDc').innerText = winA > 55 ? nA + " ou Nul (1X)" : (winA < 45 ? nB + " ou Nul (X2)" : "12 (Pas de nul)");
     }
 
     function copySummary() {
-        const nA = document.getElementById('nameA').value; const nB = document.getElementById('nameB').value;
-        const text = `📊 PRONO EXPERT : ${nA} vs ${nB}\n🎯 Score : ${document.getElementById('score1').innerText}\n⚽ Over 2.5 : ${document.getElementById('vO25').innerText}\n🥅 BTTS : ${document.getElementById('vBtts').innerText}\n🚩 Corners : ${document.getElementById('vCorn').innerText}\n💎 DC : ${document.getElementById('vDc').innerText}`;
+        const text = `📊 ANALYSE IA PRO\n🔥 Over 2.5 : ${document.getElementById('vO25').innerText}\n🎯 SoT ${document.getElementById('nameA').value} (>3.5) : ${document.getElementById('pSotA').innerText}\n🚩 Corners ${document.getElementById('nameA').value} (>4.5) : ${document.getElementById('pCornA').innerText}\n💎 Conseil : ${document.getElementById('vDc').innerText}`;
         navigator.clipboard.writeText(text); alert("Résumé copié !");
     }
-
-    function clearHistory() { localStorage.removeItem('h_v6'); loadHistory(); }
     setup();
 </script>
 </body>
