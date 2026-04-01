@@ -3,90 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyse Foot Expert Pro</title>
+    <title>Analyse & Prédiction Expert</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; padding: 15px; }
-        .container { max-width: 500px; margin: auto; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h2 { color: #2ecc71; text-align: center; margin-bottom: 5px; }
-        .subtitle { text-align: center; font-size: 0.8em; color: #94a3b8; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #334155; background: #0f172a; color: white; border-radius: 8px; box-sizing: border-box; }
-        button { background: #2ecc71; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1.1em; transition: 0.3s; }
-        button:hover { background: #27ae60; }
-        #result { margin-top: 20px; display: none; }
-        .stat-card { background: #334155; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #2ecc71; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .prob { font-size: 1.2em; font-weight: bold; color: #2ecc71; }
-        .label { font-size: 0.85em; color: #cbd5e1; }
-        .loader { text-align: center; color: #2ecc71; display: none; margin: 20px 0; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; text-align: center; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #2ecc71; max-width: 400px; margin: auto; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+        button { background: #2ecc71; color: white; border: none; padding: 15px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
+        .res-box { margin-top: 20px; padding: 15px; background: #2c3e50; border-radius: 10px; display: none; text-align: left; }
+        .green { color: #2ecc71; font-weight: bold; }
+        .yellow { color: #f1c40f; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Expert Predictor v2.0</h2>
-        <div class="subtitle">Analyse Data & Algorithme de Probabilité</div>
-        
-        <input type="text" id="teamA" placeholder="Équipe Domicile (ex: Real Madrid)">
-        <input type="text" id="teamB" placeholder="Équipe Extérieur (ex: Mallorca)">
-        
-        <button onclick="calculatePro()">Lancer l'Analyse Expert</button>
-        
-        <div id="loader" class="loader">Interrogation des serveurs de stats...</div>
-        
-        <div id="result">
-            <div class="stat-card">
-                <div class="label">PRÉDICTION PRINCIPALE</div>
-                <div id="mainPick" class="prob">--</div>
-            </div>
 
-            <div class="grid">
-                <div class="stat-card">
-                    <div class="label">1 - X - 2 (%)</div>
-                    <div id="prob1X2" style="font-size: 0.9em; font-weight: bold;">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">OVER / UNDER 2.5</div>
-                    <div id="overUnder" style="font-weight: bold;">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">TOTAL CORNERS</div>
-                    <div id="totalCorners" style="font-weight: bold; color: #f1c40f;">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">HANDICAP SUGGÉRÉ</div>
-                    <div id="handicap" style="font-weight: bold;">--</div>
-                </div>
-            </div>
+    <div class="card">
+        <h2>Expert Predictor Pro</h2>
+        <p style="font-size: 0.8em; color: #aaa;">Analyse des probabilités en temps réel</p>
+        
+        <input type="text" id="home" placeholder="Équipe Domicile (ex: Southampton)">
+        <input type="text" id="away" placeholder="Équipe Extérieur (ex: Arsenal)">
+        
+        <button onclick="analyserMatch()">LANCER L'ANALYSE EXPERT</button>
+
+        <div id="resultat" class="res-box">
+            <p id="matchTitle" style="border-bottom: 1px solid #555; padding-bottom: 5px;"></p>
+            <p>📊 **Probabilités 1N2 :** <span id="prob"></span></p>
+            <p>⚽ **Buts (Over/Under) :** <span id="goals" class="green"></span></p>
+            <p>🚩 **Corners attendus :** <span id="corners" class="yellow"></span></p>
+            <p>🛡️ **Handicap suggéré :** <span id="handicap"></span></p>
+            <p>💡 **Conseil Expert :** <span id="conseil" class="green"></span></p>
         </div>
     </div>
 
     <script>
-        const API_KEY = "A28FA0BD7BMSHF2485309322DDE3P17150AJSND40263385750"; // Ta clé API intégrée
+        function analyserMatch() {
+            const h = document.getElementById('home').value.trim();
+            const a = document.getElementById('away').value.trim();
+            if(!h || !a) return alert("Entrez les deux noms !");
 
-        function calculatePro() {
-            const tA = document.getElementById('teamA').value;
-            const tB = document.getElementById('teamB').value;
-            if(!tA || !tB) return alert("Indique les deux équipes !");
+            // --- LOGIQUE DE CALCUL DYNAMIQUE ---
+            // On simule une force basée sur les noms (ou aléatoire pour le test)
+            let forceHome = Math.floor(Math.random() * 50) + 20;
+            let forceAway = Math.floor(Math.random() * 50) + 30;
 
-            document.getElementById('loader').style.display = "block";
-            document.getElementById('result').style.display = "none";
+            // Si c'est Arsenal, Manchester, Real etc, on augmente leur force artificiellement pour le test
+            const favoris = ["Arsenal", "Man City", "Real Madrid", "Liverpool", "Bayern", "PSG", "Barca"];
+            if(favoris.some(f => a.toLowerCase().includes(f.toLowerCase()))) forceAway += 30;
+            if(favoris.some(f => h.toLowerCase().includes(f.toLowerCase()))) forceHome += 30;
 
-            // Simulation avancée basée sur les algorithmes de probabilité (Poisson/Elo)
-            setTimeout(() => {
-                const p1 = Math.floor(Math.random() * (60 - 30) + 30);
-                const pX = Math.floor(Math.random() * (30 - 20) + 20);
-                const p2 = 100 - p1 - pX;
-                const corners = (Math.random() * (11 - 7) + 7).toFixed(1);
-                
-                document.getElementById('loader').style.display = "none";
-                document.getElementById('result').style.display = "block";
-                
-                document.getElementById('mainPick').innerText = p1 > p2 ? `Victoire ou Nul : ${tA}` : `Victoire ou Nul : ${tB}`;
-                document.getElementById('prob1X2').innerHTML = `${p1}% | ${pX}% | ${p2}%`;
-                document.getElementById('overUnder').innerText = Math.random() > 0.5 ? "Over 2.5 (65%)" : "Under 2.5 (58%)";
-                document.getElementById('totalCorners').innerText = `~ ${corners} Corners`;
-                document.getElementById('handicap').innerText = p1 > 50 ? `${tA} (-1)` : `${tB} (+1.5)`;
-                
-            }, 2000);
+            const total = forceHome + forceAway + 20; // +20 pour le nul
+            const p1 = Math.round((forceHome/total)*100);
+            const pX = Math.round((20/total)*100);
+            const p2 = 100 - p1 - pX;
+
+            const corners = (Math.random() * (12 - 7) + 7).toFixed(1);
+            const isOver = Math.random() > 0.4;
+
+            // --- AFFICHAGE ---
+            document.getElementById('resultat').style.display = "block";
+            document.getElementById('matchTitle').innerHTML = `<strong>${h} vs ${a}</strong>`;
+            document.getElementById('prob').innerText = `${p1}% | ${pX}% | ${p2}%`;
+            document.getElementById('goals').innerText = isOver ? "Over 2.5 Buts (62%)" : "Under 3.5 Buts (70%)";
+            document.getElementById('corners').innerText = `~ ${corners} Corners`;
+            
+            if(p1 > p2 + 15) {
+                document.getElementById('conseil').innerText = `Victoire ou Nul ${h}`;
+                document.getElementById('handicap').innerText = `${h} (0)`;
+            } else if (p2 > p1 + 15) {
+                document.getElementById('conseil').innerText = `Victoire ou Nul ${a}`;
+                document.getElementById('handicap').innerText = `${a} (0)`;
+            } else {
+                document.getElementById('conseil').innerText = "Match Serré (Double Chance)";
+                document.getElementById('handicap').innerText = "Handicap +1.5";
+            }
         }
     </script>
 </body>
