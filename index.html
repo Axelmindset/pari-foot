@@ -3,212 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Football Predictor - Saisie Manuelle Expert</title>
+    <title>IA Predictor - One Match Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
-        .container { max-width: 1400px; margin: auto; }
-        h1 { text-align: center; color: white; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Structure Saisie : Gauche vs Droite */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .container { max-width: 1100px; margin: auto; }
+        h1 { text-align: center; color: var(--green); font-size: 22px; text-transform: uppercase; margin: 15px 0; }
+        
+        /* Grille de Saisie */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .team-col { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .team-header { margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .team-name-input { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-size: 18px; font-weight: bold; border-radius: 5px; }
+        .team-name { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
         
-        .match-block { background: rgba(15, 23, 42, 0.5); padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--blue); }
-        .match-label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--blue); text-transform: uppercase; font-size: 11px; }
-
-        /* Grille des 10 stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .field { display: flex; flex-direction: column; }
-        label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
-        input[type="number"] { padding: 6px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 12px; }
+        label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
+        input[type="number"] { padding: 8px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 5px; }
 
-        .btn-analyze { grid-column: span 2; width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 10px; font-weight: 900; font-size: 20px; cursor: pointer; transition: 0.3s; margin-bottom: 30px; }
-        .btn-analyze:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(46, 204, 113, 0.4); }
+        .btn-analyze { width: 100%; padding: 18px; background: var(--green); color: #0f172a; border: none; border-radius: 10px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 25px; }
 
-        /* Résultats */
-        .results-section { display: none; background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid var(--green); margin-top: 20px; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .res-card { background: #0f172a; padding: 20px; border-radius: 12px; border-top: 4px solid var(--green); }
-        .prob-val { font-size: 32px; font-weight: 900; color: var(--green); display: block; margin-top: 10px; }
+        /* Dashboard Résultats */
+        .results-area { display: none; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
+        .res-title { display: block; font-size: 12px; font-weight: bold; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; }
+        .val { font-size: 22px; font-weight: 800; color: var(--green); }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 10px; }
+        .oui { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .non { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        .chart-container { background: var(--card); border-radius: 12px; padding: 15px; height: 350px; margin-top: 15px; }
         
-        .chart-box { background: #0f172a; padding: 15px; border-radius: 12px; min-height: 300px; }
-        .analysis-text { margin-top: 20px; padding: 20px; background: rgba(46, 204, 113, 0.05); border-radius: 10px; line-height: 1.6; border-left: 4px solid var(--green); }
-
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚽ IA Football Predictor Pro</h1>
+    <h1>🚀 Predictor Pro - Mode Rapide</h1>
     
     <div class="main-grid">
         <div class="team-col">
-            <div class="team-header">
-                <input type="text" id="nameA" class="team-name-input" placeholder="Équipe Domicile">
-            </div>
-            <div id="inputsA"></div>
+            <input type="text" id="nameA" class="team-name" placeholder="Nom Équipe Domicile">
+            <div class="stats-grid" id="inputsA"></div>
         </div>
 
         <div class="team-col" style="border-color: var(--blue);">
-            <div class="team-header">
-                <input type="text" id="nameB" class="team-name-input" placeholder="Équipe Extérieur" style="border-color: var(--blue);">
-            </div>
-            <div id="inputsB"></div>
+            <input type="text" id="nameB" class="team-name" placeholder="Nom Équipe Extérieur" style="border-color: var(--blue);">
+            <div class="stats-grid" id="inputsB"></div>
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="calculateDeepAnalysis()">ANALYSER LE MATCH</button>
+    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE EXPERTE</button>
 
-    <div id="results" class="results-section">
-        <div class="dashboard">
+    <div id="results" class="results-area">
+        <div class="res-grid">
             <div class="res-card">
-                <span style="color: #94a3b8; font-weight: bold;">PROBABILITÉS 1N2</span>
-                <p>Victoire <span id="outA">A</span> : <span id="probA" class="prob-val">--%</span></p>
-                <p>Match Nul : <span id="probN" class="prob-val">--%</span></p>
-                <p>Victoire <span id="outB">B</span> : <span id="probB" class="prob-val">--%</span></p>
+                <span class="res-title">Probabilités 1N2</span>
+                <p>Victoire <span id="outA">A</span> : <span class="val" id="p1">--%</span></p>
+                <p>Match Nul : <span class="val" id="pN">--%</span></p>
+                <p>Victoire <span id="outB">B</span> : <span class="val" id="p2">--%</span></p>
+                <p style="border-top: 1px solid var(--border); padding-top: 10px;">
+                    Double Chance : <span class="val" id="dc" style="color: var(--blue)">--</span>
+                </p>
             </div>
 
-            <div class="res-card">
-                <span style="color: #94a3b8; font-weight: bold;">OBJECTIFS & BUTS</span>
-                <p>Over 2.5 : <span id="pOver" class="prob-val">--%</span></p>
-                <p>Under 2.5 : <span id="pUnder" class="prob-val">--%</span></p>
-                <p>Double Chance : <span id="resDC" class="prob-val" style="color:var(--blue)">--</span></p>
+            <div class="res-card" style="border-color: var(--blue);">
+                <span class="res-title">Analyse des Buts</span>
+                <p>Les deux marquent (BTTS) : <span id="btts">--</span></p>
+                <p>Over 2.5 : <span id="o25">--</span> | Under 2.5 : <span id="u25">--</span></p>
+                <p>Over 3.5 : <span id="o35">--</span> | Under 3.5 : <span id="u35">--</span></p>
+                <p style="border-top: 1px solid var(--border); padding-top: 10px;">
+                    Une équipe marque 3+ buts : <span id="team3plus">--</span>
+                </p>
             </div>
 
-            <div class="res-card">
-                <span style="color: #94a3b8; font-weight: bold;">RECOMMANDATIONS</span>
-                <p>Équipe qui va marquer : <span id="resScorer" class="prob-val">--</span></p>
-                <p>Total Corners : <span id="resCorners" class="prob-val" style="color: #f1c40f;">--</span></p>
-                <p>Conseil : <span id="resTip" style="font-weight: bold; color: white;">--</span></p>
+            <div class="res-card" style="border-color: #f1c40f;">
+                <span class="res-title">Conseils Stratégiques</span>
+                <p>Scénario Probable : <br><small id="aiSummary" style="color: #cbd5e1;">--</small></p>
+                <p style="margin-top: 15px;">Corners attendus : <span class="val" id="corn" style="color: #f1c40f;">--</span></p>
             </div>
         </div>
 
-        <div class="dashboard" style="margin-top:20px;">
-            <div class="chart-box" style="grid-column: span 2;">
-                <canvas id="radarChart"></canvas>
-            </div>
-            <div class="res-card">
-                <span style="color: #94a3b8; font-weight: bold;">PERFORMANCES CALCULÉES</span>
-                <div id="calcStats" style="font-size: 12px; margin-top:15px; color: #cbd5e1;"></div>
-            </div>
-        </div>
-
-        <div class="analysis-text">
-            <h3 style="margin-top:0; color: var(--green);">🧠 Analyse Textuelle Automatique</h3>
-            <p id="aiText"></p>
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
         </div>
     </div>
 </div>
 
 <script>
-    // Liste des 10 statistiques demandées
-    const statsFields = [
+    const fields = [
         { id: 'poss', label: 'Possession %' }, { id: 'pass', label: 'Passes' },
         { id: 'shots', label: 'Tirs' }, { id: 'sot', label: 'Tirs Cadrés' },
         { id: 'xg', label: 'xG (Attaque)' }, { id: 'corn', label: 'Corners' },
-        { id: 'scon', label: 'Tirs Concédés' }, { id: 'sotcon', label: 'Cadrés Conc.' },
+        { id: 'scon', label: 'Tirs Conc.' }, { id: 'sotcon', label: 'Cadrés Conc.' },
         { id: 'xga', label: 'xGA (Défense)' }, { id: 'corncon', label: 'Corners Conc.' }
     ];
 
-    // Génération des formulaires gauche et droite
-    function initInputs(containerId, prefix) {
-        const container = document.getElementById(containerId);
-        for(let i=1; i<=3; i++) {
-            let html = `<div class="match-block"><span class="match-label">Dernier Match ${i}</span><div class="stats-grid">`;
-            statsFields.forEach(s => {
-                html += `<div class="field"><label>${s.label}</label><input type="number" id="${prefix}_m${i}_${s.id}" step="0.1" value="0"></div>`;
+    function setup() {
+        ['A', 'B'].forEach(p => {
+            const container = document.getElementById('inputs' + p);
+            fields.forEach(f => {
+                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" value="0"></div>`;
             });
-            html += `</div></div>`;
-            container.innerHTML += html;
-        }
+        });
     }
-    initInputs('inputsA', 'a');
-    initInputs('inputsB', 'b');
+    setup();
 
-    function calculateDeepAnalysis() {
-        const getAvg = (prefix) => {
-            let avgs = {};
-            statsFields.forEach(s => {
-                let sum = 0;
-                for(let i=1; i<=3; i++) {
-                    sum += parseFloat(document.getElementById(`${prefix}_m${i}_${s.id}`).value || 0);
-                }
-                avgs[s.id] = sum / 3;
-            });
-            return avgs;
+    function runAnalysis() {
+        const getS = (p) => {
+            let s = {};
+            fields.forEach(f => s[f.id] = parseFloat(document.getElementById(p + '_' + f.id).value || 0));
+            return s;
         };
 
-        const avgA = getAvg('a');
-        const avgB = getAvg('b');
+        const sA = getS('A'); const sB = getS('B');
+        const nA = document.getElementById('nameA').value || "Dom.";
+        const nB = document.getElementById('nameB').value || "Ext.";
 
-        // ALGORITHME 30/30/20/20 EXPLICITE
-        const process = (s) => {
-            const attack = (s.xg * 0.6 + (s.sot / (s.shots || 1)) * 4) * 10;
-            const defense = (10 - (s.xga * 0.6 + (s.sotcon / (s.scon || 1)) * 4)) * 10;
-            const domination = (s.poss * 0.5 + (s.pass / 800) * 50);
-            const pressure = (s.corn * 2 - s.corncon);
-
-            return {
-                att: Math.max(0, attack),
-                def: Math.max(0, defense),
-                dom: Math.max(0, domination),
-                pres: Math.max(0, pressure),
-                finalScore: (attack * 0.3) + (defense * 0.3) + (domination * 0.2) + (pressure * 0.2)
-            };
+        // Algorithme 30/30/20/20
+        const calc = (s) => {
+            const att = (s.xg * 0.7 + (s.sot / (s.shots || 1)) * 3) * 10;
+            const def = (10 - (s.xga * 0.7 + (s.sotcon / (s.scon || 1)) * 3)) * 10;
+            const dom = (s.poss * 0.5 + (s.pass / 800) * 50);
+            const pres = (s.corn * 2 - s.corncon);
+            return { att, def, dom, pres, score: (att*0.3 + def*0.3 + dom*0.2 + pres*0.2) };
         };
 
-        const resA = process(avgA);
-        const resB = process(avgB);
+        const rA = calc(sA); const rB = calc(sB);
+        const total = rA.score + rB.score;
+        const p1 = (rA.score / total) * 100;
+        const p2 = (rB.score / total) * 100;
+        const pN = 100 - p1 - p2;
 
-        // Probabilités
-        const total = resA.finalScore + resB.finalScore;
-        const pA = (resA.finalScore / total) * 100;
-        const pB = (resB.finalScore / total) * 100;
-        const pN = 100 - pA - pB;
-
-        // Buts (Probabilité basée sur xG cumulés)
-        const totalXG = avgA.xg + avgB.xg;
-        const probOver = Math.min(92, (totalXG / 3.2) * 100);
+        // Logique des Buts
+        const sumXG = sA.xg + sB.xg;
+        const probO25 = Math.min(95, (sumXG / 2.8) * 100);
+        const probO35 = Math.min(90, (sumXG / 3.8) * 100);
+        const isBTTS = (sA.xg > 0.9 && sB.xg > 0.9) || (sumXG > 2.8);
+        const isTeam3 = (sA.xg > 2.4 || sB.xg > 2.4);
 
         // Affichage
         document.getElementById('results').style.display = "block";
-        const nameA = document.getElementById('nameA').value || "A";
-        const nameB = document.getElementById('nameB').value || "B";
-        
-        document.getElementById('outA').innerText = nameA;
-        document.getElementById('outB').innerText = nameB;
-        document.getElementById('probA').innerText = pA.toFixed(1) + "%";
-        document.getElementById('probN').innerText = pN.toFixed(1) + "%";
-        document.getElementById('probB').innerText = pB.toFixed(1) + "%";
-        
-        document.getElementById('pOver').innerText = probOver.toFixed(1) + "%";
-        document.getElementById('pUnder').innerText = (100 - probOver).toFixed(1) + "%";
-        document.getElementById('resDC').innerText = pA > pB ? "1X" : "X2";
-        document.getElementById('resScorer').innerText = avgA.xg > avgB.xg ? nameA : nameB;
-        document.getElementById('resCorners').innerText = (avgA.corn + avgB.corn).toFixed(1);
-        document.getElementById('resTip').innerText = pA > 60 || pB > 60 ? "Victoire Sèche Recommandée" : "Prudence : Double Chance conseillée";
+        document.getElementById('outA').innerText = nA; document.getElementById('outB').innerText = nB;
+        document.getElementById('p1').innerText = p1.toFixed(1) + "%";
+        document.getElementById('p2').innerText = p2.toFixed(1) + "%";
+        document.getElementById('pN').innerText = pN.toFixed(1) + "%";
+        document.getElementById('dc').innerText = p1 > p2 ? "1X" : "X2";
 
-        // Analyse Textuelle
-        document.getElementById('aiText').innerText = `L'analyse des statistiques montre une supériorité de ${resA.finalScore > resB.finalScore ? nameA : nameB} sur les trois derniers matchs. ${nameA} produit ${(avgA.xg).toFixed(2)} xG par match contre ${(avgB.xg).toFixed(2)} pour ${nameB}. La solidité défensive de ${resA.def > resB.def ? nameA : nameB} pourrait être le facteur clé. Avec un potentiel de buts combiné de ${totalXG.toFixed(2)}, le scénario ${probOver > 50 ? 'Over 2.5' : 'Under 2.5'} est privilégié.`;
+        const badge = (cond) => cond ? '<span class="status-badge oui">OUI</span>' : '<span class="status-badge non">NON</span>';
+        document.getElementById('btts').innerHTML = badge(isBTTS);
+        document.getElementById('o25').innerHTML = badge(probO25 > 50);
+        document.getElementById('u25').innerHTML = badge(probO25 <= 50);
+        document.getElementById('o35').innerHTML = badge(probO35 > 50);
+        document.getElementById('u35').innerHTML = badge(probO35 <= 50);
+        document.getElementById('team3plus').innerHTML = badge(isTeam3);
+        document.getElementById('corn').innerText = (sA.corn + sB.corn).toFixed(1);
+        
+        document.getElementById('aiSummary').innerText = `Le match oppose une force offensive de ${rA.att.toFixed(0)} (${nA}) contre ${rB.att.toFixed(0)} (${nB}). ${sumXG > 3 ? 'Scénario ouvert attendu.' : 'Match potentiellement fermé.'}`;
 
-        // Radar Chart
+        // Graphique
         const ctx = document.getElementById('radarChart').getContext('2d');
         if(window.myRadar) window.myRadar.destroy();
         window.myRadar = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['Attaque (30%)', 'Défense (30%)', 'Domination (20%)', 'Pression (20%)'],
+                labels: ['Attaque', 'Défense', 'Domination', 'Pression'],
                 datasets: [
-                    { label: nameA, data: [resA.att, resA.def, resA.dom, resA.pres], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)' },
-                    { label: nameB, data: [resB.att, resB.def, resB.dom, resB.pres], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)' }
+                    { label: nA, data: [rA.att, rA.def, rA.dom, rA.pres], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)' },
+                    { label: nB, data: [rB.att, rB.def, rB.dom, rB.pres], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)' }
                 ]
             },
-            options: { scales: { r: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } } } }
         });
     }
 </script>
