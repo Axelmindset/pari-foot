@@ -1,119 +1,223 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Football Predictor - SofaScore Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root { --bg: #0b0e14; --card: #151921; --green: #00d084; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 15px; }
-        .container { max-width: 500px; margin: auto; }
-        .card { background: var(--card); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid #2a2f3a; }
-        input { width: 100%; padding: 15px; margin: 10px 0; background: #0b0e14; border: 1px solid #2a2f3a; color: white; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 18px; background: var(--green); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 15px; transition: 0.3s; }
-        button:hover { filter: brightness(1.1); transform: scale(1.02); }
-        .loader { display: none; text-align: center; color: var(--green); margin: 15px 0; font-weight: bold; }
-        .results { display: none; }
-        .stat-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2a2f3a; }
-        .val { font-weight: bold; color: var(--green); }
-        .prob-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin: 20px 0; background: #2a2f3a; }
-        .p-part { height: 100%; transition: 1s ease-in-out; }
-    </style>
+<meta charset="UTF-8">
+<title>Prédiction Football IA</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  margin-top: 40px;
+}
+
+select, button {
+  padding: 10px;
+  margin: 10px;
+  font-size: 16px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <div class="card">
-        <h2 style="text-align:center; margin-top:0;">SofaScore IA Data</h2>
-        <p style="text-align:center; font-size: 12px; color: #8a8d91;">Analyse basée sur les 3 derniers matchs réels</p>
-        
-        <input type="text" id="homeTeam" placeholder="Équipe Domicile (ex: Arsenal)">
-        <input type="text" id="awayTeam" placeholder="Équipe Extérieur (ex: Southampton)">
-        
-        <button onclick="analyzeSofa()">Lancer l'Analyse SofaScore</button>
-        <div id="loader" class="loader">Interrogation de SofaScore API...</div>
-    </div>
+  <h1>⚽ Analyse Match</h1>
 
-    <div id="results" class="results card">
-        <h3 id="matchName" style="text-align:center; border-bottom: 1px solid #2a2f3a; padding-bottom: 10px;"></h3>
-        
-        <div class="prob-bar">
-            <div id="bar1" class="p-part" style="background: var(--green);"></div>
-            <div id="barN" class="p-part" style="background: #4a4a4a;"></div>
-            <div id="bar2" class="p-part" style="background: #3498db;"></div>
-        </div>
+  <select id="teamA">
+    <option value="17">Barcelona</option>
+    <option value="42">Arsenal</option>
+  </select>
 
-        <div class="stat-row"><span>Probabilité 1-N-2</span> <span class="val" id="res1n2">--</span></div>
-        <div class="stat-row"><span>Double Chance</span> <span class="val" id="resDouble">--</span></div>
-        <div class="stat-row"><span>Total Corners (Pred)</span> <span class="val" id="resCorners">--</span></div>
-        <div class="stat-row"><span>Over 2.5 Buts</span> <span class="val" id="resOver">--</span></div>
-        <div class="stat-row"><span>Handicap suggéré</span> <span class="val" id="resHandicap">--</span></div>
+  <select id="teamB">
+    <option value="33">Manchester United</option>
+    <option value="50">Manchester City</option>
+  </select>
 
-        <div style="margin-top:20px; background: rgba(0,208,132,0.1); padding: 15px; border-radius: 10px; font-size: 14px; border-left: 4px solid var(--green);">
-            <strong>Conseil Expert :</strong><br>
-            <span id="aiAdvice" style="color: #ccd0d5;">--</span>
-        </div>
-    </div>
+  <br>
+  <button onclick="analyze()">Analyser</button>
+
+  <div id="result"></div>
 </div>
 
 <script>
-const SOFA_KEY = "a28fa0bd7bmshf24853091a4050dp194645jsnf30261d7e2"; // Ta clé SofaScore capturée
 
-async function analyzeSofa() {
-    const h = document.getElementById('homeTeam').value;
-    const a = document.getElementById('awayTeam').value;
-    if(!h || !a) return alert("Entrez les deux équipes");
+// 🔐 TA CLÉ API
+const API_KEY = "a28fa0bd7bmshf24853091a4050dp194645jsnf30261d7e2";
 
-    document.getElementById('loader').style.display = "block";
-    document.getElementById('results').style.display = "none";
+// 📡 Récupération des 3 derniers matchs
+async function getMatches(teamId) {
+  const url = `https://sofascore.p.rapidapi.com/teams/get-last-matches?teamId=${teamId}&pageIndex=0`;
 
-    try {
-        // Dans une version complète, on ferait un fetch sur /teams/search
-        // Ici on simule l'agrégation SofaScore pour garantir la logique de hiérarchie
-        setTimeout(() => {
-            let powerH = 50, powerA = 50;
-            const names = [h.toLowerCase(), a.toLowerCase()];
-            
-            // Logique de force basée sur la réputation mondiale (neutralise l'erreur Southampton/Arsenal)
-            const elites = ["arsenal", "city", "liverpool", "real", "bayern", "psg", "hilal", "nassr"];
-            const weak = ["southampton", "luton", "sheffield", "metz", "tai", "khaleej"];
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": API_KEY,
+        "X-RapidAPI-Host": "sofascore.p.rapidapi.com"
+      }
+    });
 
-            if(elites.some(e => h.toLowerCase().includes(e))) powerH += 40;
-            if(weak.some(w => h.toLowerCase().includes(w))) powerH -= 20;
-            if(elites.some(e => a.toLowerCase().includes(e))) powerA += 40;
-            if(weak.some(w => a.toLowerCase().includes(w))) powerA -= 20;
+    const data = await response.json();
+    console.log("DATA API:", data);
 
-            const total = powerH + powerA + 15;
-            const p1 = Math.round((powerH/total)*100);
-            const p2 = Math.round((powerA/total)*100);
-            const pN = 100 - p1 - p2;
+    return data.events ? data.events.slice(0, 3) : [];
 
-            showResults(h, a, p1, pN, p2);
-        }, 1500);
-    } catch(e) {
-        alert("Erreur de connexion SofaScore.");
-    }
+  } catch (error) {
+    console.error("Erreur API:", error);
+    return [];
+  }
 }
 
-function showResults(h, a, p1, pN, p2) {
-    document.getElementById('loader').style.display = "none";
-    document.getElementById('results').style.display = "block";
-    document.getElementById('matchName').innerText = `${h} vs ${a}`;
+// 📊 Extraction + simulation intelligente des stats
+function extractStats(matches) {
 
-    document.getElementById('bar1').style.width = p1 + "%";
-    document.getElementById('barN').style.width = pN + "%";
-    document.getElementById('bar2').style.width = p2 + "%";
+  let shots = 0;
+  let shotsOnTarget = 0;
+  let goals = 0;
+  let conceded = 0;
+  let corners = 0;
 
-    document.getElementById('res1n2').innerText = `${p1}% | ${pN}% | ${p2}%`;
-    document.getElementById('resDouble').innerText = p1 > p2 ? `1X (${p1+pN}%)` : `X2 (${p2+pN}%)`;
-    document.getElementById('resCorners').innerText = (Math.random() * (11 - 8) + 8).toFixed(1);
-    document.getElementById('resOver').innerText = (p1+p2 > 60) ? "OUI (68%)" : "NON (55%)";
-    document.getElementById('resHandicap').innerText = p1 > p2 ? `${h} (0)` : `${a} (+1)`;
+  matches.forEach(match => {
 
-    const best = p1 > p2 ? h : a;
-    document.getElementById('aiAdvice').innerText = `L'analyse des derniers matches via SofaScore montre une supériorité tactique de ${best}. Pour ta montante, sécurise avec la double chance ou le handicap (0).`;
+    let homeGoals = match.homeScore?.current || 0;
+    let awayGoals = match.awayScore?.current || 0;
+
+    // ⚠️ Simulation réaliste basée sur score
+    goals += homeGoals;
+    conceded += awayGoals;
+
+    shots += (homeGoals + 6);
+    shotsOnTarget += (homeGoals + 3);
+    corners += (homeGoals + 4);
+  });
+
+  let xG = shotsOnTarget * 0.3;
+  let xGA = conceded * 0.6;
+
+  return {
+    attack: shotsOnTarget + xG,
+    defense: (10 - conceded) + xGA,
+    pressure: corners,
+    goals,
+    shots,
+    shotsOnTarget,
+    xG,
+    xGA
+  };
 }
+
+// 🤖 Algorithme de prédiction
+function predict(a, b) {
+
+  let scoreA =
+    (a.attack * 0.3) +
+    (a.defense * 0.3) +
+    (a.pressure * 0.2);
+
+  let scoreB =
+    (b.attack * 0.3) +
+    (b.defense * 0.3) +
+    (b.pressure * 0.2);
+
+  let total = scoreA + scoreB;
+
+  let probA = (scoreA / total) * 100;
+  let probB = (scoreB / total) * 100;
+  let draw = 100 - (probA + probB);
+
+  return {
+    A: probA.toFixed(1),
+    B: probB.toFixed(1),
+    D: draw.toFixed(1)
+  };
+}
+
+// 📈 Prédictions avancées
+function advanced(a, b) {
+
+  let totalGoals = a.goals + b.goals;
+  let totalCorners = a.pressure + b.pressure;
+
+  return {
+    over25: totalGoals > 2 ? "Over 2.5 🔥" : "Under 2.5",
+    corners: totalCorners > 10 ? "Over Corners 🔥" : "Under Corners",
+    doubleChance: a.goals >= b.goals ? "1X" : "X2"
+  };
+}
+
+// 🧠 Analyse textuelle
+function generateText(a, b) {
+
+  if (a.attack > b.attack && a.defense > b.defense) {
+    return "L'équipe A domine offensivement et défensivement. Forte probabilité de victoire.";
+  }
+
+  if (b.attack > a.attack && b.defense > a.defense) {
+    return "L'équipe B semble supérieure sur tous les plans.";
+  }
+
+  return "Match équilibré avec incertitude élevée.";
+}
+
+// 🚀 Fonction principale
+async function analyze() {
+
+  document.getElementById("result").innerHTML = "Analyse en cours...";
+
+  const teamA = document.getElementById("teamA").value;
+  const teamB = document.getElementById("teamB").value;
+
+  const matchesA = await getMatches(teamA);
+  const matchesB = await getMatches(teamB);
+
+  if (matchesA.length === 0 || matchesB.length === 0) {
+    document.getElementById("result").innerHTML = "Erreur : données API indisponibles.";
+    return;
+  }
+
+  const statsA = extractStats(matchesA);
+  const statsB = extractStats(matchesB);
+
+  const prediction = predict(statsA, statsB);
+  const adv = advanced(statsA, statsB);
+  const text = generateText(statsA, statsB);
+
+  document.getElementById("result").innerHTML = `
+    <div class="card">
+      <h2>📊 Probabilités</h2>
+      Victoire A : ${prediction.A}% <br>
+      Match nul : ${prediction.D}% <br>
+      Victoire B : ${prediction.B}%
+    </div>
+
+    <div class="card">
+      <h2>📈 Prédictions</h2>
+      Double chance : ${adv.doubleChance} <br>
+      Over/Under 2.5 : ${adv.over25} <br>
+      Corners : ${adv.corners}
+    </div>
+
+    <div class="card">
+      <h2>🧠 Analyse IA</h2>
+      ${text}
+    </div>
+  `;
+}
+
 </script>
+
 </body>
 </html>
