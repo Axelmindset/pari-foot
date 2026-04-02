@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor V9 - Expert Intégral</title>
+    <title>IA Predictor V10 - Master Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; --purple: #9b59b6; }
+        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; --purple: #9b59b6; --red: #e74c3c; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
         .container { max-width: 1000px; margin: auto; }
-        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
         
         /* Formulaire */
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
@@ -20,7 +20,7 @@
         label { font-size: 9px; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
         input[type="number"] { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 6px; }
 
-        .btn-analyze { width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; }
+        .btn-analyze { width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
 
         /* Dashboard de Résultats */
         .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -32,11 +32,11 @@
 
         /* Tactique & Graphique */
         .tactical-box { background: rgba(52, 152, 219, 0.1); border: 1px solid var(--blue); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .chart-container { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 300px; }
+        .chart-container { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 320px; border: 1px solid var(--border); }
         
         .copy-btn { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
         
-        .history-section { background: var(--card); border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .history-section { background: var(--card); border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid var(--border); }
         .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .history-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
@@ -46,7 +46,7 @@
 <body>
 
 <div class="container">
-    <h1>🚀 IA PREDICTOR V9 - PRO DASHBOARD</h1>
+    <h1>🚀 IA PREDICTOR V10 - EXPERT ABSOLU</h1>
     
     <div class="main-grid">
         <div class="team-col">
@@ -59,17 +59,17 @@
         </div>
     </div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">GÉNÉRER L'ANALYSE COMPLÈTE</button>
+    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE COMPLÈTE</button>
 
     <div id="results" style="display: none;">
         
         <div class="tactical-box">
-            <span class="card-title" style="color: var(--blue);">Analyse Tactique Intelligente</span>
+            <span class="card-title" style="color: var(--blue);">Décryptage Tactique IA</span>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <p id="descA" style="font-size:11px;"></p>
                 <p id="descB" style="font-size:11px;"></p>
             </div>
-            <p id="matchDyn" style="color: var(--gold); font-weight: bold; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;"></p>
+            <p id="matchDyn" style="color: var(--gold); font-weight: bold; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-style: italic;"></p>
         </div>
 
         <div class="chart-container">
@@ -78,46 +78,51 @@
 
         <div class="res-grid">
             <div class="res-card" style="border-color: var(--purple);">
-                <span class="card-title">Scores les plus probables</span>
-                <p>1er : <span class="val" id="sc1">--</span> <span class="perc" id="psc1"></span></p>
-                <p>2ème : <span class="val" id="sc2" style="color:#bdc3c7">--</span> <span class="perc" id="psc2"></span></p>
-                <p style="font-size:10px; margin-top:10px;">1: <span id="p1"></span> | N: <span id="pN"></span> | 2: <span id="p2"></span></p>
+                <span class="card-title">Probabilités & Scores Exacts</span>
+                <p>1er Score : <span class="val" id="sc1">--</span> <span class="perc" id="psc1"></span></p>
+                <p>2ème Score : <span class="val" id="sc2" style="color:#bdc3c7">--</span> <span class="perc" id="psc2"></span></p>
+                <div style="margin-top:10px; font-size:11px; color:#cbd5e1; border-top:1px solid var(--border); padding-top:5px;">
+                    Victoire 1 : <b id="p1"></b> | Nul : <b id="pN"></b> | Victoire 2 : <b id="p2"></b>
+                </div>
             </div>
 
             <div class="res-card">
-                <span class="card-title">Marché des Buts (%)</span>
-                <p>Over 2.5 : <span class="val" id="vO25">--%</span> | Over 3.5 : <b id="vO35">--%</b></p>
-                <p>BTTS (Les deux marquent) : <span class="val" id="vBtts">--%</span></p>
+                <span class="card-title">Marché des Buts & Paliers (%)</span>
+                <p>Over 2.5 : <span class="val" id="vO25">--%</span> | Over 3.5 : <b class="perc" id="vO35">--%</b></p>
+                <p>BTTS : <span class="val" id="vBtts">--%</span></p>
                 <div style="border-top: 1px solid var(--border); padding-top:10px;">
-                    <span class="team-label" id="lblGA"></span> 2+ buts: <b class="perc" id="v2A"></b> | 3+ buts: <b id="v3A"></b><br>
-                    <span class="team-label" id="lblGB"></span> 2+ buts: <b class="perc" id="v2B"></b> | 3+ buts: <b id="v3B"></b>
+                    <span class="team-label" id="lblGA"></span> 2+ buts : <b class="perc" id="v2A"></b> | 3+ buts : <b id="v3A"></b><br>
+                    <span class="team-label" id="lblGB"></span> 2+ buts : <b class="perc" id="v2B"></b> | 3+ buts : <b id="v3B"></b>
                 </div>
             </div>
 
             <div class="res-card" style="border-color: var(--blue);">
                 <span class="card-title">Tirs Cadrés Individuels (>3.5)</span>
-                <p><span id="lblSotA"></span> : <span class="val" id="pSotA">--%</span></p>
-                <p><span id="lblSotB"></span> : <span class="val" id="pSotB">--%</span></p>
+                <p><span class="team-label" id="lblSotA"></span> Over 3.5 : <span class="val" id="pSotA">--%</span></p>
+                <p><span class="team-label" id="lblSotB"></span> Over 3.5 : <span class="val" id="pSotB">--%</span></p>
+                <small style="color:#94a3b8">Basé sur xG d'attaque et tirs moyens.</small>
             </div>
 
             <div class="res-card" style="border-color: var(--gold);">
                 <span class="card-title">Corners Individuels (>4.5)</span>
-                <p><span id="lblCornA"></span> : <span class="val" id="pCornA" style="color:var(--gold)">--%</span></p>
-                <p><span id="lblCornB"></span> : <span class="val" id="pCornB" style="color:var(--gold)">--%</span></p>
-                <p style="margin-top:5px; font-weight:bold;">Total Match : <span id="vTotalCorn"></span></p>
+                <p><span class="team-label" id="lblCornA"></span> Over 4.5 : <span class="val" id="pCornA" style="color:var(--gold)">--%</span></p>
+                <p><span class="team-label" id="lblCornB"></span> Over 4.5 : <span class="val" id="pCornB" style="color:var(--gold)">--%</span></p>
+                <p style="margin-top:10px; font-weight:bold; border-top:1px solid var(--border); padding-top:5px;">
+                    Total Match Estimé : <span id="vTotalCorn" class="val" style="font-size:18px;"></span>
+                </p>
             </div>
         </div>
 
-        <div class="res-card" style="width:100%; border-top: 4px solid var(--gold);">
-            <span class="card-title">Expert Double Chance</span>
+        <div class="res-card" style="width:100%; border-top: 4px solid var(--gold); margin-bottom:20px;">
+            <span class="card-title">Conseil Expert Double Chance</span>
             <span class="val" id="vDc">--</span>
         </div>
 
-        <button class="copy-btn" onclick="copySummary()">📲 COPIER POUR WHATSAPP</button>
+        <button class="copy-btn" onclick="copySummary()">📲 COPIER LE RÉSUMÉ POUR WHATSAPP</button>
     </div>
 
     <div class="history-section">
-        <h3 style="margin: 0 0 10px 0; font-size: 14px;">📜 Historique des Analyses</h3>
+        <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--green);">📜 Historique des Analyses</h3>
         <table class="history-table" id="hTable"></table>
     </div>
 </div>
@@ -146,11 +151,11 @@
     function saveData() {
         const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
         ['A', 'B'].forEach(p => fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }));
-        localStorage.setItem('predictor_v9_full', JSON.stringify(data));
+        localStorage.setItem('predictor_v10_full', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('predictor_v9_full');
+        const saved = localStorage.getItem('predictor_v10_full');
         if(!saved) return;
         const data = JSON.parse(saved);
         document.getElementById('nameA').value = data.nameA || "";
@@ -173,11 +178,11 @@
         document.getElementById('results').style.display = "block";
 
         // 1. Tactique & Dynamique
-        document.getElementById('descA').innerHTML = `<b>${nA}</b> : ${sA.poss > 55 ? "Domination territoriale." : "Jeu direct et contres."}`;
-        document.getElementById('descB').innerHTML = `<b>${nB}</b> : ${sB.poss > 55 ? "Domination territoriale." : "Jeu direct et contres."}`;
-        document.getElementById('matchDyn').innerText = `DYNAMIQUE : ${sA.xg + sB.xg > 2.8 ? "Match ouvert, transitions rapides attendues." : "Duel tactique fermé, peu d'espaces."}`;
+        document.getElementById('descA').innerHTML = `<b>${nA}</b> : ${sA.poss > 55 ? "Domination et possession haute." : (sA.xg > 1.8 ? "Efficacité redoutable en contre." : "Bloc bas et jeu de transition.")}`;
+        document.getElementById('descB').innerHTML = `<b>${nB}</b> : ${sB.poss > 55 ? "Domination et possession haute." : (sB.xg > 1.8 ? "Efficacité redoutable en contre." : "Bloc bas et jeu de transition.")}`;
+        document.getElementById('matchDyn').innerText = `DYNAMIQUE : ${sA.xg + sB.xg > 2.8 ? "Match ouvert avec de nombreuses occasions." : "Duel tactique serré, la défense sera la clé."}`;
 
-        // 2. Scores & Buts
+        // 2. Scores & Probabilités 1N2
         let scores = []; let wA = 0, d = 0, wB = 0;
         for(let i=0; i<=5; i++) {
             for(let j=0; j<=5; j++) {
@@ -191,9 +196,10 @@
         document.getElementById('sc2').innerText = scores[1].s; document.getElementById('psc2').innerText = scores[1].p.toFixed(1) + "%";
         document.getElementById('p1').innerText = wA.toFixed(0) + "%"; document.getElementById('pN').innerText = d.toFixed(0) + "%"; document.getElementById('p2').innerText = wB.toFixed(0) + "%";
 
+        // 3. Buts Paliers
         document.getElementById('vO25').innerText = poissonGe(sA.xg+sB.xg, 3).toFixed(1) + "%";
         document.getElementById('vO35').innerText = poissonGe(sA.xg+sB.xg, 4).toFixed(1) + "%";
-        document.getElementById('vBtts').innerText = (sA.xg > 0.8 && sB.xg > 0.8 ? 78 : 32) + "%";
+        document.getElementById('vBtts').innerText = (sA.xg > 0.8 && sB.xg > 0.8 ? 78 : 35) + "%";
         
         document.getElementById('lblGA').innerText = nA; document.getElementById('lblGB').innerText = nB;
         document.getElementById('v2A').innerText = poissonGe(sA.xg, 2).toFixed(1) + "%";
@@ -201,13 +207,15 @@
         document.getElementById('v2B').innerText = poissonGe(sB.xg, 2).toFixed(1) + "%";
         document.getElementById('v3B').innerText = poissonGe(sB.xg, 3).toFixed(1) + "%";
 
-        // 3. SoT & Corners
+        // 4. SoT & Corners
         document.getElementById('lblSotA').innerText = nA; document.getElementById('pSotA').innerText = poissonGe(sA.sot, 4).toFixed(1) + "%";
         document.getElementById('lblSotB').innerText = nB; document.getElementById('pSotB').innerText = poissonGe(sB.sot, 4).toFixed(1) + "%";
         document.getElementById('lblCornA').innerText = nA; document.getElementById('pCornA').innerText = poissonGe(sA.corn, 5).toFixed(1) + "%";
         document.getElementById('lblCornB').innerText = nB; document.getElementById('pCornB').innerText = poissonGe(sB.corn, 5).toFixed(1) + "%";
         document.getElementById('vTotalCorn').innerText = (sA.corn + sB.corn).toFixed(1);
-        document.getElementById('vDc').innerText = wA > 55 ? nA + " ou Nul (1X)" : (wB > 55 ? nB + " ou Nul (X2)" : "12 (Match sans nul)");
+        
+        // Double Chance
+        document.getElementById('vDc').innerText = wA > 50 ? nA + " ou Nul (1X)" : (wB > 50 ? nB + " ou Nul (X2)" : "Double Chance 12");
 
         updateChart(sA, sB, nA, nB);
         addHistory(nA, nB, scores[0].s);
@@ -219,31 +227,32 @@
         radarChart = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['Attaque', 'Tirs Cadrés', 'Corners', 'Défense', 'Pression'],
+                labels: ['Attaque (xG)', 'Tirs Cadrés', 'Corners', 'Défense', 'Possession'],
                 datasets: [
-                    { label: nA, data: [sA.xg*20, sA.sot*10, sA.corn*10, (5-sA.xga)*20, sA.poss], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)' },
-                    { label: nB, data: [sB.xg*20, sB.sot*10, sB.corn*10, (5-sB.xga)*20, sB.poss], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)' }
+                    { label: nA, data: [sA.xg*20, sA.sot*10, sA.corn*10, (5-sA.xga)*20, sA.poss], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', borderWidth: 3 },
+                    { label: nB, data: [sB.xg*20, sB.sot*10, sB.corn*10, (5-sB.xga)*20, sB.poss], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)', borderWidth: 3 }
                 ]
             },
-            options: { scales: { r: { grid: { color: '#334155' }, ticks: { display: false }, min: 0, max: 100 } }, plugins: { legend: { labels: { color: '#fff' } } } }
+            options: { scales: { r: { grid: { color: '#334155' }, angleLines: { color: '#334155' }, ticks: { display: false }, min: 0, max: 100 } }, plugins: { legend: { labels: { color: '#fff', font: { size: 12 } } } } }
         });
     }
 
     function addHistory(a, b, s) {
-        let h = JSON.parse(localStorage.getItem('h_v9') || "[]");
-        h.unshift({ d: new Date().toLocaleDateString(), m: `${a} vs ${b}`, s: s });
+        let h = JSON.parse(localStorage.getItem('h_v10') || "[]");
+        h.unshift({ d: new Date().toLocaleDateString(), m: `${a} - ${b}`, s: s });
         if(h.length > 5) h.pop();
-        localStorage.setItem('h_v9', JSON.stringify(h)); loadHistory();
+        localStorage.setItem('h_v10', JSON.stringify(h)); loadHistory();
     }
 
     function loadHistory() {
-        const h = JSON.parse(localStorage.getItem('h_v9') || "[]");
+        const h = JSON.parse(localStorage.getItem('h_v10') || "[]");
         document.getElementById('hTable').innerHTML = h.map(i => `<tr><td>${i.d}</td><td>${i.m}</td><td><b>${i.s}</b></td></tr>`).join('');
     }
 
     function copySummary() {
-        const text = `📊 PRONO IA V9\n🔥 Over 2.5: ${document.getElementById('vO25').innerText}\n⚽ Score: ${document.getElementById('sc1').innerText}\n🎯 SoT ${document.getElementById('nameA').value}: ${document.getElementById('pSotA').innerText}\n🚩 Corners: ${document.getElementById('vTotalCorn').innerText}\n💎 DC: ${document.getElementById('vDc').innerText}`;
-        navigator.clipboard.writeText(text); alert("Prono copié !");
+        const nA = document.getElementById('nameA').value;
+        const text = `📊 ANALYSE IA EXPERTE\n⚽ Score : ${document.getElementById('sc1').innerText}\n🔥 Over 2.5 : ${document.getElementById('vO25').innerText}\n🎯 ${nA} 2+ buts : ${document.getElementById('v2A').innerText}\n🚩 Corners Total : ${document.getElementById('vTotalCorn').innerText}\n💎 DC : ${document.getElementById('vDc').innerText}`;
+        navigator.clipboard.writeText(text); alert("Prono copié pour WhatsApp !");
     }
     setup();
 </script>
