@@ -529,7 +529,8 @@
     return { total, details };
   }
   
-  // ========== MEILLEUR PRONOSTIC ==========
+  // ========== MEILLEUR PRONOSTIC (nouveaux seuils) ==========
+  // Over à partir de 13 points, Under maximum 12 points
   function getBestPronostic(pointsA, pointsB) {
     const totalPoints = pointsA + pointsB;
     if (totalPoints >= 13) return `Over 2,5 buts dans le match`;
@@ -546,63 +547,57 @@
     return 0;
   }
   
-  // ========== FONCTION SCORES CORRIGÉE ==========
-  // Score principal = basé sur les buts (impartial)
-  // Second score = avantage à l'équipe avec le plus de points
-  // Si points égaux → second score = 1-1 (ou score inférieur cohérent)
+  // ========== SCORES COHÉRENTS ==========
+  // Deuxième score attribué à l'équipe avec le plus grand avantage de points
+  // Si points égaux, second score = 1-1
   function getPossibleScores(goalsA, goalsB, pointsA, pointsB) {
+    // Score principal basé sur les buts estimés
     const primaryScore = `${goalsA}-${goalsB}`;
+    
     let secondaryScore = "";
     
-    // Seuil de buts pour chaque équipe
-    function getSeuil(points) {
-        if (points >= 16) return 5;
-        if (points >= 13) return 4;
-        if (points >= 9) return 3;
-        if (points >= 6) return 2;
-        if (points >= 3) return 1;
-        return 0;
-    }
-    
-    const seuilA = getSeuil(pointsA);
-    const seuilB = getSeuil(pointsB);
-    
-    if (seuilA > seuilB) {
-        // Avantage à A
-        secondaryScore = `${seuilA}-${seuilB}`;
+    if (pointsA > pointsB) {
+      // Équipe A a l'avantage → second score avec A supérieur
+      if (goalsA >= 3 && goalsB <= 1) secondaryScore = `${goalsA-1}-${goalsB+1}`;
+      else if (goalsA >= 2 && goalsB === 0) secondaryScore = `${goalsA-1}-${goalsB+1}`;
+      else if (goalsA >= 2 && goalsB >= 1) secondaryScore = `${goalsA-1}-${goalsB}`;
+      else if (goalsA === 1 && goalsB === 0) secondaryScore = `0-0`;
+      else if (goalsA === 1 && goalsB === 1) secondaryScore = `0-0`;
+      else secondaryScore = `${Math.max(0, goalsA-1)}-${Math.min(5, goalsB+1)}`;
     } 
-    else if (seuilB > seuilA) {
-        // Avantage à B
-        secondaryScore = `${seuilA}-${seuilB}`;
+    else if (pointsB > pointsA) {
+      // Équipe B a l'avantage → second score avec B supérieur
+      if (goalsB >= 3 && goalsA <= 1) secondaryScore = `${goalsA+1}-${goalsB-1}`;
+      else if (goalsB >= 2 && goalsA === 0) secondaryScore = `${goalsA+1}-${goalsB-1}`;
+      else if (goalsB >= 2 && goalsA >= 1) secondaryScore = `${goalsA}-${goalsB-1}`;
+      else if (goalsB === 1 && goalsA === 0) secondaryScore = `0-0`;
+      else if (goalsB === 1 && goalsA === 1) secondaryScore = `0-0`;
+      else secondaryScore = `${Math.min(5, goalsA+1)}-${Math.max(0, goalsB-1)}`;
     }
     else {
-        // Seuils égaux → chaque équipe perd 1 but par rapport au score principal
-        let newA = Math.max(0, goalsA - 1);
-        let newB = Math.max(0, goalsB - 1);
-        secondaryScore = `${newA}-${newB}`;
+      // Points égaux → match équilibré, second score = 1-1 ou 0-0
+      if (goalsA === 0 && goalsB === 0) secondaryScore = `1-1`;
+      else if (goalsA === 1 && goalsB === 0) secondaryScore = `0-0`;
+      else if (goalsA === 0 && goalsB === 1) secondaryScore = `0-0`;
+      else if (goalsA === 1 && goalsB === 1) secondaryScore = `0-0`;
+      else if (goalsA === 2 && goalsB === 1) secondaryScore = `1-1`;
+      else if (goalsA === 1 && goalsB === 2) secondaryScore = `1-1`;
+      else if (goalsA === 2 && goalsB === 2) secondaryScore = `1-1`;
+      else secondaryScore = `1-1`;
     }
     
-    // Éviter que le second score soit identique au premier
-    if (primaryScore === secondaryScore) {
-        if (seuilA > seuilB) secondaryScore = `${Math.min(5, seuilA+1)}-${seuilB}`;
-        else if (seuilB > seuilA) secondaryScore = `${seuilA}-${Math.min(5, seuilB+1)}`;
-        else secondaryScore = `${Math.max(0, goalsA-1)}-${Math.max(0, goalsB-1)}`;
+    // Éviter les scores négatifs ou incohérents
+    secondaryScore = secondaryScore.replace(/-/g, '-');
+    if (secondaryScore.includes('-')) {
+      let parts = secondaryScore.split('-');
+      let sA = Math.max(0, Math.min(5, parseInt(parts[0]) || 0));
+      let sB = Math.max(0, Math.min(5, parseInt(parts[1]) || 0));
+      secondaryScore = `${sA}-${sB}`;
     }
     
-    return [primaryScore, secondaryScore];
-  }
-    
-    // Nettoyage
-    let parts = secondaryScore.split('-');
-    let sA = Math.max(0, Math.min(5, parseInt(parts[0]) || 0));
-    let sB = Math.max(0, Math.min(5, parseInt(parts[1]) || 0));
-    secondaryScore = `${sA}-${sB}`;
-    
-    // Éviter doublon avec le score principal
+    // Éviter que les deux scores soient identiques
     if (primaryScore === secondaryScore) {
-      if (goalsA > 0 && goalsB < 5) secondaryScore = `${goalsA}-${goalsB+1}`;
-      else if (goalsB > 0 && goalsA < 5) secondaryScore = `${goalsA+1}-${goalsB}`;
-      else if (goalsA > 0) secondaryScore = `${goalsA-1}-${goalsB}`;
+      if (goalsA > 0) secondaryScore = `${goalsA-1}-${goalsB}`;
       else secondaryScore = `${goalsA}-${goalsB+1}`;
     }
     
