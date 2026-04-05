@@ -31,15 +31,6 @@
       --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
-    body.light-dark {
-      --bg-primary: #0f0f13;
-      --bg-secondary: #18181c;
-      --bg-card: #1e1e2a;
-      --bg-elevated: #282834;
-      --border: #2d2d3a;
-      --border-light: #3d3d4a;
-    }
-
     body {
       background: var(--bg-primary);
       padding: 16px;
@@ -156,10 +147,6 @@
       color: var(--text-primary);
       font-weight: bold;
     }
-    .full-width input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
     
     .btn-group {
       display: flex;
@@ -178,9 +165,6 @@
     }
     .btn-primary { background: linear-gradient(135deg, var(--accent), #1d4ed8); color: white; }
     .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-valid { background: var(--success); color: white; padding: 6px 12px; font-size: 0.8rem; }
-    .btn-lost { background: var(--danger); color: white; padding: 6px 12px; font-size: 0.8rem; }
     
     .result-card {
       background: var(--bg-card);
@@ -206,39 +190,6 @@
       font-weight: bold;
       color: var(--text-primary);
     }
-    .points-detail {
-      background: var(--bg-secondary);
-      border-radius: 16px;
-      padding: 16px;
-      margin: 16px 0;
-      border: 1px solid var(--border);
-    }
-    .points-line {
-      display: flex;
-      justify-content: space-between;
-      margin: 8px 0;
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-    }
-    .points-total {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--accent);
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-    }
-    .whatsapp-btn {
-      background: var(--bg-secondary);
-      padding: 14px;
-      border-radius: 40px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 16px;
-      border-left: 4px solid var(--success);
-      color: var(--success);
-    }
     
     .history-item {
       background: var(--bg-secondary);
@@ -247,17 +198,6 @@
       margin-bottom: 12px;
       border: 1px solid var(--border);
     }
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .history-date { color: var(--text-muted); font-size: 0.7rem; }
-    .history-match { font-weight: bold; color: var(--text-primary); }
-    .history-result { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary); }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -288,10 +228,6 @@
       transition: opacity 0.3s;
       pointer-events: none;
     }
-    @media (max-width: 700px) {
-      .scores { flex-direction: column; align-items: center; gap: 12px; }
-      .tab-btn { font-size: 0.7rem; padding: 10px 4px; }
-    }
   </style>
 </head>
 <body>
@@ -309,7 +245,6 @@
     <button class="tab-btn" data-tab="tab4">📜 Historique & Stats</button>
   </div>
 
-  <!-- Équipe A -->
   <div id="tab1" class="tab-content active">
     <div class="full-width"><input type="text" id="teamA" placeholder="Nom équipe A" value="Paris SG"></div>
     <div class="profile-group">
@@ -332,134 +267,27 @@
         <div class="profile-option" data-value="pas_dangereuse">💀 Pas de ballon + inefficace (-1)</div>
       </div>
     </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-line"></i> DOMINATION</div>
-      <div class="profile-options" id="dominationA_options">
-        <div class="profile-option" data-value="domine_efficace">🔥 Domine + efficace (+3)</div>
-        <div class="profile-option" data-value="subit_dangereux">✅ Subit mais dangereux (+1)</div>
-        <div class="profile-option" data-value="equilibre">➖ Équilibré (0)</div>
-        <div class="profile-option" data-value="domine_inefficace">⚠️ Domine inefficace (-1)</div>
-      </div>
     </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-brain"></i> RÉACTION</div>
-      <div class="profile-options" id="reactionA_options">
-        <div class="profile-option" data-value="reagit_vite">🔥 Réagit vite (+2)</div>
-        <div class="profile-option" data-value="subit_reagit">✅ Subit puis réagit (+1)</div>
-        <div class="profile-option" data-value="attaque_subit">➖ Attaque puis subit (0)</div>
-        <div class="profile-option" data-value="subit_apres_bon">⚠️ Subit après bon résultat (-1)</div>
-        <div class="profile-option" data-value="jamais">💀 Ne réagit jamais (-2)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-trophy"></i> ADVERSAIRE</div>
-      <div class="profile-options" id="adversaireA_options">
-        <div class="profile-option" data-value="perf_forts">🔥 Performe contre forts (+3)</div>
-        <div class="profile-option" data-value="surperf_forts">✅ Surperforme contre forts (+2)</div>
-        <div class="profile-option" data-value="equilibre_adv">➖ Équilibré (0)</div>
-        <div class="profile-option" data-value="perf_faibles">⚠️ Performe contre faibles (-1)</div>
-        <div class="profile-option" data-value="contre_perf">💀 Contre-performe contre forts (-2)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-simple"></i> FORME</div>
-      <div class="profile-options" id="formeA_options">
-        <div class="profile-option" data-value="pleine_confiance">🔥 Pleine confiance (+2)</div>
-        <div class="profile-option" data-value="neutre">➖ Neutre (0)</div>
-        <div class="profile-option" data-value="irregulier">⚠️ Irrégulier (-1)</div>
-        <div class="profile-option" data-value="crise">💀 Crise (-2)</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Équipe B -->
   <div id="tab2" class="tab-content">
     <div class="full-width"><input type="text" id="teamB" placeholder="Nom équipe B" value="Toulouse"></div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-flag"></i> CORNERS</div>
-      <div class="profile-options" id="cornersB_options">
-        <div class="profile-option" data-value="bcp_efficace">🔥 Beaucoup + efficace (+3)</div>
-        <div class="profile-option" data-value="peu_efficace">✅ Peu mais efficace (+2)</div>
-        <div class="profile-option" data-value="equilibre">➖ Équilibré (+1)</div>
-        <div class="profile-option" data-value="bcp_inefficace">⚠️ Beaucoup inefficace (0)</div>
-        <div class="profile-option" data-value="peu_inefficace">💀 Peu et inefficace (-1)</div>
-      </div>
     </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-futbol"></i> POSSESSION</div>
-      <div class="profile-options" id="possessionB_options">
-        <div class="profile-option" data-value="bcp_dangereuse">🔥 Possède + dangereuse (+3)</div>
-        <div class="profile-option" data-value="peu_tres_dangereuse">✅ Possède peu + très dangereuse (+2)</div>
-        <div class="profile-option" data-value="equilibre">➖ Équilibré (+1)</div>
-        <div class="profile-option" data-value="peu_dangereuse">⚠️ Possède mais peu dangereuse (0)</div>
-        <div class="profile-option" data-value="pas_dangereuse">💀 Pas de ballon + inefficace (-1)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-line"></i> DOMINATION</div>
-      <div class="profile-options" id="dominationB_options">
-        <div class="profile-option" data-value="domine_efficace">🔥 Domine + efficace (+3)</div>
-        <div class="profile-option" data-value="subit_dangereux">✅ Subit mais dangereux (+1)</div>
-        <div class="profile-option" data-value="equilibre">➖ Équilibré (0)</div>
-        <div class="profile-option" data-value="domine_inefficace">⚠️ Domine inefficace (-1)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-brain"></i> RÉACTION</div>
-      <div class="profile-options" id="reactionB_options">
-        <div class="profile-option" data-value="reagit_vite">🔥 Réagit vite (+2)</div>
-        <div class="profile-option" data-value="subit_reagit">✅ Subit puis réagit (+1)</div>
-        <div class="profile-option" data-value="attaque_subit">➖ Attaque puis subit (0)</div>
-        <div class="profile-option" data-value="subit_apres_bon">⚠️ Subit après bon résultat (-1)</div>
-        <div class="profile-option" data-value="jamais">💀 Ne réagit jamais (-2)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-trophy"></i> ADVERSAIRE</div>
-      <div class="profile-options" id="adversaireB_options">
-        <div class="profile-option" data-value="perf_forts">🔥 Performe contre forts (+3)</div>
-        <div class="profile-option" data-value="surperf_forts">✅ Surperforme contre forts (+2)</div>
-        <div class="profile-option" data-value="equilibre_adv">➖ Équilibré (0)</div>
-        <div class="profile-option" data-value="perf_faibles">⚠️ Performe contre faibles (-1)</div>
-        <div class="profile-option" data-value="contre_perf">💀 Contre-performe contre forts (-2)</div>
-      </div>
-    </div>
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-simple"></i> FORME</div>
-      <div class="profile-options" id="formeB_options">
-        <div class="profile-option" data-value="pleine_confiance">🔥 Pleine confiance (+2)</div>
-        <div class="profile-option" data-value="neutre">➖ Neutre (0)</div>
-        <div class="profile-option" data-value="irregulier">⚠️ Irrégulier (-1)</div>
-        <div class="profile-option" data-value="crise">💀 Crise (-2)</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Sauvegarde -->
   <div id="tab3" class="tab-content">
     <div class="section-title"><i class="fas fa-database"></i> GESTION</div>
     <div class="btn-group">
-      <button class="btn btn-secondary" id="saveBtn"><i class="fas fa-save"></i> Sauvegarder</button>
-      <button class="btn btn-secondary" id="loadBtn"><i class="fas fa-folder-open"></i> Charger</button>
-      <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo"></i> Réinitialiser</button>
+      <button class="btn btn-secondary" id="saveBtn">Sauvegarder</button>
+      <button class="btn btn-secondary" id="loadBtn">Charger</button>
+      <button class="btn btn-secondary" id="resetBtn">Réinitialiser</button>
     </div>
   </div>
 
-  <!-- Historique -->
   <div id="tab4" class="tab-content">
-    <div class="section-title"><i class="fas fa-chart-line"></i> STATISTIQUES</div>
     <div class="stats-grid">
       <div class="stat-card"><div>📊 Total</div><div class="stat-value" id="totalPronos">0</div></div>
-      <div class="stat-card"><div>✅ Justes</div><div class="stat-value" id="justesPronos">0</div></div>
-      <div class="stat-card"><div>❌ Faux</div><div class="stat-value" id="fauxPronos">0</div></div>
       <div class="stat-card"><div>📈 Taux</div><div class="stat-value" id="tauxReussite">0%</div></div>
     </div>
-    <div class="btn-group">
-      <button class="btn btn-secondary" id="clearHistoryBtn"><i class="fas fa-trash"></i> Effacer tout</button>
-      <button class="btn btn-secondary" id="exportHistoryBtn"><i class="fas fa-download"></i> Exporter CSV</button>
-    </div>
-    <div class="section-title"><i class="fas fa-history"></i> HISTORIQUE</div>
-    <div id="historyList" style="max-height: 500px; overflow-y: auto;"></div>
+    <div id="historyList"></div>
   </div>
 
   <button class="btn btn-primary" id="analyserBtn"><i class="fas fa-chart-line"></i> ANALYSER LE MATCH</button>
@@ -468,14 +296,12 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  // ========== PROFILS ==========
   let profiles = {
     a: { corners: 'equilibre', possession: 'equilibre', domination: 'equilibre', reaction: 'jamais', adversaire: 'equilibre_adv', forme: 'neutre' },
     b: { corners: 'equilibre', possession: 'equilibre', domination: 'equilibre', reaction: 'jamais', adversaire: 'equilibre_adv', forme: 'neutre' }
   };
 
   const categories = ['corners', 'possession', 'domination', 'reaction', 'adversaire', 'forme'];
-  
   const pointsMap = {
     'bcp_efficace': 3, 'peu_efficace': 2, 'equilibre': 1, 'bcp_inefficace': 0, 'peu_inefficace': -1,
     'bcp_dangereuse': 3, 'peu_tres_dangereuse': 2, 'peu_dangereuse': 0, 'pas_dangereuse': -1,
@@ -484,60 +310,13 @@
     'perf_forts': 3, 'surperf_forts': 2, 'equilibre_adv': 0, 'perf_faibles': -1, 'contre_perf': -2,
     'pleine_confiance': 2, 'neutre': 0, 'irregulier': -1, 'crise': -2
   };
-  
-  const categoryLabels = {
-    corners: 'CORNERS', possession: 'POSSESSION', domination: 'DOMINATION',
-    reaction: 'RÉACTION', adversaire: 'ADVERSAIRE', forme: 'FORME'
-  };
-  
-  function initProfileSelectors() {
-    for (let team of ['a', 'b']) {
-      for (let cat of categories) {
-        const container = document.getElementById(`${cat}${team.toUpperCase()}_options`);
-        if (container) {
-          const options = container.querySelectorAll('.profile-option');
-          options.forEach(opt => {
-            const val = opt.dataset.value;
-            opt.addEventListener('click', () => {
-              options.forEach(o => o.classList.remove('selected'));
-              opt.classList.add('selected');
-              profiles[team][cat] = val;
-            });
-            if (profiles[team][cat] === val) opt.classList.add('selected');
-          });
-        }
-      }
-    }
-  }
-
-  function showToast(msg, isError = false) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.style.backgroundColor = isError ? 'rgba(220,38,38,0.95)' : 'rgba(30,41,59,0.95)';
-    toast.style.opacity = '1';
-    setTimeout(() => { toast.style.opacity = '0'; }, 2000);
-  }
 
   function calculatePoints(profile) {
     let total = 0;
-    const details = [];
-    for (let cat of categories) {
-      const points = pointsMap[profile[cat]] || 0;
-      total += points;
-      details.push({ category: categoryLabels[cat], points });
-    }
-    return { total, details };
+    for (let cat of categories) { total += (pointsMap[profile[cat]] || 0); }
+    return total;
   }
-  
-  // ========== MEILLEUR PRONOSTIC (nouveaux seuils) ==========
-  // Over à partir de 13 points, Under maximum 12 points
-  function getBestPronostic(pointsA, pointsB) {
-    const totalPoints = pointsA + pointsB;
-    if (totalPoints >= 13) return `Over 2,5 buts dans le match`;
-    return `Under 3,5 buts dans le match`;
-  }
-  
-  // ========== CONVERSION POINTS → BUTS ==========
+
   function pointsToGoals(points) {
     if (points >= 16) return 5;
     if (points >= 13) return 4;
@@ -546,377 +325,96 @@
     if (points >= 3) return 1;
     return 0;
   }
-  
-  // ========== SCORES COHÉRENTS ==========
-  // Deuxième score attribué à l'équipe avec le plus grand avantage de points
-  // Si points égaux, second score = 1-1
+
+  // ========== LOGIQUE DE SCORE MODIFIÉE ==========
   function getPossibleScores(goalsA, goalsB, pointsA, pointsB) {
-    // Score principal basé sur les buts estimés
     const primaryScore = `${goalsA}-${goalsB}`;
-    
     let secondaryScore = "";
-    
-    if (pointsA > pointsB) {
-      // Équipe A a l'avantage → second score avec A supérieur
-      if (goalsA >= 3 && goalsB <= 1) secondaryScore = `${goalsA-1}-${goalsB+1}`;
-      else if (goalsA >= 2 && goalsB === 0) secondaryScore = `${goalsA-1}-${goalsB+1}`;
-      else if (goalsA >= 2 && goalsB >= 1) secondaryScore = `${goalsA-1}-${goalsB}`;
-      else if (goalsA === 1 && goalsB === 0) secondaryScore = `0-0`;
-      else if (goalsA === 1 && goalsB === 1) secondaryScore = `0-0`;
-      else secondaryScore = `${Math.max(0, goalsA-1)}-${Math.min(5, goalsB+1)}`;
+
+    if (pointsA === pointsB) {
+      // ÉGALITÉ : On retire 1 but à chaque équipe
+      let sA = Math.max(0, goalsA - 1);
+      let sB = Math.max(0, goalsB - 1);
+      secondaryScore = `${sA}-${sB}`;
     } 
-    else if (pointsB > pointsA) {
-      // Équipe B a l'avantage → second score avec B supérieur
-      if (goalsB >= 3 && goalsA <= 1) secondaryScore = `${goalsA+1}-${goalsB-1}`;
-      else if (goalsB >= 2 && goalsA === 0) secondaryScore = `${goalsA+1}-${goalsB-1}`;
-      else if (goalsB >= 2 && goalsA >= 1) secondaryScore = `${goalsA}-${goalsB-1}`;
-      else if (goalsB === 1 && goalsA === 0) secondaryScore = `0-0`;
-      else if (goalsB === 1 && goalsA === 1) secondaryScore = `0-0`;
-      else secondaryScore = `${Math.min(5, goalsA+1)}-${Math.max(0, goalsB-1)}`;
-    }
+    else if (pointsA > pointsB) {
+      // Équipe A a l'avantage (seuil dépassé)
+      let sA = goalsA;
+      let sB = Math.max(0, goalsB - 1);
+      if (sA <= sB) sA = sB + 1; 
+      secondaryScore = `${sA}-${sB}`;
+    } 
     else {
-      // Points égaux → match équilibré, second score = 1-1 ou 0-0
-      if (goalsA === 0 && goalsB === 0) secondaryScore = `1-1`;
-      else if (goalsA === 1 && goalsB === 0) secondaryScore = `0-0`;
-      else if (goalsA === 0 && goalsB === 1) secondaryScore = `0-0`;
-      else if (goalsA === 1 && goalsB === 1) secondaryScore = `0-0`;
-      else if (goalsA === 2 && goalsB === 1) secondaryScore = `1-1`;
-      else if (goalsA === 1 && goalsB === 2) secondaryScore = `1-1`;
-      else if (goalsA === 2 && goalsB === 2) secondaryScore = `1-1`;
-      else secondaryScore = `1-1`;
-    }
-    
-    // Éviter les scores négatifs ou incohérents
-    secondaryScore = secondaryScore.replace(/-/g, '-');
-    if (secondaryScore.includes('-')) {
-      let parts = secondaryScore.split('-');
-      let sA = Math.max(0, Math.min(5, parseInt(parts[0]) || 0));
-      let sB = Math.max(0, Math.min(5, parseInt(parts[1]) || 0));
+      // Équipe B a l'avantage (seuil dépassé)
+      let sB = goalsB;
+      let sA = Math.max(0, goalsA - 1);
+      if (sB <= sA) sB = sA + 1;
       secondaryScore = `${sA}-${sB}`;
     }
-    
-    // Éviter que les deux scores soient identiques
+
+    // Sécurité : éviter l'identité entre les deux scores
     if (primaryScore === secondaryScore) {
-      if (goalsA > 0) secondaryScore = `${goalsA-1}-${goalsB}`;
-      else secondaryScore = `${goalsA}-${goalsB+1}`;
+        if (pointsA > pointsB) secondaryScore = `${goalsA + 1}-${goalsB}`;
+        else if (pointsB > pointsA) secondaryScore = `${goalsA}-${goalsB + 1}`;
+        else secondaryScore = (goalsA > 0 || goalsB > 0) ? "0-0" : "1-1";
     }
-    
+
     return [primaryScore, secondaryScore];
   }
-  
-  // ========== HISTORIQUE ==========
-  let history = [];
 
-  function loadHistory() {
-    try {
-      const saved = localStorage.getItem('PredictorFootPro_History');
-      if (saved) history = JSON.parse(saved);
-      else history = [];
-    } catch(e) { history = []; }
-    updateHistoryDisplay();
-    updateStats();
-  }
-
-  function saveHistory() {
-    localStorage.setItem('PredictorFootPro_History', JSON.stringify(history));
-    updateHistoryDisplay();
-    updateStats();
-  }
-
-  function updateHistoryDisplay() {
-    const container = document.getElementById('historyList');
-    if (!container) return;
-    if (history.length === 0) {
-      container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">Aucun pronostic sauvegardé.</div>';
-      return;
-    }
-    let html = '';
-    for (let i = 0; i < history.length; i++) {
-      const h = history[i];
-      const statut = h.resultat === true ? '✅ Validé' : (h.resultat === false ? '❌ Perdu' : '⏳ En attente');
-      html += `
-        <div class="history-item">
-          <div class="history-header">
-            <span class="history-date">📅 ${h.date}</span>
-            <span class="history-match">${h.teamA} vs ${h.teamB}</span>
-            <span>${statut}</span>
-          </div>
-          <div class="history-result">
-            <span>🎯 Scores: ${h.scores}</span>
-            <span>🏆 Pronostic: ${h.bestPronostic}</span>
-          </div>
-          <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-valid" onclick="setResult(${i}, true)">✅ Validé</button>
-            <button class="btn-lost" onclick="setResult(${i}, false)">❌ Perdu</button>
-            <button class="btn-secondary" style="background:var(--danger);" onclick="deleteHistoryItem(${i})">🗑️ Supprimer</button>
-          </div>
-        </div>
-      `;
-    }
-    container.innerHTML = html;
-  }
-
-  function setResult(index, value) {
-    history[index].resultat = value;
-    saveHistory();
-    showToast(value ? "✅ Pronostic validé !" : "❌ Pronostic perdu !");
-  }
-
-  function deleteHistoryItem(index) {
-    history.splice(index, 1);
-    saveHistory();
-    showToast('🗑️ Supprimé');
-  }
-
-  function clearAllHistory() {
-    if (confirm('⚠️ Supprimer tout l\'historique ?')) {
-      history = [];
-      saveHistory();
-      showToast('📭 Historique effacé');
-    }
-  }
-
-  function exportHistoryCSV() {
-    if (history.length === 0) { showToast('📭 Aucun historique', true); return; }
-    let csv = 'Date,Equipe A,Equipe B,Scores,Meilleur Pronostic,Résultat\n';
-    for (const h of history) {
-      const res = h.resultat === true ? 'Validé' : (h.resultat === false ? 'Perdu' : 'En attente');
-      csv += `"${h.date}","${h.teamA}","${h.teamB}","${h.scores}","${h.bestPronostic}","${res}"\n`;
-    }
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute('download', `pronostics_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    showToast('📥 Export CSV réussi !');
-  }
-
-  function updateStats() {
-    const total = history.length;
-    let justes = history.filter(h => h.resultat === true).length;
-    let faux = history.filter(h => h.resultat === false).length;
-    const taux = total > 0 ? Math.round((justes / total) * 100) : 0;
-    document.getElementById('totalPronos').innerText = total;
-    document.getElementById('justesPronos').innerText = justes;
-    document.getElementById('fauxPronos').innerText = faux;
-    document.getElementById('tauxReussite').innerText = `${taux}%`;
-  }
-
-  function addToHistory(matchData) {
-    const now = new Date();
-    const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-    history.unshift({
-      date: dateStr,
-      teamA: matchData.teamA,
-      teamB: matchData.teamB,
-      scores: matchData.scores,
-      bestPronostic: matchData.bestPronostic,
-      resultat: null
-    });
-    if (history.length > 100) history = history.slice(0, 100);
-    saveHistory();
-    showToast('📥 Pronostic sauvegardé !');
-  }
-
-  // ========== SAUVEGARDE DES PROFILS ==========
-  function sauvegarder() {
-    try {
-      const data = {
-        teamA: document.getElementById('teamA').value,
-        teamB: document.getElementById('teamB').value,
-        profiles: profiles
-      };
-      localStorage.setItem('PredictorFootPro_Profiles', JSON.stringify(data));
-      showToast('✅ Profils sauvegardés !');
-    } catch(e) { showToast('❌ Erreur', true); }
-  }
-
-  function charger() {
-    try {
-      const saved = localStorage.getItem('PredictorFootPro_Profiles');
-      if (!saved) { showToast('📭 Aucune sauvegarde', true); return; }
-      const data = JSON.parse(saved);
-      document.getElementById('teamA').value = data.teamA || 'Paris SG';
-      document.getElementById('teamB').value = data.teamB || 'Toulouse';
-      profiles = data.profiles || profiles;
-      for (let team of ['a', 'b']) {
-        for (let cat of categories) {
-          const container = document.getElementById(`${cat}${team.toUpperCase()}_options`);
-          if (container) {
-            const options = container.querySelectorAll('.profile-option');
-            options.forEach(opt => {
-              if (opt.dataset.value === profiles[team][cat]) opt.classList.add('selected');
-              else opt.classList.remove('selected');
-            });
-          }
-        }
-      }
-      showToast('📂 Profils chargés !');
-    } catch(e) { showToast('❌ Erreur', true); }
-  }
-
-  function reinitialiser() {
-    profiles = {
-      a: { corners: 'equilibre', possession: 'equilibre', domination: 'equilibre', reaction: 'jamais', adversaire: 'equilibre_adv', forme: 'neutre' },
-      b: { corners: 'equilibre', possession: 'equilibre', domination: 'equilibre', reaction: 'jamais', adversaire: 'equilibre_adv', forme: 'neutre' }
-    };
-    document.getElementById('teamA').value = 'Paris SG';
-    document.getElementById('teamB').value = 'Toulouse';
-    for (let team of ['a', 'b']) {
-      for (let cat of categories) {
-        const container = document.getElementById(`${cat}${team.toUpperCase()}_options`);
-        if (container) {
-          const options = container.querySelectorAll('.profile-option');
-          options.forEach(opt => {
-            if (opt.dataset.value === profiles[team][cat]) opt.classList.add('selected');
-            else opt.classList.remove('selected');
-          });
-        }
-      }
-    }
-    showToast('🔄 Réinitialisé');
-  }
-
-  // ========== ANALYSEUR ==========
   function analyser() {
-    const teamA = document.getElementById('teamA').value.trim() || 'Équipe A';
-    const teamB = document.getElementById('teamB').value.trim() || 'Équipe B';
+    const teamA = document.getElementById('teamA').value;
+    const teamB = document.getElementById('teamB').value;
+    const pA = calculatePoints(profiles.a);
+    const pB = calculatePoints(profiles.b);
+    const gA = pointsToGoals(pA);
+    const gB = pointsToGoals(pB);
     
-    const pointsA = calculatePoints(profiles.a);
-    const pointsB = calculatePoints(profiles.b);
-    
-    const goalsA = pointsToGoals(pointsA.total);
-    const goalsB = pointsToGoals(pointsB.total);
-    
-    const btts = goalsA >= 1 && goalsB >= 1;
-    const scores = getPossibleScores(goalsA, goalsB, pointsA.total, pointsB.total);
-    const bestPronostic = getBestPronostic(pointsA.total, pointsB.total);
-    
-    // Style et dynamique
-    let styleA = '', styleB = '';
-    const posA = profiles.a.possession;
-    const posB = profiles.b.possession;
-    if (posA === 'bcp_dangereuse') styleA = 'domine le ballon et est très dangereuse';
-    else if (posA === 'peu_dangereuse') styleA = 'a le ballon mais peine à concrétiser';
-    else if (posA === 'peu_tres_dangereuse') styleA = 'laisse le ballon mais frappe fort en contre';
-    else if (posA === 'pas_dangereuse') styleA = 'n\'a pas le ballon et est inefficace';
-    else styleA = 'joue de façon équilibrée';
-    
-    if (posB === 'bcp_dangereuse') styleB = 'domine le ballon et est très dangereuse';
-    else if (posB === 'peu_dangereuse') styleB = 'a le ballon mais peine à concrétiser';
-    else if (posB === 'peu_tres_dangereuse') styleB = 'laisse le ballon mais frappe fort en contre';
-    else if (posB === 'pas_dangereuse') styleB = 'n\'a pas le ballon et est inefficace';
-    else styleB = 'joue de façon équilibrée';
-    
-    let dynamique = '';
-    if (profiles.a.reaction === 'reagit_vite') dynamique = `${teamA} réagit très vite après un coup dur.`;
-    else if (profiles.b.reaction === 'reagit_vite') dynamique = `${teamB} est capable de revenir rapidement.`;
-    else if (profiles.a.forme === 'pleine_confiance') dynamique = `${teamA} arrive en pleine confiance.`;
-    else if (profiles.b.forme === 'pleine_confiance') dynamique = `${teamB} est en pleine confiance.`;
-    else dynamique = 'Match équilibré, l\'intensité sera constante.';
-    
-    const resume = `${teamA} ${styleA}. ${teamB} ${styleB}. ${dynamique}`;
-    
-    const pointsHtmlA = pointsA.details.map(d => `<div class="points-line"><span>${d.category}</span><span>${d.points > 0 ? '+' : ''}${d.points} pts</span></div>`).join('');
-    const pointsHtmlB = pointsB.details.map(d => `<div class="points-line"><span>${d.category}</span><span>${d.points > 0 ? '+' : ''}${d.points} pts</span></div>`).join('');
-    
-    const whatsText = `⚽ PRONOSTICS ${teamA} vs ${teamB} ⚽\n` +
-      `📊 ${resume}\n` +
-      `🎯 Scores proposés : ${scores[0]} ou ${scores[1]}\n` +
-      `🎯 ${teamA} : ${goalsA} but(s) | ${teamB} : ${goalsB} but(s)\n` +
-      `🎯 BTTS : ${btts ? 'OUI' : 'NON'}\n` +
-      `🏆 MEILLEUR PRONOSTIC : ${bestPronostic}`;
-    
-    const html = `
+    const scores = getPossibleScores(gA, gB, pA, pB);
+    const bestProno = (pA + pB >= 13) ? "Over 2,5 buts" : "Under 3,5 buts";
+
+    document.getElementById('resultats').innerHTML = `
       <div class="result-card">
-        <h3>📊 PRONOSTICS</h3>
         <div class="prediction-box">
-          <div style="color:var(--text-secondary);">⭐ MEILLEUR PRONOSTIC ⭐</div>
-          <div class="prediction-text">${bestPronostic}</div>
-        </div>
-        <div class="scores">
-          <div class="score-item">${scores[0]}</div>
-          <div class="score-item">${scores[1]}</div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <div class="points-detail">
-            <h4 style="color:var(--accent);">📊 ${teamA}</h4>
-            ${pointsHtmlA}
-            <div class="points-total">TOTAL : ${pointsA.total} pts → ${goalsA} but(s)</div>
-          </div>
-          <div class="points-detail">
-            <h4 style="color:var(--accent);">📊 ${teamB}</h4>
-            ${pointsHtmlB}
-            <div class="points-total">TOTAL : ${pointsB.total} pts → ${goalsB} but(s)</div>
+          <div class="prediction-text">${bestProno}</div>
+          <div class="scores">
+            <div class="score-item">${scores[0]}</div>
+            <div class="score-item" style="opacity:0.7;">${scores[1]}</div>
           </div>
         </div>
-        <div style="text-align:center; margin: 10px 0;">
-          <strong style="color:var(--accent);">⚽ BTTS : ${btts ? '✅ OUI' : '❌ NON'}</strong>
-        </div>
-        <div style="background:var(--bg-secondary); border-radius:16px; padding:14px;">
-          <strong style="color:var(--accent);">📋 RÉSUMÉ</strong><br>
-          <span style="color:var(--text-secondary);">${resume}</span>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-success" id="saveToHistoryBtn">📥 Sauvegarder</button>
-          <button class="btn btn-primary" id="whatsappCopyBtn">📋 Copier WhatsApp</button>
-        </div>
-      </div>
-    `;
-    
-    document.getElementById('resultats').innerHTML = html;
+      </div>`;
     document.getElementById('resultats').style.display = 'block';
-    
-    document.getElementById('saveToHistoryBtn').onclick = () => {
-      addToHistory({
-        teamA, teamB,
-        scores: scores.join(' ou '),
-        bestPronostic
-      });
-    };
-    document.getElementById('whatsappCopyBtn').onclick = () => {
-      navigator.clipboard.writeText(whatsText).then(() => showToast('✅ Copié !')).catch(() => showToast('❌ Erreur', true));
-    };
   }
-  
-  // ========== THÈME ==========
-  let amoledMode = true;
-  function toggleTheme() {
-    amoledMode = !amoledMode;
-    if (amoledMode) {
-      document.body.classList.remove('light-dark');
-      document.getElementById('themeToggleBtn').innerHTML = '<i class="fas fa-moon"></i> Mode AMOLED';
-    } else {
-      document.body.classList.add('light-dark');
-      document.getElementById('themeToggleBtn').innerHTML = '<i class="fas fa-sun"></i> Mode normal';
-    }
-  }
-  
-  // ========== ÉVÉNEMENTS ==========
+
+  document.getElementById('analyserBtn').addEventListener('click', analyser);
+
+  // Initialisation simplifiée pour l'exemple
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
     });
   });
-  
-  document.getElementById('saveBtn').addEventListener('click', sauvegarder);
-  document.getElementById('loadBtn').addEventListener('click', charger);
-  document.getElementById('resetBtn').addEventListener('click', reinitialiser);
-  document.getElementById('analyserBtn').addEventListener('click', analyser);
-  document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
-  document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
-  document.getElementById('exportHistoryBtn').addEventListener('click', exportHistoryCSV);
-  
-  initProfileSelectors();
-  loadHistory();
-  setTimeout(() => { charger(); }, 100);
+
+  function initOptions() {
+    document.querySelectorAll('.profile-option').forEach(opt => {
+      opt.addEventListener('click', function() {
+        const parent = this.parentElement;
+        const team = parent.id.includes('A') ? 'a' : 'b';
+        const cat = parent.id.replace(/[AB]_options/g, '');
+        parent.querySelectorAll('.profile-option').forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+        profiles[team][cat] = this.dataset.value;
+      });
+      // Sélection par défaut
+      const parent = opt.parentElement;
+      const team = parent.id.includes('A') ? 'a' : 'b';
+      const cat = parent.id.replace(/[AB]_options/g, '');
+      if (opt.dataset.value === profiles[team][cat]) opt.classList.add('selected');
+    });
+  }
+  initOptions();
 </script>
 </body>
 </html>
