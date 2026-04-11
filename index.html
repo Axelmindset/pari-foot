@@ -30,7 +30,6 @@
             <div id="loading" class="loading">Chargement des données...</div>
             <div id="error" class="error" style="display:none;"></div>
             <div id="dashboard" style="display:none;">
-                <!-- KPIs -->
                 <div style="margin-bottom: 24px;">
                     <div class="kpi-big" id="beneficeTotal"></div>
                     <div class="label">BÉNÉFICE TOTAL</div>
@@ -47,12 +46,10 @@
                     </div>
                 </div>
                 
-                <!-- Mini courbe Bankroll -->
                 <div class="sparkline-container">
                     <canvas id="sparklineCanvas" class="sparkline"></canvas>
                 </div>
                 
-                <!-- Derniers paris -->
                 <h3>📋 DERNIERS PARIS</h3>
                 <div id="lastBets" class="last-bets"></div>
                 
@@ -61,126 +58,85 @@
         </div>
     </div>
     <script>
-        // ID de ton fichier Google Sheets
         const SHEET_ID = '15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0';
         const SHEET_NAME = 'Feuille 1';
-        
-        // Utilisation d'un proxy CORS public pour contourner la restriction
         const PROXY_URL = 'https://api.allorigins.win/raw?url=';
         const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-        
+
         async function fetchCSV() {
             try {
                 const response = await fetch(PROXY_URL + encodeURIComponent(CSV_URL));
                 const text = await response.text();
                 return parseCSV(text);
             } catch (error) {
-                console.error('Erreur fetch:', error);
-                throw error;
+                throw new Error('Erreur réseau ou proxy');
             }
         }
-        
+
         function parseCSV(csvText) {
             const lines = csvText.split('\n');
-            const data = [];
-            
-            lines.forEach(line => {
-                if (line.trim()) {
-                    // Nettoyer les guillemets
-                    const cleanLine = line.replace(/"/g, '');
-                    const row = cleanLine.split(',');
-                    data.push(row);
-                }
-            });
-            
-            return data;
+            return lines
+                .filter(line => line.trim())
+                .map(line => line.replace(/"/g, '').split(','));
         }
-        
+
         function processData(data) {
-            if (!data || data.length < 2) return null;
-            
-            // Trouver les indices des colonnes
+            if (!data || data.length < 2) throw new Error('Données vides');
+
             const headers = data[0];
-            const colIndex = {
-                bankrollApres: -1,  // J
-                beneficeBrut: -1,    // K
-                serieGagne: -1,      // N
-                date: -1,            // A
-                match: -1,           // C
-                resultat: -1         // G
+            
+            // Recherche EXACTE des colonnes selon TES noms (avec accents si besoin)
+            const col = {
+                date: headers.findIndex(h => h.includes('Date') || h === 'A'),
+                match: headers.findIndex(h => h.includes('sélection') || h.includes('Sélection') || h === 'C'),
+                resultat: headers.findIndex(h => h.includes('résultat') || h.includes('Résultat') || h === 'G'),
+                bankrollApres: headers.findIndex(h => h.includes('bankroll après') || h.includes('Bankroll après') || h === 'J'),
+                beneficeBrut: headers.findIndex(h => h.includes('bénéfice brut') || h.includes('Bénéfice brut') || h === 'K'),
+                serieGagne: headers.findIndex(h => h.includes('Serie gagné') || h.includes('Série gagné') || h === 'N')
             };
-            
-            headers.forEach((header, index) => {
-                const h = header.toLowerCase().trim();
-                if (h.includes('bankroll après') || h.includes('bankroll apres') || h === 'j') colIndex.bankrollApres = index;
-                if (h.includes('bénéfice brut') || h.includes('benefice brut') || h === 'k') colIndex.beneficeBrut = index;
-                if (h.includes('serie gagné') || h.includes('serie gagne') || h === 'n') colIndex.serieGagne = index;
-                if (h.includes('date') || h === 'a') colIndex.date = index;
-                if (h.includes('sélection') || h.includes('selection') || h === 'c') colIndex.match = index;
-                if (h.includes('résultat') || h.includes('resultat') || h === 'g') colIndex.resultat = index;
-            });
-            
-            // Calculer bénéfice total (somme colonne K)
+
             let beneficeTotal = 0;
             const bankrollHistory = [];
-            
+
             for (let i = 1; i < data.length; i++) {
                 const row = data[i];
                 
-                // Bénéfice
-                if (colIndex.beneficeBrut !== -1 && row[colIndex.beneficeBrut]) {
-                    const val = parseFloat(row[colIndex.beneficeBrut].replace('€', '').replace(',', '.').trim());
+                if (col.beneficeBrut !== -1 && row[col.beneficeBrut]) {
+                    const val = parseFloat(row[col.beneficeBrut].replace('€', '').replace(',', '.').trim());
                     if (!isNaN(val)) beneficeTotal += val;
                 }
                 
-                // Bankroll historique
-                if (colIndex.bankrollApres !== -1 && row[colIndex.bankrollApres]) {
-                    const val = parseFloat(row[colIndex.bankrollApres].replace('€', '').replace(',', '.').trim());
+                if (col.bankrollApres !== -1 && row[col.bankrollApres]) {
+                    const val = parseFloat(row[col.bankrollApres].replace('€', '').replace(',', '.').trim());
                     if (!isNaN(val)) bankrollHistory.push(val);
                 }
             }
-            
-            // Dernière ligne
+
             const lastRow = data[data.length - 1];
+            const bankrollActuelle = bankrollHistory[bankrollHistory.length - 1] || 0;
             
-            // Bankroll actuelle
-            const bankrollActuelle = bankrollHistory.length > 0 ? bankrollHistory[bankrollHistory.length - 1] : 0;
-            
-            // Série en cours
             let serieGagne = false;
-            if (colIndex.serieGagne !== -1 && lastRow[colIndex.serieGagne]) {
-                serieGagne = lastRow[colIndex.serieGagne].trim() === '1';
+            if (col.serieGagne !== -1 && lastRow[col.serieGagne]) {
+                serieGagne = lastRow[col.serieGagne].trim() === '1';
             }
-            
-            // Derniers paris (5 derniers)
+
             const lastBets = [];
-            const startIdx = Math.max(1, data.length - 6);
-            for (let i = data.length - 1; i >= startIdx && lastBets.length < 5; i--) {
+            for (let i = data.length - 1; i >= Math.max(1, data.length - 5) && lastBets.length < 5; i--) {
                 const row = data[i];
-                const date = colIndex.date !== -1 ? row[colIndex.date] : '';
-                const match = colIndex.match !== -1 ? row[colIndex.match] : '';
-                const resultat = colIndex.resultat !== -1 ? row[colIndex.resultat] : '';
-                const benefice = colIndex.beneficeBrut !== -1 ? parseFloat(row[colIndex.beneficeBrut]?.replace('€', '').replace(',', '.').trim()) || 0 : 0;
+                const match = col.match !== -1 ? row[col.match] : '';
+                if (!match || !match.trim()) continue;
                 
-                if (match && match.trim()) {
-                    lastBets.push({
-                        date: date.trim(),
-                        match: match.trim().substring(0, 25) + (match.trim().length > 25 ? '...' : ''),
-                        resultat: resultat.trim(),
-                        benefice
-                    });
-                }
+                lastBets.push({
+                    date: col.date !== -1 ? row[col.date] : '',
+                    match: match.trim().substring(0, 28) + (match.trim().length > 28 ? '…' : ''),
+                    resultat: col.resultat !== -1 ? row[col.resultat] : '',
+                    benefice: col.beneficeBrut !== -1 ? parseFloat(row[col.beneficeBrut]?.replace('€', '').replace(',', '.')) || 0 : 0
+                });
             }
-            
-            return {
-                beneficeTotal,
-                bankrollActuelle,
-                bankrollHistory,
-                serieGagne,
-                lastBets
-            };
+
+            return { beneficeTotal, bankrollActuelle, bankrollHistory, serieGagne, lastBets };
         }
-        
+
         function drawSparkline(canvasId, data) {
             const canvas = document.getElementById(canvasId);
             if (!canvas || data.length < 2) return;
@@ -188,7 +144,6 @@
             const ctx = canvas.getContext('2d');
             const width = canvas.offsetWidth;
             const height = 60;
-            
             canvas.width = width;
             canvas.height = height;
             
@@ -197,33 +152,25 @@
             const range = max - min || 1;
             
             ctx.clearRect(0, 0, width, height);
-            
             ctx.beginPath();
             ctx.strokeStyle = data[data.length - 1] >= data[0] ? '#2e7d32' : '#c62828';
             ctx.lineWidth = 2;
             
             const step = width / (data.length - 1);
-            
             data.forEach((value, index) => {
                 const x = index * step;
                 const y = height - ((value - min) / range) * (height - 10) - 5;
-                
-                if (index === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
+                index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
             });
             
             ctx.stroke();
-            
             ctx.lineTo(width, height);
             ctx.lineTo(0, height);
             ctx.closePath();
             ctx.fillStyle = data[data.length - 1] >= data[0] ? 'rgba(46, 125, 50, 0.1)' : 'rgba(198, 40, 40, 0.1)';
             ctx.fill();
         }
-        
+
         function displayDashboard(stats) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
@@ -238,16 +185,14 @@
             
             document.getElementById('bankrollActuelle').textContent = stats.bankrollActuelle.toFixed(2) + ' €';
             
-            if (stats.bankrollHistory.length > 1) {
-                drawSparkline('sparklineCanvas', stats.bankrollHistory);
-            }
+            if (stats.bankrollHistory.length > 1) drawSparkline('sparklineCanvas', stats.bankrollHistory);
             
-            const betsContainer = document.getElementById('lastBets');
-            betsContainer.innerHTML = '';
+            const container = document.getElementById('lastBets');
+            container.innerHTML = '';
             stats.lastBets.forEach(bet => {
-                const betEl = document.createElement('div');
-                betEl.className = 'bet-item';
-                betEl.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'bet-item';
+                div.innerHTML = `
                     <div>
                         <div style="font-weight:500;">${bet.match}</div>
                         <div style="font-size:12px; color:#757575;">${bet.date}</div>
@@ -257,32 +202,23 @@
                         <div style="font-size:12px;">${bet.resultat}</div>
                     </div>
                 `;
-                betsContainer.appendChild(betEl);
+                container.appendChild(div);
             });
             
             document.getElementById('updateTime').textContent = 'Mis à jour le ' + new Date().toLocaleString('fr-FR');
         }
-        
-        function showError(message) {
+
+        function showError(msg) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'block';
-            document.getElementById('error').textContent = 'Erreur: ' + message;
+            document.getElementById('error').textContent = 'Erreur : ' + msg;
         }
-        
-        // Lancement
+
+        // GO !
         fetchCSV()
-            .then(data => {
-                const stats = processData(data);
-                if (stats) {
-                    displayDashboard(stats);
-                } else {
-                    showError('Impossible de traiter les données');
-                }
-            })
-            .catch(error => {
-                showError('Impossible de charger le fichier. Vérifie ta connexion.');
-                console.error(error);
-            });
+            .then(processData)
+            .then(displayDashboard)
+            .catch(err => showError(err.message));
     </script>
 </body>
 </html>
