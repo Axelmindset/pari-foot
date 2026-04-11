@@ -13,9 +13,6 @@
         .red { color: #c62828; }
         .label { font-size: 14px; color: #757575; text-align: center; margin-top: 8px; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
-        .badge { padding: 6px 12px; border-radius: 20px; font-weight: 500; }
-        .badge-win { background: #e8f5e9; color: #2e7d32; }
-        .badge-loss { background: #ffebee; color: #c62828; }
         .last-bets { margin-top: 12px; }
         .bet-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .loading { text-align: center; padding: 20px; color: #757575; }
@@ -23,6 +20,8 @@
         .update-time { font-size: 12px; color: #9e9e9e; text-align: right; margin-top: 16px; }
         h2 { font-size: 20px; margin-top: 0; margin-bottom: 16px; color: #333; }
         h3 { font-size: 16px; margin: 0 0 8px 0; color: #555; }
+        .sparkline-container { margin: 16px 0; text-align: center; }
+        .sparkline { width: 100%; height: 60px; }
     </style>
 </head>
 <body>
@@ -49,6 +48,11 @@
                     </div>
                 </div>
                 
+                <!-- Mini courbe Bankroll -->
+                <div class="sparkline-container">
+                    <canvas id="sparklineCanvas" class="sparkline"></canvas>
+                </div>
+                
                 <!-- Derniers paris -->
                 <h3>📋 DERNIERS PARIS</h3>
                 <div id="lastBets" class="last-bets"></div>
@@ -58,89 +62,106 @@
         </div>
     </div>
     <script>
-        const SPREADSHEET_HTMLVIEW_URL = 'https://docs.google.com/spreadsheets/u/0/d/15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0/htmlview';
+        // Utilise le lien CSV exporté
+        const CSV_URL = 'https://docs.google.com/spreadsheets/u/0/d/15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0/export?format=csv';
         
-        async function fetchData() {
+        async function fetchCSV() {
             try {
-                // On utilise htmlview pour récupérer le HTML brut
-                const response = await fetch(SPREADSHEET_HTMLVIEW_URL);
-                const html = await response.text();
-                
-                // Parser le HTML pour extraire les données du tableau
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                
-                // Google Sheets htmlview met les données dans des tables
-                const tables = doc.querySelectorAll('table');
-                if (tables.length === 0) throw new Error('Aucune table trouvée');
-                
-                // La première table contient généralement les données de la feuille active
-                const rows = tables[0].querySelectorAll('tr');
-                const data = [];
-                
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td, th');
-                    const rowData = [];
-                    cells.forEach(cell => rowData.push(cell.textContent.trim()));
-                    if (rowData.length > 0) data.push(rowData);
-                });
-                
-                return data;
+                const response = await fetch(CSV_URL);
+                const text = await response.text();
+                return parseCSV(text);
             } catch (error) {
                 console.error('Erreur fetch:', error);
                 throw error;
             }
         }
         
-        function parseSheetData(data) {
-            if (!data || data.length < 2) return null;
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const data = [];
             
-            // Trouver les indices des colonnes qui nous intéressent
-            const headers = data[0];
-            const colMap = {};
-            headers.forEach((header, index) => {
-                const h = header.toLowerCase();
-                if (h.includes('bénéfice') || h.includes('benefice') || header === 'K') colMap.benefice = index;
-                if (h.includes('bankroll après') || header === 'J') colMap.bankroll = index;
-                if (h.includes('série gagné') || header === 'N') colMap.serie = index;
-                if (h.includes('date')) colMap.date = index;
-                if (h.includes('équipe') || h.includes('selection') || header === 'C') colMap.match = index;
-                if (h.includes('résultat') || header === 'G') colMap.resultat = index;
+            lines.forEach(line => {
+                if (line.trim()) {
+                    // Gestion basique du CSV (les virgules comme séparateur)
+                    const row = line.split(',');
+                    data.push(row);
+                }
             });
             
-            // Extraire les valeurs
-            const lastRow = data[data.length - 1];
+            return data;
+        }
+        
+        function processData(data) {
+            if (!data || data.length < 2) return null;
             
-            // Bénéfice total = somme de la colonne K (ou dernière ligne de la colonne si cumul)
+            // Trouver les indices des colonnes (basé sur tes colonnes A à R)
+            const headers = data[0];
+            const colIndex = {
+                bankrollApres: -1,  // J
+                beneficeBrut: -1,    // K
+                serieGagne: -1,      // N
+                date: -1,            // A
+                match: -1,           // C
+                resultat: -1         // G
+            };
+            
+            headers.forEach((header, index) => {
+                const h = header.toLowerCase().trim();
+                if (h.includes('bankroll après') || h === 'j') colIndex.bankrollApres = index;
+                if (h.includes('bénéfice brut') || h.includes('benefice brut') || h === 'k') colIndex.beneficeBrut = index;
+                if (h.includes('serie gagné') || h === 'n') colIndex.serieGagne = index;
+                if (h.includes('date') || h === 'a') colIndex.date = index;
+                if (h.includes('sélection') || h.includes('selection') || h === 'c') colIndex.match = index;
+                if (h.includes('résultat') || h.includes('resultat') || h === 'g') colIndex.resultat = index;
+            });
+            
+            // Calculer bénéfice total (somme colonne K)
             let beneficeTotal = 0;
+            const bankrollHistory = [];
+            
             for (let i = 1; i < data.length; i++) {
-                const val = parseFloat(data[i][colMap.benefice]?.replace('€', '').replace(',', '.')) || 0;
-                beneficeTotal += val;
+                const row = data[i];
+                
+                // Bénéfice
+                if (colIndex.beneficeBrut !== -1 && row[colIndex.beneficeBrut]) {
+                    const val = parseFloat(row[colIndex.beneficeBrut].replace('€', '').replace(',', '.').trim());
+                    if (!isNaN(val)) beneficeTotal += val;
+                }
+                
+                // Bankroll historique (pour le graphique)
+                if (colIndex.bankrollApres !== -1 && row[colIndex.bankrollApres]) {
+                    const val = parseFloat(row[colIndex.bankrollApres].replace('€', '').replace(',', '.').trim());
+                    if (!isNaN(val)) bankrollHistory.push(val);
+                }
             }
             
-            // Bankroll actuelle = dernière valeur de la colonne J
-            const bankrollStr = lastRow[colMap.bankroll]?.replace('€', '').replace(',', '.');
-            const bankroll = parseFloat(bankrollStr) || 0;
+            // Dernière ligne
+            const lastRow = data[data.length - 1];
             
-            // Série en cours = dernière valeur de la colonne N
-            const serie = lastRow[colMap.serie] || '0';
-            const isWinning = serie === '1';
+            // Bankroll actuelle
+            const bankrollActuelle = bankrollHistory.length > 0 ? bankrollHistory[bankrollHistory.length - 1] : 0;
+            
+            // Série en cours
+            let serieGagne = false;
+            if (colIndex.serieGagne !== -1 && lastRow[colIndex.serieGagne]) {
+                serieGagne = lastRow[colIndex.serieGagne].trim() === '1';
+            }
             
             // Derniers paris (5 derniers)
             const lastBets = [];
             const startIdx = Math.max(1, data.length - 6);
             for (let i = data.length - 1; i >= startIdx && lastBets.length < 5; i--) {
                 const row = data[i];
-                const date = row[colMap.date] || '';
-                const match = row[colMap.match] || '';
-                const resultat = row[colMap.resultat] || '';
-                const benefice = parseFloat(row[colMap.benefice]?.replace('€', '').replace(',', '.')) || 0;
+                const date = colIndex.date !== -1 ? row[colIndex.date] : '';
+                const match = colIndex.match !== -1 ? row[colIndex.match] : '';
+                const resultat = colIndex.resultat !== -1 ? row[colIndex.resultat] : '';
+                const benefice = colIndex.beneficeBrut !== -1 ? parseFloat(row[colIndex.beneficeBrut]?.replace('€', '').replace(',', '.').trim()) || 0 : 0;
                 
-                if (match) {
+                if (match && match.trim()) {
                     lastBets.push({
-                        date,
-                        match: match.substring(0, 25) + (match.length > 25 ? '...' : ''),
-                        resultat,
+                        date: date.trim(),
+                        match: match.trim().substring(0, 25) + (match.trim().length > 25 ? '...' : ''),
+                        resultat: resultat.trim(),
                         benefice
                     });
                 }
@@ -148,10 +169,58 @@
             
             return {
                 beneficeTotal,
-                bankroll,
-                serie: isWinning,
+                bankrollActuelle,
+                bankrollHistory,
+                serieGagne,
                 lastBets
             };
+        }
+        
+        function drawSparkline(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || data.length < 2) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.offsetWidth;
+            const height = 60;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Trouver min et max
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = max - min || 1;
+            
+            // Dessiner
+            ctx.clearRect(0, 0, width, height);
+            
+            // Ligne
+            ctx.beginPath();
+            ctx.strokeStyle = data[data.length - 1] >= data[0] ? '#2e7d32' : '#c62828';
+            ctx.lineWidth = 2;
+            
+            const step = width / (data.length - 1);
+            
+            data.forEach((value, index) => {
+                const x = index * step;
+                const y = height - ((value - min) / range) * (height - 10) - 5;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Remplissage sous la courbe
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fillStyle = data[data.length - 1] >= data[0] ? 'rgba(46, 125, 50, 0.1)' : 'rgba(198, 40, 40, 0.1)';
+            ctx.fill();
         }
         
         function displayDashboard(stats) {
@@ -165,11 +234,16 @@
             
             // Série
             const serieEl = document.getElementById('serieEnCours');
-            serieEl.textContent = stats.serie ? '✅ GAINS' : '❌ PERTES';
-            serieEl.className = stats.serie ? 'green' : 'red';
+            serieEl.textContent = stats.serieGagne ? '✅ GAINS' : '❌ PERTES';
+            serieEl.className = stats.serieGagne ? 'green' : 'red';
             
             // Bankroll
-            document.getElementById('bankrollActuelle').textContent = stats.bankroll.toFixed(2) + ' €';
+            document.getElementById('bankrollActuelle').textContent = stats.bankrollActuelle.toFixed(2) + ' €';
+            
+            // Sparkline
+            if (stats.bankrollHistory.length > 1) {
+                drawSparkline('sparklineCanvas', stats.bankrollHistory);
+            }
             
             // Derniers paris
             const betsContainer = document.getElementById('lastBets');
@@ -201,13 +275,13 @@
         }
         
         // Lancement
-        fetchData()
+        fetchCSV()
             .then(data => {
-                const stats = parseSheetData(data);
+                const stats = processData(data);
                 if (stats) {
                     displayDashboard(stats);
                 } else {
-                    showError('Impossible de parser les données');
+                    showError('Impossible de traiter les données');
                 }
             })
             .catch(error => {
