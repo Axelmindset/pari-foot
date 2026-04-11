@@ -12,7 +12,6 @@
         .green { color: #2e7d32; }
         .red { color: #c62828; }
         .label { font-size: 14px; color: #757575; text-align: center; margin-top: 8px; }
-        .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
         .last-bets { margin-top: 12px; }
         .bet-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .loading { text-align: center; padding: 20px; color: #757575; }
@@ -62,12 +61,17 @@
         </div>
     </div>
     <script>
-        // Utilise le lien CSV exporté
-        const CSV_URL = 'https://docs.google.com/spreadsheets/u/0/d/15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0/export?format=csv';
+        // ID de ton fichier Google Sheets
+        const SHEET_ID = '15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0';
+        const SHEET_NAME = 'Feuille 1';
+        
+        // Utilisation d'un proxy CORS public pour contourner la restriction
+        const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
         
         async function fetchCSV() {
             try {
-                const response = await fetch(CSV_URL);
+                const response = await fetch(PROXY_URL + encodeURIComponent(CSV_URL));
                 const text = await response.text();
                 return parseCSV(text);
             } catch (error) {
@@ -82,8 +86,9 @@
             
             lines.forEach(line => {
                 if (line.trim()) {
-                    // Gestion basique du CSV (les virgules comme séparateur)
-                    const row = line.split(',');
+                    // Nettoyer les guillemets
+                    const cleanLine = line.replace(/"/g, '');
+                    const row = cleanLine.split(',');
                     data.push(row);
                 }
             });
@@ -94,7 +99,7 @@
         function processData(data) {
             if (!data || data.length < 2) return null;
             
-            // Trouver les indices des colonnes (basé sur tes colonnes A à R)
+            // Trouver les indices des colonnes
             const headers = data[0];
             const colIndex = {
                 bankrollApres: -1,  // J
@@ -107,9 +112,9 @@
             
             headers.forEach((header, index) => {
                 const h = header.toLowerCase().trim();
-                if (h.includes('bankroll après') || h === 'j') colIndex.bankrollApres = index;
+                if (h.includes('bankroll après') || h.includes('bankroll apres') || h === 'j') colIndex.bankrollApres = index;
                 if (h.includes('bénéfice brut') || h.includes('benefice brut') || h === 'k') colIndex.beneficeBrut = index;
-                if (h.includes('serie gagné') || h === 'n') colIndex.serieGagne = index;
+                if (h.includes('serie gagné') || h.includes('serie gagne') || h === 'n') colIndex.serieGagne = index;
                 if (h.includes('date') || h === 'a') colIndex.date = index;
                 if (h.includes('sélection') || h.includes('selection') || h === 'c') colIndex.match = index;
                 if (h.includes('résultat') || h.includes('resultat') || h === 'g') colIndex.resultat = index;
@@ -128,7 +133,7 @@
                     if (!isNaN(val)) beneficeTotal += val;
                 }
                 
-                // Bankroll historique (pour le graphique)
+                // Bankroll historique
                 if (colIndex.bankrollApres !== -1 && row[colIndex.bankrollApres]) {
                     const val = parseFloat(row[colIndex.bankrollApres].replace('€', '').replace(',', '.').trim());
                     if (!isNaN(val)) bankrollHistory.push(val);
@@ -187,15 +192,12 @@
             canvas.width = width;
             canvas.height = height;
             
-            // Trouver min et max
             const min = Math.min(...data);
             const max = Math.max(...data);
             const range = max - min || 1;
             
-            // Dessiner
             ctx.clearRect(0, 0, width, height);
             
-            // Ligne
             ctx.beginPath();
             ctx.strokeStyle = data[data.length - 1] >= data[0] ? '#2e7d32' : '#c62828';
             ctx.lineWidth = 2;
@@ -215,7 +217,6 @@
             
             ctx.stroke();
             
-            // Remplissage sous la courbe
             ctx.lineTo(width, height);
             ctx.lineTo(0, height);
             ctx.closePath();
@@ -227,25 +228,20 @@
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             
-            // Bénéfice total
             const benefEl = document.getElementById('beneficeTotal');
             benefEl.textContent = stats.beneficeTotal.toFixed(2) + ' €';
             benefEl.className = 'kpi-big ' + (stats.beneficeTotal >= 0 ? 'green' : 'red');
             
-            // Série
             const serieEl = document.getElementById('serieEnCours');
             serieEl.textContent = stats.serieGagne ? '✅ GAINS' : '❌ PERTES';
             serieEl.className = stats.serieGagne ? 'green' : 'red';
             
-            // Bankroll
             document.getElementById('bankrollActuelle').textContent = stats.bankrollActuelle.toFixed(2) + ' €';
             
-            // Sparkline
             if (stats.bankrollHistory.length > 1) {
                 drawSparkline('sparklineCanvas', stats.bankrollHistory);
             }
             
-            // Derniers paris
             const betsContainer = document.getElementById('lastBets');
             betsContainer.innerHTML = '';
             stats.lastBets.forEach(bet => {
@@ -264,7 +260,6 @@
                 betsContainer.appendChild(betEl);
             });
             
-            // Date de mise à jour
             document.getElementById('updateTime').textContent = 'Mis à jour le ' + new Date().toLocaleString('fr-FR');
         }
         
