@@ -59,9 +59,8 @@
     </div>
     <script>
         const SHEET_ID = '15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0';
-        const SHEET_NAME = 'Feuille 1';
-        const PROXY_URL = 'https://api.allorigins.win/raw?url=';
-        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        const PROXY_URL = 'https://corsproxy.io/?';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 
         async function fetchCSV() {
             try {
@@ -85,7 +84,6 @@
 
             const headers = data[0];
             
-            // Recherche EXACTE des colonnes selon TES noms (avec accents si besoin)
             const col = {
                 date: headers.findIndex(h => h.includes('Date') || h === 'A'),
                 match: headers.findIndex(h => h.includes('sélection') || h.includes('Sélection') || h === 'C'),
@@ -214,7 +212,6 @@
             document.getElementById('error').textContent = 'Erreur : ' + msg;
         }
 
-        // GO !
         fetchCSV()
             .then(processData)
             .then(displayDashboard)
