@@ -2,94 +2,218 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prono Bot 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>⚽ Mon Suivi Paris Sportifs</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #121212; color: white; text-align: center; }
-        .card { background: #1e1e1e; padding: 25px; border-radius: 15px; max-width: 400px; margin: auto; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: #00ff88; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #444; border-radius: 8px; background: #2a2a2a; color: white; }
-        button { background: #00ff88; color: #000; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        #resultat { margin-top: 25px; }
-        .success { border: 2px solid #00ff88; padding: 15px; border-radius: 10px; background: rgba(0, 255, 136, 0.1); }
-        .error { color: #ff4444; background: rgba(255, 68, 68, 0.1); padding: 10px; border-radius: 5px; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 16px; background: #f5f5f5; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .kpi-big { font-size: 48px; font-weight: bold; text-align: center; }
+        .green { color: #2e7d32; }
+        .red { color: #c62828; }
+        .label { font-size: 14px; color: #757575; text-align: center; margin-top: 8px; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .badge { padding: 6px 12px; border-radius: 20px; font-weight: 500; }
+        .badge-win { background: #e8f5e9; color: #2e7d32; }
+        .badge-loss { background: #ffebee; color: #c62828; }
+        .last-bets { margin-top: 12px; }
+        .bet-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .loading { text-align: center; padding: 20px; color: #757575; }
+        .error { color: #c62828; text-align: center; padding: 20px; }
+        .update-time { font-size: 12px; color: #9e9e9e; text-align: right; margin-top: 16px; }
+        h2 { font-size: 20px; margin-top: 0; margin-bottom: 16px; color: #333; }
+        h3 { font-size: 16px; margin: 0 0 8px 0; color: #555; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <h2>⚽ Prono Bot v2026</h2>
-    <p style="font-size: 0.8em; color: #aaa;">Données Saison 2025/2026</p>
-    
-    <input type="password" id="apiKey" placeholder="Clé API">
-    <input type="number" id="homeId" placeholder="ID Domicile (ex: 85)">
-    <input type="number" id="awayId" placeholder="ID Extérieur (ex: 81)">
-    
-    <button onclick="predire()">Calculer Pronostic</button>
-
-    <div id="resultat"></div>
-</div>
-
-<script>
-async function fetchStats(teamId, apiKey) {
-    // Mise à jour pour la saison 2025 (correspondant à l'année 2026)
-    const url = `https://v3.football.api-sports.io/teams/statistics?league=61&season=2025&team=${teamId}`;
-    
-    const response = await fetch(url, {
-        method: "GET",
-        headers: {
-            "x-rapidapi-key": apiKey,
-            "x-rapidapi-host": "v3.football.api-sports.io"
-        }
-    });
-
-    const data = await response.json();
-
-    if (data.errors && Object.keys(data.errors).length > 0) {
-        throw new Error("Problème de clé API.");
-    }
-
-    if (!data.response || !data.response.goals || !data.response.goals.for) {
-        throw new Error("Données 2025 indisponibles pour l'ID " + teamId);
-    }
-
-    return data.response.goals.for.average.total;
-}
-
-async function predire() {
-    const key = document.getElementById('apiKey').value.trim();
-    const homeId = document.getElementById('homeId').value;
-    const awayId = document.getElementById('awayId').value;
-    const resDiv = document.getElementById('resultat');
-
-    if (!key || !homeId || !awayId) {
-        resDiv.innerHTML = "<p class='error'>Champs vides !</p>";
-        return;
-    }
-
-    resDiv.innerHTML = "⏳ Analyse en direct...";
-
-    try {
-        const avgHome = await fetchStats(homeId, key);
-        const avgAway = await fetchStats(awayId, key);
-
-        const goalsHome = parseFloat(avgHome).toFixed(1);
-        const goalsAway = parseFloat(avgAway).toFixed(1);
-
-        resDiv.innerHTML = `
-            <div class="success">
-                <p style="margin: 0;">Score estimé</p>
-                <p style="font-size: 35px; font-weight: bold; margin: 10px 0;">
-                    ${Math.round(goalsHome)} - ${Math.round(goalsAway)}
-                </p>
-                <small>Moyennes Saison 25/26 : ${goalsHome} - ${goalsAway}</small>
+    <div class="container">
+        <div class="card">
+            <h2>⚽ Paris FOOTBALL-SIMILATE</h2>
+            <div id="loading" class="loading">Chargement des données...</div>
+            <div id="error" class="error" style="display:none;"></div>
+            <div id="dashboard" style="display:none;">
+                <!-- KPIs -->
+                <div style="margin-bottom: 24px;">
+                    <div class="kpi-big" id="beneficeTotal"></div>
+                    <div class="label">BÉNÉFICE TOTAL</div>
+                </div>
+                
+                <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold;" id="serieEnCours"></div>
+                        <div class="label">SÉRIE</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold;" id="bankrollActuelle"></div>
+                        <div class="label">BANKROLL</div>
+                    </div>
+                </div>
+                
+                <!-- Derniers paris -->
+                <h3>📋 DERNIERS PARIS</h3>
+                <div id="lastBets" class="last-bets"></div>
+                
+                <div class="update-time" id="updateTime"></div>
             </div>
-        `;
-    } catch (error) {
-        resDiv.innerHTML = `<p class="error">❌ ${error.message}</p>`;
-    }
-}
-</script>
-
+        </div>
+    </div>
+    <script>
+        const SPREADSHEET_HTMLVIEW_URL = 'https://docs.google.com/spreadsheets/u/0/d/15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0/htmlview';
+        
+        async function fetchData() {
+            try {
+                // On utilise htmlview pour récupérer le HTML brut
+                const response = await fetch(SPREADSHEET_HTMLVIEW_URL);
+                const html = await response.text();
+                
+                // Parser le HTML pour extraire les données du tableau
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Google Sheets htmlview met les données dans des tables
+                const tables = doc.querySelectorAll('table');
+                if (tables.length === 0) throw new Error('Aucune table trouvée');
+                
+                // La première table contient généralement les données de la feuille active
+                const rows = tables[0].querySelectorAll('tr');
+                const data = [];
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td, th');
+                    const rowData = [];
+                    cells.forEach(cell => rowData.push(cell.textContent.trim()));
+                    if (rowData.length > 0) data.push(rowData);
+                });
+                
+                return data;
+            } catch (error) {
+                console.error('Erreur fetch:', error);
+                throw error;
+            }
+        }
+        
+        function parseSheetData(data) {
+            if (!data || data.length < 2) return null;
+            
+            // Trouver les indices des colonnes qui nous intéressent
+            const headers = data[0];
+            const colMap = {};
+            headers.forEach((header, index) => {
+                const h = header.toLowerCase();
+                if (h.includes('bénéfice') || h.includes('benefice') || header === 'K') colMap.benefice = index;
+                if (h.includes('bankroll après') || header === 'J') colMap.bankroll = index;
+                if (h.includes('série gagné') || header === 'N') colMap.serie = index;
+                if (h.includes('date')) colMap.date = index;
+                if (h.includes('équipe') || h.includes('selection') || header === 'C') colMap.match = index;
+                if (h.includes('résultat') || header === 'G') colMap.resultat = index;
+            });
+            
+            // Extraire les valeurs
+            const lastRow = data[data.length - 1];
+            
+            // Bénéfice total = somme de la colonne K (ou dernière ligne de la colonne si cumul)
+            let beneficeTotal = 0;
+            for (let i = 1; i < data.length; i++) {
+                const val = parseFloat(data[i][colMap.benefice]?.replace('€', '').replace(',', '.')) || 0;
+                beneficeTotal += val;
+            }
+            
+            // Bankroll actuelle = dernière valeur de la colonne J
+            const bankrollStr = lastRow[colMap.bankroll]?.replace('€', '').replace(',', '.');
+            const bankroll = parseFloat(bankrollStr) || 0;
+            
+            // Série en cours = dernière valeur de la colonne N
+            const serie = lastRow[colMap.serie] || '0';
+            const isWinning = serie === '1';
+            
+            // Derniers paris (5 derniers)
+            const lastBets = [];
+            const startIdx = Math.max(1, data.length - 6);
+            for (let i = data.length - 1; i >= startIdx && lastBets.length < 5; i--) {
+                const row = data[i];
+                const date = row[colMap.date] || '';
+                const match = row[colMap.match] || '';
+                const resultat = row[colMap.resultat] || '';
+                const benefice = parseFloat(row[colMap.benefice]?.replace('€', '').replace(',', '.')) || 0;
+                
+                if (match) {
+                    lastBets.push({
+                        date,
+                        match: match.substring(0, 25) + (match.length > 25 ? '...' : ''),
+                        resultat,
+                        benefice
+                    });
+                }
+            }
+            
+            return {
+                beneficeTotal,
+                bankroll,
+                serie: isWinning,
+                lastBets
+            };
+        }
+        
+        function displayDashboard(stats) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Bénéfice total
+            const benefEl = document.getElementById('beneficeTotal');
+            benefEl.textContent = stats.beneficeTotal.toFixed(2) + ' €';
+            benefEl.className = 'kpi-big ' + (stats.beneficeTotal >= 0 ? 'green' : 'red');
+            
+            // Série
+            const serieEl = document.getElementById('serieEnCours');
+            serieEl.textContent = stats.serie ? '✅ GAINS' : '❌ PERTES';
+            serieEl.className = stats.serie ? 'green' : 'red';
+            
+            // Bankroll
+            document.getElementById('bankrollActuelle').textContent = stats.bankroll.toFixed(2) + ' €';
+            
+            // Derniers paris
+            const betsContainer = document.getElementById('lastBets');
+            betsContainer.innerHTML = '';
+            stats.lastBets.forEach(bet => {
+                const betEl = document.createElement('div');
+                betEl.className = 'bet-item';
+                betEl.innerHTML = `
+                    <div>
+                        <div style="font-weight:500;">${bet.match}</div>
+                        <div style="font-size:12px; color:#757575;">${bet.date}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:500; color:${bet.benefice >= 0 ? '#2e7d32' : '#c62828'};">${bet.benefice >= 0 ? '+' : ''}${bet.benefice.toFixed(2)} €</div>
+                        <div style="font-size:12px;">${bet.resultat}</div>
+                    </div>
+                `;
+                betsContainer.appendChild(betEl);
+            });
+            
+            // Date de mise à jour
+            document.getElementById('updateTime').textContent = 'Mis à jour le ' + new Date().toLocaleString('fr-FR');
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'Erreur: ' + message;
+        }
+        
+        // Lancement
+        fetchData()
+            .then(data => {
+                const stats = parseSheetData(data);
+                if (stats) {
+                    displayDashboard(stats);
+                } else {
+                    showError('Impossible de parser les données');
+                }
+            })
+            .catch(error => {
+                showError('Impossible de charger le fichier. Vérifie ta connexion.');
+                console.error(error);
+            });
+    </script>
 </body>
 </html>
