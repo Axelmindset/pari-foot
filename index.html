@@ -5,215 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>⚽ Mon Suivi Paris</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            background: #f2f4f8;
-            padding: 16px;
-        }
-        .container {
-            max-width: 450px;
-            margin: 0 auto;
-        }
-
-        /* Carte principale */
-        .card {
-            background: white;
-            border-radius: 24px;
-            padding: 24px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        h1 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 24px;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* KPIs */
-        .benefice-box {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-        .benefice-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .benefice-value {
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1.1;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, system-ui, sans-serif; background: #f2f4f8; padding: 16px; }
+        .container { max-width: 450px; margin: 0 auto; }
+        .card { background: white; border-radius: 24px; padding: 24px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1 { font-size: 22px; font-weight: 600; color: #1e293b; margin-bottom: 24px; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .benefice-box { text-align: center; margin-bottom: 28px; }
+        .benefice-label { font-size: 16px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .benefice-value { font-size: 56px; font-weight: 700; line-height: 1.1; }
         .green { color: #10b981; }
         .red { color: #ef4444; }
-
-        .row-kpi {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 28px;
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 16px 12px;
-        }
-        .kpi-item {
-            text-align: center;
-            flex: 1;
-        }
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-        .kpi-label {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
-            margin-top: 6px;
-        }
-
-        /* Dernier pari express */
-        .last-bet-badge {
-            background: #eef2ff;
-            border-radius: 18px;
-            padding: 14px 16px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .last-bet-left {
-            display: flex;
-            flex-direction: column;
-        }
-        .last-bet-teams {
-            font-weight: 600;
-            font-size: 16px;
-            color: #1e293b;
-        }
-        .last-bet-details {
-            font-size: 14px;
-            color: #475569;
-            margin-top: 4px;
-        }
-        .last-bet-result {
-            background: white;
-            padding: 8px 14px;
-            border-radius: 40px;
-            font-weight: 700;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        }
-
-        /* Tableau des derniers paris */
-        .history-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 12px;
-        }
-        .bet-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 15px;
-        }
-        .bet-table th {
-            text-align: left;
-            padding-bottom: 10px;
-            color: #94a3b8;
-            font-weight: 500;
-            font-size: 13px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .bet-table td {
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .bet-table tr:last-child td {
-            border-bottom: none;
-        }
-        .bet-match {
-            font-weight: 500;
-            color: #0f172a;
-        }
-        .bet-date {
-            font-size: 13px;
-            color: #64748b;
-        }
-        .bet-gain {
-            font-weight: 600;
-            text-align: right;
-        }
-
-        /* Forme */
-        .form-box {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 8px 12px;
-        }
-        .form-label {
-            font-weight: 600;
-            color: #334155;
-        }
-        .form-value {
-            background: white;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 700;
-            color: #0f172a;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .update-time {
-            text-align: right;
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 20px;
-        }
-
-        .loading, .error {
-            text-align: center;
-            padding: 30px;
-            color: #64748b;
-        }
-        .error {
-            color: #ef4444;
-        }
+        .row-kpi { display: flex; justify-content: space-between; margin-bottom: 28px; background: #f8fafc; border-radius: 20px; padding: 16px 12px; }
+        .kpi-item { text-align: center; flex: 1; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: #0f172a; }
+        .kpi-label { font-size: 14px; color: #64748b; font-weight: 500; margin-top: 6px; }
+        .last-bet-badge { background: #eef2ff; border-radius: 18px; padding: 14px 16px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+        .last-bet-left { display: flex; flex-direction: column; }
+        .last-bet-teams { font-weight: 600; font-size: 16px; color: #1e293b; }
+        .last-bet-details { font-size: 14px; color: #475569; margin-top: 4px; }
+        .last-bet-result { background: white; padding: 8px 14px; border-radius: 40px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .history-title { font-size: 16px; font-weight: 600; color: #334155; margin-bottom: 12px; }
+        .bet-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        .bet-table th { text-align: left; padding-bottom: 10px; color: #94a3b8; font-weight: 500; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+        .bet-table td { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .bet-table tr:last-child td { border-bottom: none; }
+        .bet-match { font-weight: 500; color: #0f172a; }
+        .bet-date { font-size: 13px; color: #64748b; }
+        .bet-gain { font-weight: 600; text-align: right; }
+        .form-box { margin-top: 20px; display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; border-radius: 40px; padding: 8px 12px; }
+        .form-label { font-weight: 600; color: #334155; }
+        .form-value { background: white; padding: 8px 20px; border-radius: 40px; font-weight: 700; color: #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .update-time { text-align: right; font-size: 11px; color: #94a3b8; margin-top: 20px; }
+        .loading, .error { text-align: center; padding: 30px; color: #64748b; }
+        .error { color: #ef4444; }
+        .refresh-btn { background: #e2e8f0; border: none; padding: 12px 24px; border-radius: 40px; font-weight: 600; color: #1e293b; width: 100%; margin-top: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1>
-                <span>📊 MON SUIVI PARIS SPORTIFS</span>
-            </h1>
-
+            <h1>📊 MON SUIVI PARIS SPORTIFS</h1>
             <div id="loading" class="loading">Chargement des données...</div>
             <div id="error" class="error" style="display:none;"></div>
-
             <div id="dashboard" style="display:none;">
-                <!-- BÉNÉFICE TOTAL -->
                 <div class="benefice-box">
                     <div class="benefice-label">BÉNÉFICE TOTAL</div>
                     <div class="benefice-value" id="beneficeTotal"></div>
                 </div>
-
-                <!-- ROI & FORME -->
                 <div class="row-kpi">
                     <div class="kpi-item">
                         <div class="kpi-value" id="roiValue"></div>
@@ -224,41 +62,25 @@
                         <div class="kpi-label">BANKROLL</div>
                     </div>
                 </div>
-
-                <!-- DERNIER PARI (carte rapide) -->
-                <div class="last-bet-badge" id="lastBetCard">
-                    <!-- Rempli dynamiquement -->
-                </div>
-
-                <!-- DERNIERS PARIS (tableau) -->
+                <div class="last-bet-badge" id="lastBetCard"></div>
                 <div class="history-title">📋 DERNIERS PARIS</div>
                 <table class="bet-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Match</th>
-                            <th style="text-align:right;">Gain/Perte</th>
-                        </tr>
-                    </thead>
-                    <tbody id="betTableBody">
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Match</th><th style="text-align:right;">Gain/Perte</th></tr></thead>
+                    <tbody id="betTableBody"></tbody>
                 </table>
-
-                <!-- FORME -->
                 <div class="form-box">
                     <span class="form-label">🔥 FORME</span>
                     <span class="form-value" id="formValue"></span>
                 </div>
-
                 <div class="update-time" id="updateTime"></div>
+                <button class="refresh-btn" id="refreshBtn">🔄 Rafraîchir les données</button>
             </div>
         </div>
     </div>
-
     <script>
         const SHEET_ID = '15BizpkHINhXjnfYatjHE0UDpHAK6uqxcZvALweURgl0';
         const PROXY_URL = 'https://corsproxy.io/?';
-        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0&t=${new Date().getTime()}`;
 
         async function fetchCSV() {
             const response = await fetch(PROXY_URL + encodeURIComponent(CSV_URL));
@@ -273,37 +95,19 @@
 
         function processData(data) {
             if (!data || data.length < 2) throw new Error('Données vides');
-
             const headers = data[0];
-            
-            // Index exacts basés sur tes colonnes A à R
             const col = {
-                date: 0,               // A
-                match: 2,              // C (Sélection)
-                mise: 5,               // F
-                cote: 4,               // E
-                resultat: 6,           // G
-                bankrollApres: 9,      // J
-                beneficeBrut: 10,      // K
-                serieGagne: 13,        // N
-                roiGlobal: 17          // R
+                date: 0, match: 2, mise: 5, cote: 4, resultat: 6,
+                bankrollApres: 9, beneficeBrut: 10, serieGagne: 13, roiGlobal: 17
             };
-
-            // Bénéfice total (somme K)
             let beneficeTotal = 0;
             for (let i = 1; i < data.length; i++) {
                 const val = parseFloat(data[i][col.beneficeBrut]?.replace('€', '').replace(',', '.').trim());
                 if (!isNaN(val)) beneficeTotal += val;
             }
-
-            // Bankroll actuelle (dernière valeur J)
             const lastRow = data[data.length - 1];
             const bankroll = parseFloat(lastRow[col.bankrollApres]?.replace('€', '').replace(',', '.')) || 0;
-
-            // ROI Global (dernière valeur R)
             const roi = parseFloat(lastRow[col.roiGlobal]?.replace('%', '').replace(',', '.')) || 0;
-
-            // Série (calcul 4 derniers paris : colonne N)
             const last4Serie = [];
             for (let i = Math.max(1, data.length - 4); i < data.length; i++) {
                 const val = data[i][col.serieGagne]?.trim();
@@ -311,8 +115,6 @@
             }
             const wins = last4Serie.filter(s => s === 'V').length;
             const formText = `${wins}V / ${last4Serie.length - wins}D`;
-
-            // Dernier pari (pour la carte)
             const lastBet = {
                 match: lastRow[col.match] || '—',
                 mise: parseFloat(lastRow[col.mise]?.replace('€', '').replace(',', '.')) || 0,
@@ -320,8 +122,6 @@
                 gain: parseFloat(lastRow[col.beneficeBrut]?.replace('€', '').replace(',', '.')) || 0,
                 resultat: lastRow[col.resultat] || ''
             };
-
-            // 5 derniers paris pour le tableau
             const recentBets = [];
             for (let i = data.length - 1; i >= Math.max(1, data.length - 5); i--) {
                 const row = data[i];
@@ -333,66 +133,30 @@
                     gain: parseFloat(row[col.beneficeBrut]?.replace('€', '').replace(',', '.')) || 0
                 });
             }
-
-            return {
-                beneficeTotal,
-                bankroll,
-                roi,
-                formText,
-                lastBet,
-                recentBets
-            };
+            return { beneficeTotal, bankroll, roi, formText, lastBet, recentBets };
         }
 
         function displayDashboard(stats) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-
-            // Bénéfice total
             const benefEl = document.getElementById('beneficeTotal');
             benefEl.textContent = (stats.beneficeTotal >= 0 ? '+ ' : '− ') + Math.abs(stats.beneficeTotal).toFixed(2) + ' €';
             benefEl.className = 'benefice-value ' + (stats.beneficeTotal >= 0 ? 'green' : 'red');
-
-            // ROI
             const roiEl = document.getElementById('roiValue');
             roiEl.textContent = (stats.roi >= 0 ? '+' : '') + stats.roi.toFixed(1) + ' %';
             roiEl.style.color = stats.roi >= 0 ? '#10b981' : '#ef4444';
-
-            // Bankroll
             document.getElementById('bankrollValue').textContent = stats.bankroll.toFixed(0) + ' €';
-
-            // Carte dernier pari
             const lastCard = document.getElementById('lastBetCard');
             const lb = stats.lastBet;
-            lastCard.innerHTML = `
-                <div class="last-bet-left">
-                    <span class="last-bet-teams">${lb.match}</span>
-                    <span class="last-bet-details">Mise : ${lb.mise.toFixed(2)}€  |  Cote : ${lb.cote}  /  ${lb.gain >= 0 ? '+' : ''}${lb.gain.toFixed(2)}€</span>
-                </div>
-                <div class="last-bet-result" style="color:${lb.gain >= 0 ? '#10b981' : '#ef4444'};">
-                    ${lb.resultat || (lb.gain >= 0 ? 'Gagné' : 'Perdu')}
-                </div>
-            `;
-
-            // Tableau des derniers paris
+            lastCard.innerHTML = `<div class="last-bet-left"><span class="last-bet-teams">${lb.match}</span><span class="last-bet-details">Mise : ${lb.mise.toFixed(2)}€  |  Cote : ${lb.cote}  /  ${lb.gain >= 0 ? '+' : ''}${lb.gain.toFixed(2)}€</span></div><div class="last-bet-result" style="color:${lb.gain >= 0 ? '#10b981' : '#ef4444'};">${lb.resultat || (lb.gain >= 0 ? 'Gagné' : 'Perdu')}</div>`;
             const tbody = document.getElementById('betTableBody');
             tbody.innerHTML = '';
             stats.recentBets.forEach(bet => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="bet-date">${bet.date}</span></td>
-                    <td><span class="bet-match">${bet.match.substring(0, 20)}${bet.match.length > 20 ? '…' : ''}</span></td>
-                    <td class="bet-gain" style="color:${bet.gain >= 0 ? '#10b981' : '#ef4444'};">
-                        ${bet.gain >= 0 ? '+' : ''}${bet.gain.toFixed(2)} €
-                    </td>
-                `;
+                tr.innerHTML = `<td><span class="bet-date">${bet.date}</span></td><td><span class="bet-match">${bet.match.substring(0, 20)}${bet.match.length > 20 ? '…' : ''}</span></td><td class="bet-gain" style="color:${bet.gain >= 0 ? '#10b981' : '#ef4444'};">${bet.gain >= 0 ? '+' : ''}${bet.gain.toFixed(2)} €</td>`;
                 tbody.appendChild(tr);
             });
-
-            // Forme
             document.getElementById('formValue').textContent = stats.formText;
-
-            // Heure màj
             document.getElementById('updateTime').textContent = 'Mis à jour le ' + new Date().toLocaleString('fr-FR');
         }
 
@@ -402,10 +166,11 @@
             document.getElementById('error').textContent = 'Erreur : ' + msg;
         }
 
-        fetchCSV()
-            .then(processData)
-            .then(displayDashboard)
-            .catch(err => showError(err.message));
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            location.reload(true);
+        });
+
+        fetchCSV().then(processData).then(displayDashboard).catch(err => showError(err.message));
     </script>
 </body>
 </html>
