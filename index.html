@@ -1,260 +1,580 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Predictor V10 - Master Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root { --bg: #0f172a; --card: #1e293b; --green: #2ecc71; --blue: #3498db; --text: #f8fafc; --border: #334155; --gold: #f1c40f; --purple: #9b59b6; --red: #e74c3c; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
-        .container { max-width: 1000px; margin: auto; }
-        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
-        
-        /* Formulaire */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .team-col { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-        .team-name { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--green); color: white; font-weight: bold; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .field { display: flex; flex-direction: column; }
-        label { font-size: 9px; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
-        input[type="number"] { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 6px; }
-
-        .btn-analyze { width: 100%; padding: 20px; background: var(--green); color: #0f172a; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
-
-        /* Dashboard de Résultats */
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .res-card { background: var(--card); padding: 15px; border-radius: 12px; border-top: 4px solid var(--green); }
-        .card-title { font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .val { font-size: 22px; font-weight: 800; color: var(--green); }
-        .perc { color: var(--gold); font-weight: bold; }
-        .team-label { font-size: 11px; font-weight: bold; color: var(--blue); margin-top: 5px; display: block; }
-
-        /* Tactique & Graphique */
-        .tactical-box { background: rgba(52, 152, 219, 0.1); border: 1px solid var(--blue); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .chart-container { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 320px; border: 1px solid var(--border); }
-        
-        .copy-btn { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        
-        .history-section { background: var(--card); border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid var(--border); }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .history-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>⚽ FootPredict Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; -webkit-tap-highlight-color: transparent; }
+    :root { --bg-primary: #000000; --bg-secondary: #111115; --bg-card: #1a1a24; --bg-elevated: #22222e; --border: #2a2a38; --text-primary: #ffffff; --text-secondary: #a0a0b0; --text-muted: #6b6b7a; --accent: #10b981; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; }
+    body.light-dark { --bg-primary: #0f0f13; --bg-secondary: #18181c; --bg-card: #1e1e2a; --bg-elevated: #282834; --border: #2d2d3a; }
+    body { background: var(--bg-primary); padding: 16px; min-height: 100vh; color: var(--text-primary); }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 1.6rem; text-align: center; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .sub { text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 24px; }
+    .theme-toggle { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+    .theme-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); padding: 12px 8px; border-radius: 16px; font-weight: bold; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+    .tab-btn.active { background: var(--accent); color: white; }
+    .tab-content { display: none; background: var(--bg-card); border-radius: 24px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
+    .tab-content.active { display: block; }
+    .section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 20px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .section-title i { color: var(--accent); }
+    .profile-group { margin-bottom: 20px; }
+    .profile-label { color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 10px; font-weight: 600; text-transform: uppercase; }
+    .profile-options { display: flex; flex-direction: column; gap: 6px; }
+    .profile-option { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 40px; padding: 10px 16px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+    .profile-option.selected { background: var(--accent); color: white; }
+    .full-width { margin-bottom: 20px; }
+    .full-width input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 16px; font-size: 1rem; background: var(--bg-secondary); color: var(--text-primary); font-weight: bold; }
+    .full-width input:focus { outline: none; border-color: var(--accent); }
+    .btn-group { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+    .btn { flex: 1; padding: 14px; border: none; border-radius: 40px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-whatsapp { background: #25D366; color: white; }
+    .result-card { background: var(--bg-card); border-radius: 24px; padding: 20px; margin-top: 20px; border: 1px solid var(--border); }
+    .prediction-box { background: var(--bg-secondary); border-radius: 20px; padding: 20px; text-align: center; border: 2px solid var(--accent); margin-bottom: 20px; }
+    .prediction-text { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+    .prediction-sub { font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; }
+    .scores { display: flex; justify-content: center; gap: 20px; margin: 16px 0; }
+    .score-item { background: var(--bg-elevated); padding: 12px 24px; border-radius: 20px; font-size: 1.8rem; font-weight: bold; color: var(--text-primary); }
+    .points-detail { background: var(--bg-secondary); border-radius: 16px; padding: 16px; margin: 16px 0; border: 1px solid var(--border); }
+    .points-line { display: flex; justify-content: space-between; margin: 8px 0; color: var(--text-secondary); font-size: 0.9rem; }
+    .points-total { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .stat-box { background: var(--bg-elevated); padding: 12px; border-radius: 12px; text-align: center; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+    .stat-percent { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .whatsapp-btn { background: #25D366; color: white; padding: 16px; border-radius: 40px; text-align: center; cursor: pointer; font-weight: bold; margin-top: 16px; border: none; width: 100%; font-size: 1rem; }
+    .whatsapp-btn:active { opacity: 0.9; }
+    .history-item { background: var(--bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+    .history-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .history-date { color: var(--text-muted); font-size: 0.7rem; }
+    .history-match { font-weight: bold; color: var(--text-primary); }
+    .stats-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: var(--bg-secondary); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+    .stat-card-value { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+    .toast { position: fixed; bottom: 30px; left: 20px; right: 20px; background: rgba(30,41,59,0.95); color: white; text-align: center; padding: 12px; border-radius: 40px; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    @media (max-width: 700px) { .scores { flex-direction: column; align-items: center; gap: 12px; } .tab-btn { font-size: 0.7rem; padding: 10px 4px; } .stats-overview { grid-template-columns: repeat(2, 1fr); } }
+  </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>🚀 IA PREDICTOR V10 - EXPERT ABSOLU</h1>
-    
-    <div class="main-grid">
-        <div class="team-col">
-            <input type="text" id="nameA" class="team-name" placeholder="Domicile" oninput="saveData()">
-            <div class="stats-grid" id="inputsA"></div>
-        </div>
-        <div class="team-col" style="border-color: var(--blue);">
-            <input type="text" id="nameB" class="team-name" placeholder="Extérieur" oninput="saveData()" style="border-color: var(--blue);">
-            <div class="stats-grid" id="inputsB"></div>
-        </div>
-    </div>
+  <div class="theme-toggle">
+    <button class="theme-btn" id="themeToggleBtn"><i class="fas fa-moon"></i> Mode AMOLED</button>
+  </div>
+  <h1><i class="fas fa-futbol"></i> FootPredict Pro</h1>
+  <div class="sub">Système de Points • Probabilités par Score • Historique</div>
 
-    <button class="btn-analyze" onclick="runAnalysis()">LANCER L'ANALYSE COMPLÈTE</button>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab1">🏠 Équipe A</button>
+    <button class="tab-btn" data-tab="tab2">✈️ Équipe B</button>
+    <button class="tab-btn" data-tab="tab3">💾 Sauvegarde</button>
+    <button class="tab-btn" data-tab="tab4">📊 Historique</button>
+  </div>
 
-    <div id="results" style="display: none;">
-        
-        <div class="tactical-box">
-            <span class="card-title" style="color: var(--blue);">Décryptage Tactique IA</span>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <p id="descA" style="font-size:11px;"></p>
-                <p id="descB" style="font-size:11px;"></p>
-            </div>
-            <p id="matchDyn" style="color: var(--gold); font-weight: bold; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-style: italic;"></p>
-        </div>
+  <!-- Équipe A -->
+  <div id="tab1" class="tab-content active">
+    <div class="full-width"><input type="text" id="teamA" placeholder="Nom équipe A" value="Paris SG"></div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-cloud-sun"></i> MÉTÉO</div>
+      <div class="profile-options" id="weatherA_options">
+        <div class="profile-option" data-value="pluie">🌧️ Pluie/Froid (+4)</div>
+        <div class="profile-option" data-value="soleil">☀️ Soleil (+3)</div>
+        <div class="profile-option selected" data-value="normal">🌙 Nuit/Normal (+2)</div>
+        <div class="profile-option" data-value="neutre">⚪ Neutre (+1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-trophy"></i> CONTEXTE</div>
+      <div class="profile-options" id="contextA_options">
+        <div class="profile-option" data-value="decisif">🔥 Match décisif (+4)</div>
+        <div class="profile-option" data-value="survie">💀 Joue sa survie (+3)</div>
+        <div class="profile-option" data-value="avant_treve">🎄 Avant trêve (+1)</div>
+        <div class="profile-option selected" data-value="normal">✅ Normal (0)</div>
+        <div class="profile-option" data-value="apres_treve">📅 Après trêve (-2)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-chart-line"></i> FORME</div>
+      <div class="profile-options" id="formeA_options">
+        <div class="profile-option" data-value="bonne_serie">✅ Bonne série (+3)</div>
+        <div class="profile-option selected" data-value="neutre">😐 Neutre (+1)</div>
+        <div class="profile-option" data-value="irregulier">🎢 Irrégulier (0)</div>
+        <div class="profile-option" data-value="crise">📉 Crise (-1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-bolt"></i> DYNAMIQUE</div>
+      <div class="profile-options" id="dynamiqueA_options">
+        <div class="profile-option" data-value="super_forts">💪 Super forme vs forts (+3)</div>
+        <div class="profile-option" data-value="top5">👑 Top 5 (+1)</div>
+        <div class="profile-option selected" data-value="super_faibles">🎯 Super vs faibles (0)</div>
+        <div class="profile-option" data-value="contre_perf">❌ Contre-performances (-1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-sync-alt"></i> RÉACTION</div>
+      <div class="profile-options" id="reactionA_options">
+        <div class="profile-option" data-value="reagit_vite">⚡ Réagit vite (+4)</div>
+        <div class="profile-option" data-value="subit_reagit">📊 Subit puis réagit (+2)</div>
+        <div class="profile-option selected" data-value="attaque_subit">🎪 Attaque puis subit (0)</div>
+        <div class="profile-option" data-value="subit_apres">😴 Subit après résultat (-1)</div>
+        <div class="profile-option" data-value="jamais">❌ Ne réagit jamais (-2)</div>
+      </div>
+    </div>
+  </div>
 
-        <div class="chart-container">
-            <canvas id="radarChart"></canvas>
-        </div>
+  <!-- Équipe B -->
+  <div id="tab2" class="tab-content">
+    <div class="full-width"><input type="text" id="teamB" placeholder="Nom équipe B" value="Toulouse"></div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-cloud-sun"></i> MÉTÉO</div>
+      <div class="profile-options" id="weatherB_options">
+        <div class="profile-option" data-value="pluie">🌧️ Pluie/Froid (+4)</div>
+        <div class="profile-option" data-value="soleil">☀️ Soleil (+3)</div>
+        <div class="profile-option selected" data-value="normal">🌙 Nuit/Normal (+2)</div>
+        <div class="profile-option" data-value="neutre">⚪ Neutre (+1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-trophy"></i> CONTEXTE</div>
+      <div class="profile-options" id="contextB_options">
+        <div class="profile-option" data-value="decisif">🔥 Match décisif (+4)</div>
+        <div class="profile-option" data-value="survie">💀 Joue sa survie (+3)</div>
+        <div class="profile-option" data-value="avant_treve">🎄 Avant trêve (+1)</div>
+        <div class="profile-option selected" data-value="normal">✅ Normal (0)</div>
+        <div class="profile-option" data-value="apres_treve">📅 Après trêve (-2)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-chart-line"></i> FORME</div>
+      <div class="profile-options" id="formeB_options">
+        <div class="profile-option" data-value="bonne_serie">✅ Bonne série (+3)</div>
+        <div class="profile-option selected" data-value="neutre">😐 Neutre (+1)</div>
+        <div class="profile-option" data-value="irregulier">🎢 Irrégulier (0)</div>
+        <div class="profile-option" data-value="crise">📉 Crise (-1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-bolt"></i> DYNAMIQUE</div>
+      <div class="profile-options" id="dynamiqueB_options">
+        <div class="profile-option" data-value="super_forts">💪 Super forme vs forts (+3)</div>
+        <div class="profile-option" data-value="top5">👑 Top 5 (+1)</div>
+        <div class="profile-option selected" data-value="super_faibles">🎯 Super vs faibles (0)</div>
+        <div class="profile-option" data-value="contre_perf">❌ Contre-performances (-1)</div>
+      </div>
+    </div>
+    
+    <div class="profile-group">
+      <div class="profile-label"><i class="fas fa-sync-alt"></i> RÉACTION</div>
+      <div class="profile-options" id="reactionB_options">
+        <div class="profile-option" data-value="reagit_vite">⚡ Réagit vite (+4)</div>
+        <div class="profile-option" data-value="subit_reagit">📊 Subit puis réagit (+2)</div>
+        <div class="profile-option selected" data-value="attaque_subit">🎪 Attaque puis subit (0)</div>
+        <div class="profile-option" data-value="subit_apres">😴 Subit après résultat (-1)</div>
+        <div class="profile-option" data-value="jamais">❌ Ne réagit jamais (-2)</div>
+      </div>
+    </div>
+  </div>
 
-        <div class="res-grid">
-            <div class="res-card" style="border-color: var(--purple);">
-                <span class="card-title">Probabilités & Scores Exacts</span>
-                <p>1er Score : <span class="val" id="sc1">--</span> <span class="perc" id="psc1"></span></p>
-                <p>2ème Score : <span class="val" id="sc2" style="color:#bdc3c7">--</span> <span class="perc" id="psc2"></span></p>
-                <div style="margin-top:10px; font-size:11px; color:#cbd5e1; border-top:1px solid var(--border); padding-top:5px;">
-                    Victoire 1 : <b id="p1"></b> | Nul : <b id="pN"></b> | Victoire 2 : <b id="p2"></b>
-                </div>
-            </div>
+  <!-- Sauvegarde -->
+  <div id="tab3" class="tab-content">
+    <div class="section-title"><i class="fas fa-database"></i> GESTION</div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" id="saveBtn"><i class="fas fa-save"></i> Sauvegarder</button>
+      <button class="btn btn-secondary" id="loadBtn"><i class="fas fa-folder-open"></i> Charger</button>
+      <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo"></i> Réinitialiser</button>
+    </div>
+  </div>
 
-            <div class="res-card">
-                <span class="card-title">Marché des Buts & Paliers (%)</span>
-                <p>Over 2.5 : <span class="val" id="vO25">--%</span> | Over 3.5 : <b class="perc" id="vO35">--%</b></p>
-                <p>BTTS : <span class="val" id="vBtts">--%</span></p>
-                <div style="border-top: 1px solid var(--border); padding-top:10px;">
-                    <span class="team-label" id="lblGA"></span> 2+ buts : <b class="perc" id="v2A"></b> | 3+ buts : <b id="v3A"></b><br>
-                    <span class="team-label" id="lblGB"></span> 2+ buts : <b class="perc" id="v2B"></b> | 3+ buts : <b id="v3B"></b>
-                </div>
-            </div>
+  <!-- Historique -->
+  <div id="tab4" class="tab-content">
+    <div class="section-title"><i class="fas fa-chart-line"></i> STATISTIQUES</div>
+    <div class="stats-overview">
+      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div style="font-size:0.7rem;color:var(--text-muted);">Total</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statCorrect" style="color:var(--success);">0</div><div style="font-size:0.7rem;color:var(--text-muted);">✅</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statIncorrect" style="color:var(--danger);">0</div><div style="font-size:0.7rem;color:var(--text-muted);">❌</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statRate" style="color:var(--warning);">0%</div><div style="font-size:0.7rem;color:var(--text-muted);">Taux</div></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" id="clearHistoryBtn"><i class="fas fa-trash"></i> Effacer</button>
+      <button class="btn btn-secondary" id="exportHistoryBtn"><i class="fas fa-download"></i> Exporter</button>
+    </div>
+    <div class="section-title"><i class="fas fa-history"></i> HISTORIQUE</div>
+    <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
+  </div>
 
-            <div class="res-card" style="border-color: var(--blue);">
-                <span class="card-title">Tirs Cadrés Individuels (>3.5)</span>
-                <p><span class="team-label" id="lblSotA"></span> Over 3.5 : <span class="val" id="pSotA">--%</span></p>
-                <p><span class="team-label" id="lblSotB"></span> Over 3.5 : <span class="val" id="pSotB">--%</span></p>
-                <small style="color:#94a3b8">Basé sur xG d'attaque et tirs moyens.</small>
-            </div>
-
-            <div class="res-card" style="border-color: var(--gold);">
-                <span class="card-title">Corners Individuels (>4.5)</span>
-                <p><span class="team-label" id="lblCornA"></span> Over 4.5 : <span class="val" id="pCornA" style="color:var(--gold)">--%</span></p>
-                <p><span class="team-label" id="lblCornB"></span> Over 4.5 : <span class="val" id="pCornB" style="color:var(--gold)">--%</span></p>
-                <p style="margin-top:10px; font-weight:bold; border-top:1px solid var(--border); padding-top:5px;">
-                    Total Match Estimé : <span id="vTotalCorn" class="val" style="font-size:18px;"></span>
-                </p>
-            </div>
-        </div>
-
-        <div class="res-card" style="width:100%; border-top: 4px solid var(--gold); margin-bottom:20px;">
-            <span class="card-title">Conseil Expert Double Chance</span>
-            <span class="val" id="vDc">--</span>
-        </div>
-
-        <button class="copy-btn" onclick="copySummary()">📲 COPIER LE RÉSUMÉ POUR WHATSAPP</button>
-    </div>
-
-    <div class="history-section">
-        <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--green);">📜 Historique des Analyses</h3>
-        <table class="history-table" id="hTable"></table>
-    </div>
+  <button class="btn btn-primary" id="analyserBtn" style="margin-bottom:20px;"><i class="fas fa-chart-line"></i> ANALYSER LE MATCH</button>
+  <div id="resultats" style="display:none;"></div>
 </div>
+<div id="toast" class="toast"></div>
 
 <script>
-    const fields = [
-        { id: 'poss', label: 'Possession %' }, { id: 'pass', label: 'Passes' },
-        { id: 'shots', label: 'Tirs' }, { id: 'sot', label: 'Tirs Cadrés' },
-        { id: 'xg', label: 'xG Attaque' }, { id: 'corn', label: 'Corners' },
-        { id: 'scon', label: 'Tirs Conc.' }, { id: 'sotcon', label: 'Cadrés Conc.' },
-        { id: 'xga', label: 'xGA Défense' }, { id: 'corncon', label: 'Corners Conc.' }
-    ];
+  // ========== VARIABLES GLOBALES ==========
+  var profiles = {
+    a: { weather: 'normal', context: 'normal', forme: 'neutre', dynamique: 'super_faibles', reaction: 'attaque_subit' },
+    b: { weather: 'normal', context: 'normal', forme: 'neutre', dynamique: 'super_faibles', reaction: 'attaque_subit' }
+  };
 
-    let radarChart = null;
+  var categories = ['weather', 'context', 'forme', 'dynamique', 'reaction'];
+  
+  var pointsMap = {
+    'pluie': 4, 'soleil': 3, 'normal': 2, 'neutre': 1,
+    'decisif': 4, 'survie': 3, 'avant_treve': 1, 'apres_treve': -2,
+    'bonne_serie': 3, 'irregulier': 0, 'crise': -1,
+    'super_forts': 3, 'top5': 1, 'super_faibles': 0, 'contre_perf': -1,
+    'reagit_vite': 4, 'subit_reagit': 2, 'attaque_subit': 0, 'subit_apres': -1, 'jamais': -2
+  };
 
-    function setup() {
-        ['A', 'B'].forEach(p => {
-            const container = document.getElementById('inputs' + p);
-            fields.forEach(f => {
-                container.innerHTML += `<div class="field"><label>${f.label}</label><input type="number" id="${p}_${f.id}" step="0.1" oninput="saveData()"></div>`;
-            });
-        });
-        loadData(); loadHistory();
-    }
+  var currentAnalysis = null;
 
-    function saveData() {
-        const data = { nameA: document.getElementById('nameA').value, nameB: document.getElementById('nameB').value, stats: {} };
-        ['A', 'B'].forEach(p => fields.forEach(f => { data.stats[p+'_'+f.id] = document.getElementById(p+'_'+f.id).value; }));
-        localStorage.setItem('predictor_v10_full', JSON.stringify(data));
-    }
+  // ========== STORAGE HELPERS ==========
+  function storageAvailable(type) {
+    try {
+      var storage = window[type];
+      var x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    } catch(e) { return false; }
+  }
 
-    function loadData() {
-        const saved = localStorage.getItem('predictor_v10_full');
-        if(!saved) return;
-        const data = JSON.parse(saved);
-        document.getElementById('nameA').value = data.nameA || "";
-        document.getElementById('nameB').value = data.nameB || "";
-        for(let key in data.stats) if(document.getElementById(key)) document.getElementById(key).value = data.stats[key];
-    }
+  function safeGetItem(key, defaultVal) {
+    if (!storageAvailable('localStorage')) return defaultVal;
+    try {
+      var item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultVal;
+    } catch(e) { return defaultVal; }
+  }
 
-    function poisson(l, k) { return (Math.exp(-l) * Math.pow(l, k)) / factorial(k); }
-    function poissonGe(l, k) { 
-        let prob = 0; for(let i=0; i<k; i++) prob += poisson(l, i); 
-        return Math.max(0, Math.min(100, (1 - prob) * 100)); 
-    }
-    function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }
+  function safeSetItem(key, value) {
+    if (!storageAvailable('localStorage')) { showToast('⚠️ Stockage non disponible'); return false; }
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch(e) {
+      if (e.name === 'QuotaExceededError') showToast('⚠️ Stockage plein');
+      else showToast('⚠️ Erreur sauvegarde');
+      return false;
+    }
+  }
 
-    function runAnalysis() {
-        const getS = (p) => { let s = {}; fields.forEach(f => s[f.id] = parseFloat(document.getElementById(p + '_' + f.id).value || 0)); return s; };
-        const sA = getS('A'); const sB = getS('B');
-        const nA = document.getElementById('nameA').value || "Dom."; const nB = document.getElementById('nameB').value || "Ext.";
+  // ========== INITIALISATION ==========
+  function initProfileSelectors() {
+    for (var t = 0; t < categories.length; t++) {
+      var cat = categories[t];
+      initCategory('a', cat);
+      initCategory('b', cat);
+    }
+  }
 
-        document.getElementById('results').style.display = "block";
+  function initCategory(team, cat) {
+    var container = document.getElementById(cat + team.toUpperCase() + '_options');
+    if (!container) return;
+    var options = container.querySelectorAll('.profile-option');
+    for (var i = 0; i < options.length; i++) {
+      (function(opt) {
+        opt.addEventListener('click', function() {
+          for (var j = 0; j < options.length; j++) options[j].classList.remove('selected');
+          opt.classList.add('selected');
+          profiles[team][cat] = opt.dataset.value;
+        });
+      })(options[i]);
+    }
+  }
 
-        // 1. Tactique & Dynamique
-        document.getElementById('descA').innerHTML = `<b>${nA}</b> : ${sA.poss > 55 ? "Domination et possession haute." : (sA.xg > 1.8 ? "Efficacité redoutable en contre." : "Bloc bas et jeu de transition.")}`;
-        document.getElementById('descB').innerHTML = `<b>${nB}</b> : ${sB.poss > 55 ? "Domination et possession haute." : (sB.xg > 1.8 ? "Efficacité redoutable en contre." : "Bloc bas et jeu de transition.")}`;
-        document.getElementById('matchDyn').innerText = `DYNAMIQUE : ${sA.xg + sB.xg > 2.8 ? "Match ouvert avec de nombreuses occasions." : "Duel tactique serré, la défense sera la clé."}`;
+  function initTabs() {
+    var tabs = document.querySelectorAll('.tab-btn');
+    var contents = document.querySelectorAll('.tab-content');
+    for (var i = 0; i < tabs.length; i++) {
+      (function(tab) {
+        tab.addEventListener('click', function() {
+          for (var j = 0; j < tabs.length; j++) { tabs[j].classList.remove('active'); contents[j].classList.remove('active'); }
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+      })(tabs[i]);
+    }
+  }
 
-        // 2. Scores & Probabilités 1N2
-        let scores = []; let wA = 0, d = 0, wB = 0;
-        for(let i=0; i<=5; i++) {
-            for(let j=0; j<=5; j++) {
-                let p = poisson(sA.xg, i) * poisson(sB.xg, j) * 100;
-                scores.push({ s: `${i}-${j}`, p: p });
-                if(i > j) wA += p; else if(i === j) d += p; else wB += p;
-            }
-        }
-        scores.sort((a,b) => b.p - a.p);
-        document.getElementById('sc1').innerText = scores[0].s; document.getElementById('psc1').innerText = scores[0].p.toFixed(1) + "%";
-        document.getElementById('sc2').innerText = scores[1].s; document.getElementById('psc2').innerText = scores[1].p.toFixed(1) + "%";
-        document.getElementById('p1').innerText = wA.toFixed(0) + "%"; document.getElementById('pN').innerText = d.toFixed(0) + "%"; document.getElementById('p2').innerText = wB.toFixed(0) + "%";
+  function initTheme() {
+    var btn = document.getElementById('themeToggleBtn');
+    btn.addEventListener('click', function() {
+      document.body.classList.toggle('light-dark');
+      var icon = this.querySelector('i');
+      if (document.body.classList.contains('light-dark')) {
+        icon.className = 'fas fa-sun';
+        this.innerHTML = '<i class="fas fa-sun"></i> Mode Sombre';
+      } else {
+        icon.className = 'fas fa-moon';
+        this.innerHTML = '<i class="fas fa-moon"></i> Mode AMOLED';
+      }
+    });
+  }
 
-        // 3. Buts Paliers
-        document.getElementById('vO25').innerText = poissonGe(sA.xg+sB.xg, 3).toFixed(1) + "%";
-        document.getElementById('vO35').innerText = poissonGe(sA.xg+sB.xg, 4).toFixed(1) + "%";
-        document.getElementById('vBtts').innerText = (sA.xg > 0.8 && sB.xg > 0.8 ? 78 : 35) + "%";
-        
-        document.getElementById('lblGA').innerText = nA; document.getElementById('lblGB').innerText = nB;
-        document.getElementById('v2A').innerText = poissonGe(sA.xg, 2).toFixed(1) + "%";
-        document.getElementById('v3A').innerText = poissonGe(sA.xg, 3).toFixed(1) + "%";
-        document.getElementById('v2B').innerText = poissonGe(sB.xg, 2).toFixed(1) + "%";
-        document.getElementById('v3B').innerText = poissonGe(sB.xg, 3).toFixed(1) + "%";
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
 
-        // 4. SoT & Corners
-        document.getElementById('lblSotA').innerText = nA; document.getElementById('pSotA').innerText = poissonGe(sA.sot, 4).toFixed(1) + "%";
-        document.getElementById('lblSotB').innerText = nB; document.getElementById('pSotB').innerText = poissonGe(sB.sot, 4).toFixed(1) + "%";
-        document.getElementById('lblCornA').innerText = nA; document.getElementById('pCornA').innerText = poissonGe(sA.corn, 5).toFixed(1) + "%";
-        document.getElementById('lblCornB').innerText = nB; document.getElementById('pCornB').innerText = poissonGe(sB.corn, 5).toFixed(1) + "%";
-        document.getElementById('vTotalCorn').innerText = (sA.corn + sB.corn).toFixed(1);
-        
-        // Double Chance
-        document.getElementById('vDc').innerText = wA > 50 ? nA + " ou Nul (1X)" : (wB > 50 ? nB + " ou Nul (X2)" : "Double Chance 12");
+  function calculatePoints(team) {
+    var total = 0;
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i];
+      var val = profiles[team][cat];
+      total += pointsMap[val] || 0;
+    }
+    return total;
+  }
 
-        updateChart(sA, sB, nA, nB);
-        addHistory(nA, nB, scores[0].s);
-    }
+  function calculateAll() {
+    var ptsA = calculatePoints('a');
+    var ptsB = calculatePoints('b');
+    var total = ptsA + ptsB;
+    var gap = ptsA - ptsB;
+    return { ptsA: ptsA, ptsB: ptsB, total: total, gap: gap };
+  }
 
-    function updateChart(sA, sB, nA, nB) {
-        if(radarChart) radarChart.destroy();
-        const ctx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['Attaque (xG)', 'Tirs Cadrés', 'Corners', 'Défense', 'Possession'],
-                datasets: [
-                    { label: nA, data: [sA.xg*20, sA.sot*10, sA.corn*10, (5-sA.xga)*20, sA.poss], borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', borderWidth: 3 },
-                    { label: nB, data: [sB.xg*20, sB.sot*10, sB.corn*10, (5-sB.xga)*20, sB.poss], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)', borderWidth: 3 }
-                ]
-            },
-            options: { scales: { r: { grid: { color: '#334155' }, angleLines: { color: '#334155' }, ticks: { display: false }, min: 0, max: 100 } }, plugins: { legend: { labels: { color: '#fff', font: { size: 12 } } } } }
-        });
-    }
+  // ========== PRONOSTICS ==========
+  function generatePredictions() {
+    var calc = calculateAll();
+    var ptsA = calc.ptsA;
+    var ptsB = calc.ptsB;
+    var total = calc.total;
+    var gap = calc.gap;
+    
+    var nameA = document.getElementById('teamA').value || 'Équipe A';
+    var nameB = document.getElementById('teamB').value || 'Équipe B';
+    
+    // === 1. GÉNÉRER LES SCORES ===
+    function getScoreFromPoints(pts) {
+      if (pts >= 15) return Math.floor(Math.random() * 2) + 3;
+      if (pts >= 10) return Math.floor(Math.random() * 2) + 2;
+      if (pts >= 5) return Math.floor(Math.random() * 2) + 1;
+      return Math.random() > 0.7 ? 1 : 0;
+    }
+    
+    var s1A = getScoreFromPoints(ptsA);
+    var s1B = getScoreFromPoints(ptsB);
+    
+    if (s1A === 0 && s1B === 0 && (ptsA >= 5 || ptsB >= 5)) {
+      if (ptsA > ptsB) s1A = 1;
+      else if (ptsB > ptsA) s1B = 1;
+      else s1A = 1;
+    }
+    
+    var s2A = s1A, s2B = s1B;
+    if (s1A > s1B) { s2A = Math.min(4, s1A + 1); s2B = Math.max(0, s1B - 1); }
+    else if (s1B > s1A) { s2B = Math.min(4, s1B + 1); s2A = Math.max(0, s1A - 1); }
+    else { s2A = Math.min(4, s1A + 1); }
+    
+    // === 2. PROBABILITÉS PAR SCORE ===
+    var totalButs = s1A + s1B;
+    
+    var btts, bttsPercent;
+    if (s1A >= 1 && s1B >= 1) {
+      btts = 'OUI';
+      if (s1A >= 2 && s1B >= 2) bttsPercent = 85;
+      else if (s1A >= 3 || s1B >= 3) bttsPercent = 80;
+      else if (s1A >= 2 || s1B >= 2) bttsPercent = 55;
+      else bttsPercent = 50;
+    } else {
+      btts = 'NON';
+      bttsPercent = 0;
+    }
+    
+    var over25, over25Percent;
+    if (totalButs >= 5) { over25 = 'OUI'; over25Percent = 90; }
+    else if (totalButs === 4) { over25 = 'OUI'; over25Percent = 75; }
+    else if (totalButs === 3) { over25 = 'OUI'; over25Percent = (s1A >= 3 || s1B >= 3) ? 50 : 45; }
+    else { over25 = 'NON'; over25Percent = 0; }
+    
+    var under35, under35Percent;
+    if (totalButs <= 3) { under35 = 'OUI'; under35Percent = (totalButs <= 2) ? 80 : 55; }
+    else if (totalButs === 4) { under35 = 'NON'; under35Percent = 50; }
+    else { under35 = 'NON'; under35Percent = 0; }
+    
+    var winner = null, dc = null;
+    if (gap >= 7) { winner = gap > 0 ? nameA : nameB; }
+    else { dc = gap >= 0 ? (nameA + ' ou Nul') : (nameB + ' ou Nul'); }
+    
+    function getCorn(team) {
+      var w = profiles[team].weather, f = profiles[team].forme, r = profiles[team].reaction;
+      var min = 2, max = 6;
+      if (w === 'pluie') { min = 4; max = 6; }
+      if (w === 'soleil') { min = 2; max = 4; }
+      if (f === 'bonne_serie' || f === 'irregulier' || f === 'crise') min = 4;
+      if (r === 'subit_apres') { min = 2; max = 4; }
+      if (r === 'jamais') { min = 2; max = 3; }
+      return { min: Math.max(2, min), max: Math.min(6, max) };
+    }
+    
+    function getSot(team) {
+      var w = profiles[team].weather, f = profiles[team].forme, r = profiles[team].reaction;
+      var min = 2, max = 6;
+      if (w === 'pluie') { min = 5; max = 8; }
+      if (w === 'soleil') { min = 2; max = 4; }
+      if (f === 'bonne_serie') { min = 5; max = 8; }
+      if (r === 'reagit_vite') { min = 5; max = 9; }
+      if (r === 'subit_reagit') { min = 3; max = 5; }
+      if (r === 'subit_apres' || r === 'jamais') { min = 1; max = 3; }
+      return { min: Math.max(1, min), max: Math.min(9, max) };
+    }
+    
+    var cA = getCorn('a'), cB = getCorn('b');
+    var tA = getSot('a'), tB = getSot('b');
+    
+    var conf = Math.min(95, 40 + Math.abs(gap) * 6);
+    var dyn = gap >= 7 ? (gap > 0 ? nameA : nameB) + ' est nettement favori.' : 'Match équilibré attendu.';
+    
+    var safeBet, safePercent;
+    if (over25Percent >= 70) { safeBet = 'Over 2.5'; safePercent = over25Percent; }
+    else if (under35Percent >= 70) { safeBet = 'Under 3.5'; safePercent = under35Percent; }
+    else if (bttsPercent >= 70) { safeBet = 'BTTS ' + btts; safePercent = bttsPercent; }
+    else { safeBet = 'Match Incertain'; safePercent = 0; }
+    
+    return {
+      nameA: nameA, nameB: nameB, ptsA: ptsA, ptsB: ptsB, total: total, gap: gap,
+      s1A: s1A, s1B: s1B, s2A: s2A, s2B: s2B, totalButs: totalButs,
+      btts: btts, bttsPercent: bttsPercent,
+      over25: over25, over25Percent: over25Percent,
+      under35: under35, under35Percent: under35Percent,
+      winner: winner, dc: dc,
+      cA: cA, cB: cB, cTot: { min: cA.min + cB.min, max: cA.max + cB.max },
+      tA: tA, tB: tB, tTot: { min: tA.min + tB.min, max: tA.max + tB.max },
+      conf: Math.round(conf),
+      safeBet: safeBet, safePercent: safePercent,
+      dyn: dyn
+    };
+  }
 
-    function addHistory(a, b, s) {
-        let h = JSON.parse(localStorage.getItem('h_v10') || "[]");
-        h.unshift({ d: new Date().toLocaleDateString(), m: `${a} - ${b}`, s: s });
-        if(h.length > 5) h.pop();
-        localStorage.setItem('h_v10', JSON.stringify(h)); loadHistory();
-    }
+  // ========== AFFICHAGE ==========
+  function displayResults(data) {
+    currentAnalysis = data;
+    var r = document.getElementById('resultats');
+    r.style.display = 'block';
+    
+    var predictionText = data.winner ? ('Victoire ' + data.winner) : ('Double Chance: ' + data.dc);
+    
+    r.innerHTML = '' +
+      '<div class="result-card">' +
+        '<div class="prediction-box">' +
+          '<div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:8px;">🔒 PRONOSTIC LE PLUS SÛR</div>' +
+          '<div class="prediction-text">' + data.safeBet + '</div>' +
+          '<div class="prediction-sub">' + (data.safePercent > 0 ? data.safePercent + '% confiance' : '') + '</div>' +
+        '</div>' +
+        '<div class="prediction-box" style="border-color:var(--warning);">' +
+          '<div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:8px;">🏆 1N2</div>' +
+          '<div class="prediction-text" style="color:var(--warning);">' + predictionText + '</div>' +
+          '<div class="prediction-sub">Écart: ' + (data.gap >= 0 ? '+' : '') + data.gap + ' pts</div>' +
+        '</div>' +
+        '<div class="scores">' +
+          '<div class="score-item">' + data.s1A + ' - ' + data.s1B + '</div>' +
+          '<div class="score-item">' + data.s2A + ' - ' + data.s2B + '</div>' +
+        '</div>' +
+        '<div class="points-detail">' +
+          '<div class="points-line"><span>' + data.nameA + '</span><span style="color:var(--accent);font-weight:bold;">' + data.ptsA + ' pts</span></div>' +
+          '<div class="points-line"><span>' + data.nameB + '</span><span style="color:var(--danger);font-weight:bold;">' + data.ptsB + ' pts</span></div>' +
+          '<div class="points-total">Confiance: ' + data.conf + '%</div>' +
+        '</div>' +
+        '<div class="stats-grid">' +
+          '<div class="stat-box">' +
+            '<div class="stat-label">BTTS</div>' +
+            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.btts === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.btts + '</div>' +
+            '<div class="stat-percent">' + (data.bttsPercent > 0 ? data.bttsPercent + '%' : '') + '</div>' +
+          '</div>' +
+          '<div class="stat-box">' +
+            '<div class="stat-label">Over 2.5</div>' +
+            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.over25 === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.over25 + '</div>' +
+            '<div class="stat-percent">' + (data.over25Percent > 0 ? data.over25Percent + '%' : '') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="stats-grid">' +
+          '<div class="stat-box">' +
+            '<div class="stat-label">Under 3.5</div>' +
+            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.under35 === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.under35 + '</div>' +
+            '<div class="stat-percent">' + (data.under35Percent > 0 ? data.under35Percent + '%' : '') + '</div>' +
+          '</div>' +
+          '<div class="stat-box">' +
+            '<div class="stat-label">Total Buts</div>' +
+            '<div style="font-size:1.5rem;font-weight:bold;color:var(--accent);">' + data.totalButs + '</div>' +
+            '<div class="stat-percent">Score: ' + data.s1A + '-' + data.s1B + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="stats-grid">' +
+          '<div class="stat-box" style="text-align:left;padding:12px;">' +
+            '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">📐 Corners</div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;"><span>' + data.nameA + '</span><span>' + data.cA.min + '-' + data.cA.max + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-top:4px;"><span>' + data.nameB + '</span><span>' + data.cB.min + '-' + data.cB.max + '</span></div>' +
+            '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:bold;color:var(--accent);"><span>Total</span><span>' + data.cTot.min + '-' + data.cTot.max + '</span></div>' +
+          '</div>' +
+          '<div class="stat-box" style="text-align:left;padding:12px;">' +
+            '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">🎯 Tirs Cadrés</div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;"><span>' + data.nameA + '</span><span>' + data.tA.min + '-' + data.tA.max + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-top:4px;"><span>' + data.nameB + '</span><span>' + data.tB.min + '-' + data.tB.max + '</span></div>' +
+            '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:bold;color:var(--accent);"><span>Total</span><span>' + data.tTot.min + '-' + data.tTot.max + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:16px;padding:12px;background:var(--bg-secondary);border-radius:12px;border-left:4px solid var(--accent);">' +
+          '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px;">💡 Dynamique</div>' +
+          '<div style="color:var(--text-primary);">' + data.dyn + '</div>' +
+        '</div>' +
+        '<button class="whatsapp-btn" id="whatsappBtn"><i class="fab fa-whatsapp"></i> Copier le résumé WhatsApp</button>' +
+      '</div>';
+    
+    setTimeout(function() {
+      var btn = document.getElementById('whatsappBtn');
+      if (btn) btn.addEventListener('click', function() { copyWhatsApp(data); });
+    }, 100);
+    
+    r.scrollIntoView({ behavior: 'smooth' });
+  }
 
-    function loadHistory() {
-        const h = JSON.parse(localStorage.getItem('h_v10') || "[]");
-        document.getElementById('hTable').innerHTML = h.map(i => `<tr><td>${i.d}</td><td>${i.m}</td><td><b>${i.s}</b></td></tr>`).join('');
-    }
+  // ========== WHATSAPP ==========
+  function copyWhatsApp(data) {
+    var predictionText = data.winner ? ('Victoire ' + data.winner) : ('DC: ' + data.dc);
+    var text = '⚽ *FOOTPREDICT PRO*\n🆚 ' + data.nameA + ' vs ' + data.nameB + '\n\n🔒 *' + data.safeBet + '* (' + data.safePercent + '%)\n🏆 *' + predictionText + '*\n🎲 ' + data.s1A + '-' + data.s1B + ' / ' + data.s2A + '-' + data.s2B + '\n⚽ BTTS: ' + data.btts + ' (' + data.bttsPercent + '%)\n📈 Over 2.5: ' + data.over25 + ' (' + data.over25Percent + '%)\n📉 Under 3.5: ' + data.under35 + ' (' + data.under35Percent + '%)\n💡 Confiance: ' + data.conf + '%\n\n⚠️ Jouez responsable.';
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() { showToast('✅ Copié !'); }).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  }
 
-    function copySummary() {
-        const nA = document.getElementById('nameA').value;
-        const text = `📊 ANALYSE IA EXPERTE\n⚽ Score : ${document.getElementById('sc1').innerText}\n🔥 Over 2.5 : ${document.getElementById('vO25').innerText}\n🎯 ${nA} 2+ buts : ${document.getElementById('v2A').innerText}\n🚩 Corners Total : ${document.getElementById('vTotalCorn').innerText}\n💎 DC : ${document.getElementById('vDc').innerText}`;
-        navigator.clipboard.writeText(text); alert("Prono copié pour WhatsApp !");
-    }
-    setup();
-</script>
-</body>
-</html>
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('✅ Copié !'); } catch(e) { alert('❌ Échec'); }
+    document.body.removeChild(ta);
+  }
+
+  // ========== ANALYSE ==========
+  function runAnalysis() {
+    var nameA = document.getElementById('teamA').value.trim();
+    var nameB = document.getElementById('teamB').value.trim();
+    if (!nameA || !nameB) { showToast('⚠️ Entrez les équipes'); return; }
+    var data = generatePredictions();
+    displayResults(data);
+    saveHistory(data);
+    showToast('✅ Analyse terminée !');
+  }
+
+  // ========== SAUVEGARDE ==========
