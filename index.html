@@ -1,580 +1,208 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>⚽ FootPredict Pro</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; -webkit-tap-highlight-color: transparent; }
-    :root { --bg-primary: #000000; --bg-secondary: #111115; --bg-card: #1a1a24; --bg-elevated: #22222e; --border: #2a2a38; --text-primary: #ffffff; --text-secondary: #a0a0b0; --text-muted: #6b6b7a; --accent: #10b981; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; }
-    body.light-dark { --bg-primary: #0f0f13; --bg-secondary: #18181c; --bg-card: #1e1e2a; --bg-elevated: #282834; --border: #2d2d3a; }
-    body { background: var(--bg-primary); padding: 16px; min-height: 100vh; color: var(--text-primary); }
-    .container { max-width: 800px; margin: 0 auto; }
-    h1 { font-size: 1.6rem; text-align: center; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .sub { text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 24px; }
-    .theme-toggle { display: flex; justify-content: flex-end; margin-bottom: 12px; }
-    .theme-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); padding: 12px 8px; border-radius: 16px; font-weight: bold; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
-    .tab-btn.active { background: var(--accent); color: white; }
-    .tab-content { display: none; background: var(--bg-card); border-radius: 24px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
-    .tab-content.active { display: block; }
-    .section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 20px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
-    .section-title i { color: var(--accent); }
-    .profile-group { margin-bottom: 20px; }
-    .profile-label { color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 10px; font-weight: 600; text-transform: uppercase; }
-    .profile-options { display: flex; flex-direction: column; gap: 6px; }
-    .profile-option { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 40px; padding: 10px 16px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
-    .profile-option.selected { background: var(--accent); color: white; }
-    .full-width { margin-bottom: 20px; }
-    .full-width input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 16px; font-size: 1rem; background: var(--bg-secondary); color: var(--text-primary); font-weight: bold; }
-    .full-width input:focus { outline: none; border-color: var(--accent); }
-    .btn-group { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
-    .btn { flex: 1; padding: 14px; border: none; border-radius: 40px; font-weight: bold; font-size: 1rem; cursor: pointer; }
-    .btn-primary { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
-    .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-whatsapp { background: #25D366; color: white; }
-    .result-card { background: var(--bg-card); border-radius: 24px; padding: 20px; margin-top: 20px; border: 1px solid var(--border); }
-    .prediction-box { background: var(--bg-secondary); border-radius: 20px; padding: 20px; text-align: center; border: 2px solid var(--accent); margin-bottom: 20px; }
-    .prediction-text { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-    .prediction-sub { font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; }
-    .scores { display: flex; justify-content: center; gap: 20px; margin: 16px 0; }
-    .score-item { background: var(--bg-elevated); padding: 12px 24px; border-radius: 20px; font-size: 1.8rem; font-weight: bold; color: var(--text-primary); }
-    .points-detail { background: var(--bg-secondary); border-radius: 16px; padding: 16px; margin: 16px 0; border: 1px solid var(--border); }
-    .points-line { display: flex; justify-content: space-between; margin: 8px 0; color: var(--text-secondary); font-size: 0.9rem; }
-    .points-total { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-    .stat-box { background: var(--bg-elevated); padding: 12px; border-radius: 12px; text-align: center; }
-    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-    .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-    .stat-percent { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-    .whatsapp-btn { background: #25D366; color: white; padding: 16px; border-radius: 40px; text-align: center; cursor: pointer; font-weight: bold; margin-top: 16px; border: none; width: 100%; font-size: 1rem; }
-    .whatsapp-btn:active { opacity: 0.9; }
-    .history-item { background: var(--bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
-    .history-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-    .history-date { color: var(--text-muted); font-size: 0.7rem; }
-    .history-match { font-weight: bold; color: var(--text-primary); }
-    .stats-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-    .stat-card { background: var(--bg-secondary); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid var(--border); }
-    .stat-card-value { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
-    .toast { position: fixed; bottom: 30px; left: 20px; right: 20px; background: rgba(30,41,59,0.95); color: white; text-align: center; padding: 12px; border-radius: 40px; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; }
-    @media (max-width: 700px) { .scores { flex-direction: column; align-items: center; gap: 12px; } .tab-btn { font-size: 0.7rem; padding: 10px 4px; } .stats-overview { grid-template-columns: repeat(2, 1fr); } }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚽ FootPredict Pro - Version Finale</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    :root { --bg-primary: #000; --bg-card: #1a1a24; --accent: #10b981; --text: #fff; --border: #2a2a38; }
+    body { background: var(--bg-primary); color: var(--text); padding: 15px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); color: #aaa; cursor: pointer; border-radius: 10px; }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .tab-content { display: none; background: var(--bg-card); padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
+    .tab-content.active { display: block; }
+    .profile-option { background: #111; padding: 10px; margin: 5px 0; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; text-align: center; }
+    .profile-option.selected { background: var(--accent); border-color: #fff; }
+    input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid var(--border); background: #111; color: #fff; font-weight: bold; }
+    .btn-primary { width: 100%; padding: 15px; background: var(--accent); border: none; color: #fff; font-weight: bold; border-radius: 30px; margin: 15px 0; cursor: pointer; }
+    .result-card { background: var(--bg-card); border: 2px solid var(--accent); padding: 20px; border-radius: 20px; margin-top: 20px; }
+    .score-item { font-size: 2rem; font-weight: bold; background: #222; padding: 10px 20px; border-radius: 15px; }
+    .history-item { background: #111; padding: 10px; border-bottom: 1px solid var(--border); margin-top: 5px; }
+    .toast { position: fixed; bottom: 20px; width: 80%; left: 10%; background: var(--accent); color: #fff; padding: 10px; border-radius: 20px; text-align: center; display: none; }
+  </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="theme-toggle">
-    <button class="theme-btn" id="themeToggleBtn"><i class="fas fa-moon"></i> Mode AMOLED</button>
-  </div>
-  <h1><i class="fas fa-futbol"></i> FootPredict Pro</h1>
-  <div class="sub">Système de Points • Probabilités par Score • Historique</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab('tab1', this)">Équipe A</button>
+    <button class="tab-btn" onclick="openTab('tab2', this)">Équipe B</button>
+    <button class="tab-btn" onclick="openTab('tab3', this)">Outils</button>
+    <button class="tab-btn" onclick="openTab('tab4', this)">Historique</button>
+  </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="tab1">🏠 Équipe A</button>
-    <button class="tab-btn" data-tab="tab2">✈️ Équipe B</button>
-    <button class="tab-btn" data-tab="tab3">💾 Sauvegarde</button>
-    <button class="tab-btn" data-tab="tab4">📊 Historique</button>
-  </div>
+  <div id="tab1" class="tab-content active">
+    <input type="text" id="teamA" value="Paris SG">
+    <div id="optsA"></div>
+  </div>
 
-  <!-- Équipe A -->
-  <div id="tab1" class="tab-content active">
-    <div class="full-width"><input type="text" id="teamA" placeholder="Nom équipe A" value="Paris SG"></div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-cloud-sun"></i> MÉTÉO</div>
-      <div class="profile-options" id="weatherA_options">
-        <div class="profile-option" data-value="pluie">🌧️ Pluie/Froid (+4)</div>
-        <div class="profile-option" data-value="soleil">☀️ Soleil (+3)</div>
-        <div class="profile-option selected" data-value="normal">🌙 Nuit/Normal (+2)</div>
-        <div class="profile-option" data-value="neutre">⚪ Neutre (+1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-trophy"></i> CONTEXTE</div>
-      <div class="profile-options" id="contextA_options">
-        <div class="profile-option" data-value="decisif">🔥 Match décisif (+4)</div>
-        <div class="profile-option" data-value="survie">💀 Joue sa survie (+3)</div>
-        <div class="profile-option" data-value="avant_treve">🎄 Avant trêve (+1)</div>
-        <div class="profile-option selected" data-value="normal">✅ Normal (0)</div>
-        <div class="profile-option" data-value="apres_treve">📅 Après trêve (-2)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-line"></i> FORME</div>
-      <div class="profile-options" id="formeA_options">
-        <div class="profile-option" data-value="bonne_serie">✅ Bonne série (+3)</div>
-        <div class="profile-option selected" data-value="neutre">😐 Neutre (+1)</div>
-        <div class="profile-option" data-value="irregulier">🎢 Irrégulier (0)</div>
-        <div class="profile-option" data-value="crise">📉 Crise (-1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-bolt"></i> DYNAMIQUE</div>
-      <div class="profile-options" id="dynamiqueA_options">
-        <div class="profile-option" data-value="super_forts">💪 Super forme vs forts (+3)</div>
-        <div class="profile-option" data-value="top5">👑 Top 5 (+1)</div>
-        <div class="profile-option selected" data-value="super_faibles">🎯 Super vs faibles (0)</div>
-        <div class="profile-option" data-value="contre_perf">❌ Contre-performances (-1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-sync-alt"></i> RÉACTION</div>
-      <div class="profile-options" id="reactionA_options">
-        <div class="profile-option" data-value="reagit_vite">⚡ Réagit vite (+4)</div>
-        <div class="profile-option" data-value="subit_reagit">📊 Subit puis réagit (+2)</div>
-        <div class="profile-option selected" data-value="attaque_subit">🎪 Attaque puis subit (0)</div>
-        <div class="profile-option" data-value="subit_apres">😴 Subit après résultat (-1)</div>
-        <div class="profile-option" data-value="jamais">❌ Ne réagit jamais (-2)</div>
-      </div>
-    </div>
-  </div>
+  <div id="tab2" class="tab-content">
+    <input type="text" id="teamB" value="Toulouse">
+    <div id="optsB"></div>
+  </div>
 
-  <!-- Équipe B -->
-  <div id="tab2" class="tab-content">
-    <div class="full-width"><input type="text" id="teamB" placeholder="Nom équipe B" value="Toulouse"></div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-cloud-sun"></i> MÉTÉO</div>
-      <div class="profile-options" id="weatherB_options">
-        <div class="profile-option" data-value="pluie">🌧️ Pluie/Froid (+4)</div>
-        <div class="profile-option" data-value="soleil">☀️ Soleil (+3)</div>
-        <div class="profile-option selected" data-value="normal">🌙 Nuit/Normal (+2)</div>
-        <div class="profile-option" data-value="neutre">⚪ Neutre (+1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-trophy"></i> CONTEXTE</div>
-      <div class="profile-options" id="contextB_options">
-        <div class="profile-option" data-value="decisif">🔥 Match décisif (+4)</div>
-        <div class="profile-option" data-value="survie">💀 Joue sa survie (+3)</div>
-        <div class="profile-option" data-value="avant_treve">🎄 Avant trêve (+1)</div>
-        <div class="profile-option selected" data-value="normal">✅ Normal (0)</div>
-        <div class="profile-option" data-value="apres_treve">📅 Après trêve (-2)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-chart-line"></i> FORME</div>
-      <div class="profile-options" id="formeB_options">
-        <div class="profile-option" data-value="bonne_serie">✅ Bonne série (+3)</div>
-        <div class="profile-option selected" data-value="neutre">😐 Neutre (+1)</div>
-        <div class="profile-option" data-value="irregulier">🎢 Irrégulier (0)</div>
-        <div class="profile-option" data-value="crise">📉 Crise (-1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-bolt"></i> DYNAMIQUE</div>
-      <div class="profile-options" id="dynamiqueB_options">
-        <div class="profile-option" data-value="super_forts">💪 Super forme vs forts (+3)</div>
-        <div class="profile-option" data-value="top5">👑 Top 5 (+1)</div>
-        <div class="profile-option selected" data-value="super_faibles">🎯 Super vs faibles (0)</div>
-        <div class="profile-option" data-value="contre_perf">❌ Contre-performances (-1)</div>
-      </div>
-    </div>
-    
-    <div class="profile-group">
-      <div class="profile-label"><i class="fas fa-sync-alt"></i> RÉACTION</div>
-      <div class="profile-options" id="reactionB_options">
-        <div class="profile-option" data-value="reagit_vite">⚡ Réagit vite (+4)</div>
-        <div class="profile-option" data-value="subit_reagit">📊 Subit puis réagit (+2)</div>
-        <div class="profile-option selected" data-value="attaque_subit">🎪 Attaque puis subit (0)</div>
-        <div class="profile-option" data-value="subit_apres">😴 Subit après résultat (-1)</div>
-        <div class="profile-option" data-value="jamais">❌ Ne réagit jamais (-2)</div>
-      </div>
-    </div>
-  </div>
+  <div id="tab3" class="tab-content">
+    <button class="btn-primary" style="background:#444;" onclick="saveAll()">💾 Sauvegarder Profils</button>
+    <button class="btn-primary" style="background:#444;" onclick="loadAll()">📂 Charger Profils</button>
+  </div>
 
-  <!-- Sauvegarde -->
-  <div id="tab3" class="tab-content">
-    <div class="section-title"><i class="fas fa-database"></i> GESTION</div>
-    <div class="btn-group">
-      <button class="btn btn-secondary" id="saveBtn"><i class="fas fa-save"></i> Sauvegarder</button>
-      <button class="btn btn-secondary" id="loadBtn"><i class="fas fa-folder-open"></i> Charger</button>
-      <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo"></i> Réinitialiser</button>
-    </div>
-  </div>
+  <div id="tab4" class="tab-content">
+    <button onclick="clearHistory()" style="color:red; background:none; border:none; margin-bottom:10px;">Effacer l'historique</button>
+    <div id="historyList"></div>
+  </div>
 
-  <!-- Historique -->
-  <div id="tab4" class="tab-content">
-    <div class="section-title"><i class="fas fa-chart-line"></i> STATISTIQUES</div>
-    <div class="stats-overview">
-      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div style="font-size:0.7rem;color:var(--text-muted);">Total</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statCorrect" style="color:var(--success);">0</div><div style="font-size:0.7rem;color:var(--text-muted);">✅</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statIncorrect" style="color:var(--danger);">0</div><div style="font-size:0.7rem;color:var(--text-muted);">❌</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statRate" style="color:var(--warning);">0%</div><div style="font-size:0.7rem;color:var(--text-muted);">Taux</div></div>
-    </div>
-    <div class="btn-group">
-      <button class="btn btn-secondary" id="clearHistoryBtn"><i class="fas fa-trash"></i> Effacer</button>
-      <button class="btn btn-secondary" id="exportHistoryBtn"><i class="fas fa-download"></i> Exporter</button>
-    </div>
-    <div class="section-title"><i class="fas fa-history"></i> HISTORIQUE</div>
-    <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
-  </div>
-
-  <button class="btn btn-primary" id="analyserBtn" style="margin-bottom:20px;"><i class="fas fa-chart-line"></i> ANALYSER LE MATCH</button>
-  <div id="resultats" style="display:none;"></div>
+  <button class="btn-primary" onclick="runAnalysis()">🚀 ANALYSER LE MATCH</button>
+  <div id="resultats"></div>
 </div>
+
 <div id="toast" class="toast"></div>
 
 <script>
-  // ========== VARIABLES GLOBALES ==========
-  var profiles = {
-    a: { weather: 'normal', context: 'normal', forme: 'neutre', dynamique: 'super_faibles', reaction: 'attaque_subit' },
-    b: { weather: 'normal', context: 'normal', forme: 'neutre', dynamique: 'super_faibles', reaction: 'attaque_subit' }
-  };
+  // Données et Config
+  let profiles = { a: {}, b: {} };
+  const categories = [
+    { id: 'forme', label: 'FORME', options: [{n:'Bonne', v:4}, {n:'Neutre', v:1}, {n:'Crise', v:-2}] },
+    { id: 'context', label: 'CONTEXTE', options: [{n:'Décisif', v:4}, {n:'Normal', v:0}] }
+  ];
 
-  var categories = ['weather', 'context', 'forme', 'dynamique', 'reaction'];
-  
-  var pointsMap = {
-    'pluie': 4, 'soleil': 3, 'normal': 2, 'neutre': 1,
-    'decisif': 4, 'survie': 3, 'avant_treve': 1, 'apres_treve': -2,
-    'bonne_serie': 3, 'irregulier': 0, 'crise': -1,
-    'super_forts': 3, 'top5': 1, 'super_faibles': 0, 'contre_perf': -1,
-    'reagit_vite': 4, 'subit_reagit': 2, 'attaque_subit': 0, 'subit_apres': -1, 'jamais': -2
-  };
+  window.onload = () => {
+    renderOptions();
+    loadHistory();
+  };
 
-  var currentAnalysis = null;
+  function renderOptions() {
+    ['a', 'b'].forEach(t => {
+      let html = '';
+      categories.forEach(c => {
+        html += `<p style="font-size:0.7rem; margin-top:10px;">${c.label}</p>`;
+        c.options.forEach((o, i) => {
+          let sel = (i===1) ? 'selected' : '';
+          if(i===1) profiles[t][c.id] = o.v;
+          html += `<div class="profile-option ${sel}" onclick="selectOpt('${t}','${c.id}',${o.v}, this)">${o.n}</div>`;
+        });
+      });
+      document.getElementById('opts'+t.toUpperCase()).innerHTML = html;
+    });
+  }
 
-  // ========== STORAGE HELPERS ==========
-  function storageAvailable(type) {
-    try {
-      var storage = window[type];
-      var x = '__storage_test__';
-      storage.setItem(x, x);
-      storage.removeItem(x);
-      return true;
-    } catch(e) { return false; }
-  }
+  function selectOpt(team, cat, val, el) {
+    let opts = el.parentElement.querySelectorAll('.profile-option');
+    opts.forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    profiles[team][cat] = val;
+  }
 
-  function safeGetItem(key, defaultVal) {
-    if (!storageAvailable('localStorage')) return defaultVal;
-    try {
-      var item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : defaultVal;
-    } catch(e) { return defaultVal; }
-  }
+  function runAnalysis() {
+    let ptsA = 0; for(let k in profiles.a) ptsA += profiles.a[k];
+    let ptsB = 0; for(let k in profiles.b) ptsB += profiles.b[k];
+    
+    const nameA = document.getElementById('teamA').value;
+    const nameB = document.getElementById('teamB').value;
 
-  function safeSetItem(key, value) {
-    if (!storageAvailable('localStorage')) { showToast('⚠️ Stockage non disponible'); return false; }
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch(e) {
-      if (e.name === 'QuotaExceededError') showToast('⚠️ Stockage plein');
-      else showToast('⚠️ Erreur sauvegarde');
-      return false;
-    }
-  }
+    // Calcul des scores selon tes points
+    let s1A = Math.max(0, Math.floor(ptsA/2));
+    let s1B = Math.max(0, Math.floor(ptsB/2));
+    let s2A = s1A + 1;
+    let s2B = (ptsB > ptsA) ? s1B + 1 : s1B;
 
-  // ========== INITIALISATION ==========
-  function initProfileSelectors() {
-    for (var t = 0; t < categories.length; t++) {
-      var cat = categories[t];
-      initCategory('a', cat);
-      initCategory('b', cat);
-    }
-  }
+    // --- RÈGLE 1 : PRONOSTIC SÛR (OVER/UNDER) ---
+    let totalScore1 = s1A + s1B;
+    let totalScore2 = s2A + s2B;
+    let safeBet = (totalScore1 + totalScore2 >= 4) ? "Over 2.5 Buts" : "Under 3.5 Buts";
 
-  function initCategory(team, cat) {
-    var container = document.getElementById(cat + team.toUpperCase() + '_options');
-    if (!container) return;
-    var options = container.querySelectorAll('.profile-option');
-    for (var i = 0; i < options.length; i++) {
-      (function(opt) {
-        opt.addEventListener('click', function() {
-          for (var j = 0; j < options.length; j++) options[j].classList.remove('selected');
-          opt.classList.add('selected');
-          profiles[team][cat] = opt.dataset.value;
-        });
-      })(options[i]);
-    }
-  }
+    // --- RÈGLE 2 : MATCH NUL & DOMINANCE ---
+    if (s1A === s1B && s2A === s2B) {
+        let dominante = (ptsA >= ptsB) ? nameA : nameB;
+        safeBet = dominante + " ou Nul";
+    }
 
-  function initTabs() {
-    var tabs = document.querySelectorAll('.tab-btn');
-    var contents = document.querySelectorAll('.tab-content');
-    for (var i = 0; i < tabs.length; i++) {
-      (function(tab) {
-        tab.addEventListener('click', function() {
-          for (var j = 0; j < tabs.length; j++) { tabs[j].classList.remove('active'); contents[j].classList.remove('active'); }
-          tab.classList.add('active');
-          document.getElementById(tab.dataset.tab).classList.add('active');
-        });
-      })(tabs[i]);
-    }
-  }
+    // --- RÈGLE 3 : BTTS AJUSTÉ ---
+    let btts = "OUI";
+    // Si l'un des scores contient un 0 (ex: 3-0), BTTS est plus risqué
+    if (s1A === 0 || s1B === 0 || s2A === 0 || s2B === 0) btts = "NON";
+    // Correction spécifique demandée : 3-0 et 3-1 -> NON
+    if ((s1A === 3 && s1B === 0) && (s2A === 3 && s2B === 1)) btts = "NON";
+    // Validation des BTTS OUI (2-2, 3-2, etc)
+    if (s1A > 0 && s1B > 0 && s2A > 0 && s2B > 0) btts = "OUI";
 
-  function initTheme() {
-    var btn = document.getElementById('themeToggleBtn');
-    btn.addEventListener('click', function() {
-      document.body.classList.toggle('light-dark');
-      var icon = this.querySelector('i');
-      if (document.body.classList.contains('light-dark')) {
-        icon.className = 'fas fa-sun';
-        this.innerHTML = '<i class="fas fa-sun"></i> Mode Sombre';
-      } else {
-        icon.className = 'fas fa-moon';
-        this.innerHTML = '<i class="fas fa-moon"></i> Mode AMOLED';
-      }
-    });
-  }
+    const resHTML = `
+      <div class="result-card">
+        <center><small>PRONOSTIC LE PLUS SÛR</small><br><h2 style="color:var(--accent)">${safeBet}</h2></center>
+        <div style="display:flex; justify-content:center; gap:10px; margin:15px 0;">
+          <div class="score-item">${s1A}-${s1B}</div>
+          <div class="score-item">${s2A}-${s2B}</div>
+        </div>
+        <p>⚡ BTTS : <b>${btts}</b></p>
+        <p>📐 Corners : <b>7 - 11</b></p>
+        <button class="btn-primary" onclick="copyWA()">COPIER WHATSAPP</button>
+      </div>`;
+    
+    document.getElementById('resultats').innerHTML = resHTML;
+    saveToHistory({match: nameA+' vs '+nameB, score: s1A+'-'+s1B+' / '+s2A+'-'+s2B, prono: safeBet});
+  }
 
-  function showToast(msg) {
-    var t = document.getElementById('toast');
-    t.innerText = msg;
-    t.classList.add('show');
-    setTimeout(function() { t.classList.remove('show'); }, 2500);
-  }
+  // Fonctions Techniques (Historique et Sauvegarde)
+  function saveToHistory(obj) {
+    let history = JSON.parse(localStorage.getItem('my_history') || '[]');
+    history.unshift(obj);
+    localStorage.setItem('my_history', JSON.stringify(history));
+    loadHistory();
+  }
 
-  function calculatePoints(team) {
-    var total = 0;
-    for (var i = 0; i < categories.length; i++) {
-      var cat = categories[i];
-      var val = profiles[team][cat];
-      total += pointsMap[val] || 0;
-    }
-    return total;
-  }
+  function loadHistory() {
+    let history = JSON.parse(localStorage.getItem('my_history') || '[]');
+    document.getElementById('historyList').innerHTML = history.map(h => `
+      <div class="history-item">
+        <b>${h.match}</b><br><small>${h.score} | ${h.prono}</small>
+      </div>`).join('');
+  }
 
-  function calculateAll() {
-    var ptsA = calculatePoints('a');
-    var ptsB = calculatePoints('b');
-    var total = ptsA + ptsB;
-    var gap = ptsA - ptsB;
-    return { ptsA: ptsA, ptsB: ptsB, total: total, gap: gap };
-  }
+  function clearHistory() {
+    localStorage.removeItem('my_history');
+    loadHistory();
+    showToast("Historique effacé");
+  }
 
-  // ========== PRONOSTICS ==========
-  function generatePredictions() {
-    var calc = calculateAll();
-    var ptsA = calc.ptsA;
-    var ptsB = calc.ptsB;
-    var total = calc.total;
-    var gap = calc.gap;
-    
-    var nameA = document.getElementById('teamA').value || 'Équipe A';
-    var nameB = document.getElementById('teamB').value || 'Équipe B';
-    
-    // === 1. GÉNÉRER LES SCORES ===
-    function getScoreFromPoints(pts) {
-      if (pts >= 15) return Math.floor(Math.random() * 2) + 3;
-      if (pts >= 10) return Math.floor(Math.random() * 2) + 2;
-      if (pts >= 5) return Math.floor(Math.random() * 2) + 1;
-      return Math.random() > 0.7 ? 1 : 0;
-    }
-    
-    var s1A = getScoreFromPoints(ptsA);
-    var s1B = getScoreFromPoints(ptsB);
-    
-    if (s1A === 0 && s1B === 0 && (ptsA >= 5 || ptsB >= 5)) {
-      if (ptsA > ptsB) s1A = 1;
-      else if (ptsB > ptsA) s1B = 1;
-      else s1A = 1;
-    }
-    
-    var s2A = s1A, s2B = s1B;
-    if (s1A > s1B) { s2A = Math.min(4, s1A + 1); s2B = Math.max(0, s1B - 1); }
-    else if (s1B > s1A) { s2B = Math.min(4, s1B + 1); s2A = Math.max(0, s1A - 1); }
-    else { s2A = Math.min(4, s1A + 1); }
-    
-    // === 2. PROBABILITÉS PAR SCORE ===
-    var totalButs = s1A + s1B;
-    
-    var btts, bttsPercent;
-    if (s1A >= 1 && s1B >= 1) {
-      btts = 'OUI';
-      if (s1A >= 2 && s1B >= 2) bttsPercent = 85;
-      else if (s1A >= 3 || s1B >= 3) bttsPercent = 80;
-      else if (s1A >= 2 || s1B >= 2) bttsPercent = 55;
-      else bttsPercent = 50;
-    } else {
-      btts = 'NON';
-      bttsPercent = 0;
-    }
-    
-    var over25, over25Percent;
-    if (totalButs >= 5) { over25 = 'OUI'; over25Percent = 90; }
-    else if (totalButs === 4) { over25 = 'OUI'; over25Percent = 75; }
-    else if (totalButs === 3) { over25 = 'OUI'; over25Percent = (s1A >= 3 || s1B >= 3) ? 50 : 45; }
-    else { over25 = 'NON'; over25Percent = 0; }
-    
-    var under35, under35Percent;
-    if (totalButs <= 3) { under35 = 'OUI'; under35Percent = (totalButs <= 2) ? 80 : 55; }
-    else if (totalButs === 4) { under35 = 'NON'; under35Percent = 50; }
-    else { under35 = 'NON'; under35Percent = 0; }
-    
-    var winner = null, dc = null;
-    if (gap >= 7) { winner = gap > 0 ? nameA : nameB; }
-    else { dc = gap >= 0 ? (nameA + ' ou Nul') : (nameB + ' ou Nul'); }
-    
-    function getCorn(team) {
-      var w = profiles[team].weather, f = profiles[team].forme, r = profiles[team].reaction;
-      var min = 2, max = 6;
-      if (w === 'pluie') { min = 4; max = 6; }
-      if (w === 'soleil') { min = 2; max = 4; }
-      if (f === 'bonne_serie' || f === 'irregulier' || f === 'crise') min = 4;
-      if (r === 'subit_apres') { min = 2; max = 4; }
-      if (r === 'jamais') { min = 2; max = 3; }
-      return { min: Math.max(2, min), max: Math.min(6, max) };
-    }
-    
-    function getSot(team) {
-      var w = profiles[team].weather, f = profiles[team].forme, r = profiles[team].reaction;
-      var min = 2, max = 6;
-      if (w === 'pluie') { min = 5; max = 8; }
-      if (w === 'soleil') { min = 2; max = 4; }
-      if (f === 'bonne_serie') { min = 5; max = 8; }
-      if (r === 'reagit_vite') { min = 5; max = 9; }
-      if (r === 'subit_reagit') { min = 3; max = 5; }
-      if (r === 'subit_apres' || r === 'jamais') { min = 1; max = 3; }
-      return { min: Math.max(1, min), max: Math.min(9, max) };
-    }
-    
-    var cA = getCorn('a'), cB = getCorn('b');
-    var tA = getSot('a'), tB = getSot('b');
-    
-    var conf = Math.min(95, 40 + Math.abs(gap) * 6);
-    var dyn = gap >= 7 ? (gap > 0 ? nameA : nameB) + ' est nettement favori.' : 'Match équilibré attendu.';
-    
-    var safeBet, safePercent;
-    if (over25Percent >= 70) { safeBet = 'Over 2.5'; safePercent = over25Percent; }
-    else if (under35Percent >= 70) { safeBet = 'Under 3.5'; safePercent = under35Percent; }
-    else if (bttsPercent >= 70) { safeBet = 'BTTS ' + btts; safePercent = bttsPercent; }
-    else { safeBet = 'Match Incertain'; safePercent = 0; }
-    
-    return {
-      nameA: nameA, nameB: nameB, ptsA: ptsA, ptsB: ptsB, total: total, gap: gap,
-      s1A: s1A, s1B: s1B, s2A: s2A, s2B: s2B, totalButs: totalButs,
-      btts: btts, bttsPercent: bttsPercent,
-      over25: over25, over25Percent: over25Percent,
-      under35: under35, under35Percent: under35Percent,
-      winner: winner, dc: dc,
-      cA: cA, cB: cB, cTot: { min: cA.min + cB.min, max: cA.max + cB.max },
-      tA: tA, tB: tB, tTot: { min: tA.min + tB.min, max: tA.max + tB.max },
-      conf: Math.round(conf),
-      safeBet: safeBet, safePercent: safePercent,
-      dyn: dyn
-    };
-  }
+  function saveAll() {
+    localStorage.setItem('my_profiles', JSON.stringify(profiles));
+    localStorage.setItem('my_teams', JSON.stringify([document.getElementById('teamA').value, document.getElementById('teamB').value]));
+    showToast("Profils enregistrés !");
+  }
 
-  // ========== AFFICHAGE ==========
-  function displayResults(data) {
-    currentAnalysis = data;
-    var r = document.getElementById('resultats');
-    r.style.display = 'block';
-    
-    var predictionText = data.winner ? ('Victoire ' + data.winner) : ('Double Chance: ' + data.dc);
-    
-    r.innerHTML = '' +
-      '<div class="result-card">' +
-        '<div class="prediction-box">' +
-          '<div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:8px;">🔒 PRONOSTIC LE PLUS SÛR</div>' +
-          '<div class="prediction-text">' + data.safeBet + '</div>' +
-          '<div class="prediction-sub">' + (data.safePercent > 0 ? data.safePercent + '% confiance' : '') + '</div>' +
-        '</div>' +
-        '<div class="prediction-box" style="border-color:var(--warning);">' +
-          '<div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:8px;">🏆 1N2</div>' +
-          '<div class="prediction-text" style="color:var(--warning);">' + predictionText + '</div>' +
-          '<div class="prediction-sub">Écart: ' + (data.gap >= 0 ? '+' : '') + data.gap + ' pts</div>' +
-        '</div>' +
-        '<div class="scores">' +
-          '<div class="score-item">' + data.s1A + ' - ' + data.s1B + '</div>' +
-          '<div class="score-item">' + data.s2A + ' - ' + data.s2B + '</div>' +
-        '</div>' +
-        '<div class="points-detail">' +
-          '<div class="points-line"><span>' + data.nameA + '</span><span style="color:var(--accent);font-weight:bold;">' + data.ptsA + ' pts</span></div>' +
-          '<div class="points-line"><span>' + data.nameB + '</span><span style="color:var(--danger);font-weight:bold;">' + data.ptsB + ' pts</span></div>' +
-          '<div class="points-total">Confiance: ' + data.conf + '%</div>' +
-        '</div>' +
-        '<div class="stats-grid">' +
-          '<div class="stat-box">' +
-            '<div class="stat-label">BTTS</div>' +
-            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.btts === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.btts + '</div>' +
-            '<div class="stat-percent">' + (data.bttsPercent > 0 ? data.bttsPercent + '%' : '') + '</div>' +
-          '</div>' +
-          '<div class="stat-box">' +
-            '<div class="stat-label">Over 2.5</div>' +
-            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.over25 === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.over25 + '</div>' +
-            '<div class="stat-percent">' + (data.over25Percent > 0 ? data.over25Percent + '%' : '') + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="stats-grid">' +
-          '<div class="stat-box">' +
-            '<div class="stat-label">Under 3.5</div>' +
-            '<div style="font-size:1.5rem;font-weight:bold;color:' + (data.under35 === 'OUI' ? 'var(--success)' : 'var(--danger)') + ';">' + data.under35 + '</div>' +
-            '<div class="stat-percent">' + (data.under35Percent > 0 ? data.under35Percent + '%' : '') + '</div>' +
-          '</div>' +
-          '<div class="stat-box">' +
-            '<div class="stat-label">Total Buts</div>' +
-            '<div style="font-size:1.5rem;font-weight:bold;color:var(--accent);">' + data.totalButs + '</div>' +
-            '<div class="stat-percent">Score: ' + data.s1A + '-' + data.s1B + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="stats-grid">' +
-          '<div class="stat-box" style="text-align:left;padding:12px;">' +
-            '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">📐 Corners</div>' +
-            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;"><span>' + data.nameA + '</span><span>' + data.cA.min + '-' + data.cA.max + '</span></div>' +
-            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-top:4px;"><span>' + data.nameB + '</span><span>' + data.cB.min + '-' + data.cB.max + '</span></div>' +
-            '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:bold;color:var(--accent);"><span>Total</span><span>' + data.cTot.min + '-' + data.cTot.max + '</span></div>' +
-          '</div>' +
-          '<div class="stat-box" style="text-align:left;padding:12px;">' +
-            '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">🎯 Tirs Cadrés</div>' +
-            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;"><span>' + data.nameA + '</span><span>' + data.tA.min + '-' + data.tA.max + '</span></div>' +
-            '<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-top:4px;"><span>' + data.nameB + '</span><span>' + data.tB.min + '-' + data.tB.max + '</span></div>' +
-            '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:bold;color:var(--accent);"><span>Total</span><span>' + data.tTot.min + '-' + data.tTot.max + '</span></div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="margin-top:16px;padding:12px;background:var(--bg-secondary);border-radius:12px;border-left:4px solid var(--accent);">' +
-          '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px;">💡 Dynamique</div>' +
-          '<div style="color:var(--text-primary);">' + data.dyn + '</div>' +
-        '</div>' +
-        '<button class="whatsapp-btn" id="whatsappBtn"><i class="fab fa-whatsapp"></i> Copier le résumé WhatsApp</button>' +
-      '</div>';
-    
-    setTimeout(function() {
-      var btn = document.getElementById('whatsappBtn');
-      if (btn) btn.addEventListener('click', function() { copyWhatsApp(data); });
-    }, 100);
-    
-    r.scrollIntoView({ behavior: 'smooth' });
-  }
+  function loadAll() {
+    let p = localStorage.getItem('my_profiles');
+    if(p) {
+      profiles = JSON.parse(p);
+      let t = JSON.parse(localStorage.getItem('my_teams'));
+      document.getElementById('teamA').value = t[0];
+      document.getElementById('teamB').value = t[1];
+      showToast("Profils chargés !");
+    }
+  }
 
-  // ========== WHATSAPP ==========
-  function copyWhatsApp(data) {
-    var predictionText = data.winner ? ('Victoire ' + data.winner) : ('DC: ' + data.dc);
-    var text = '⚽ *FOOTPREDICT PRO*\n🆚 ' + data.nameA + ' vs ' + data.nameB + '\n\n🔒 *' + data.safeBet + '* (' + data.safePercent + '%)\n🏆 *' + predictionText + '*\n🎲 ' + data.s1A + '-' + data.s1B + ' / ' + data.s2A + '-' + data.s2B + '\n⚽ BTTS: ' + data.btts + ' (' + data.bttsPercent + '%)\n📈 Over 2.5: ' + data.over25 + ' (' + data.over25Percent + '%)\n📉 Under 3.5: ' + data.under35 + ' (' + data.under35Percent + '%)\n💡 Confiance: ' + data.conf + '%\n\n⚠️ Jouez responsable.';
-    
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(function() { showToast('✅ Copié !'); }).catch(function() { fallbackCopy(text); });
-    } else { fallbackCopy(text); }
-  }
+  function openTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
 
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('✅ Copié !'); } catch(e) { alert('❌ Échec'); }
-    document.body.removeChild(ta);
-  }
+  function showToast(m) {
+    let t = document.getElementById('toast');
+    t.innerText = m; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+  }
 
-  // ========== ANALYSE ==========
-  function runAnalysis() {
-    var nameA = document.getElementById('teamA').value.trim();
-    var nameB = document.getElementById('teamB').value.trim();
-    if (!nameA || !nameB) { showToast('⚠️ Entrez les équipes'); return; }
-    var data = generatePredictions();
-    displayResults(data);
-    saveHistory(data);
-    showToast('✅ Analyse terminée !');
-  }
+  function copyWA() {
+    let r = document.getElementById('resultats').innerText;
+    navigator.clipboard.writeText(r);
+    showToast("Copié !");
+  }
+</script>
 
-  // ========== SAUVEGARDE ==========
+</body>
+</html>
