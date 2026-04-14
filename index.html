@@ -4,341 +4,455 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>⚽ PrédictFoot Pro - Analyseur de matchs</title>
-  <!-- Chart.js CDN pour graphiques -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- Font Awesome 6 (gratuit) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(145deg, #f0f4fa 0%, #e2e8f0 100%);
-      padding: 2rem 1.5rem;
-    }
-
-    .container {
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    /* header */
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .header h1 {
-      font-size: 2.2rem;
-      background: linear-gradient(135deg, #1e2a3a, #0f172a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
-      letter-spacing: -0.5px;
-    }
-    .header p {
-      color: #334155;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
-
-    /* grille stats */
-    .stats-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      justify-content: center;
-      margin-bottom: 2rem;
-    }
-    .team-card {
-      flex: 1;
-      min-width: 300px;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(2px);
-      border-radius: 2rem;
-      padding: 1.5rem;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
-      transition: transform 0.2s ease;
-      border: 1px solid rgba(255,255,255,0.5);
-    }
-    .team-card:hover {
-      transform: translateY(-4px);
-    }
-    .team-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 1.5rem;
-      border-left: 5px solid #3b82f6;
-      padding-left: 1rem;
-    }
-    .input-group {
-      margin-bottom: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .input-group label {
-      font-weight: 600;
-      color: #0f172a;
-      width: 45%;
-      font-size: 0.9rem;
-    }
-    .input-group input {
-      width: 50%;
-      padding: 8px 12px;
-      border-radius: 1.2rem;
-      border: 1px solid #cbd5e1;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+    body { background: linear-gradient(145deg, #0f172a, #1e293b); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem; }
+    #app { width: 100%; max-width: 1600px; }
+    
+    /* ----- LOGIN STYLES ----- */
+    .login-container {
       background: white;
-      font-weight: 500;
-      transition: all 0.2s;
+      padding: 2.5rem 2rem;
+      border-radius: 2rem;
+      width: 380px;
+      max-width: 90%;
+      margin: 0 auto;
+      text-align: center;
+      box-shadow: 0 25px 40px -15px black;
     }
-    .input-group input:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-    }
-    .subtitle {
-      font-weight: 700;
-      margin: 1rem 0 0.8rem 0;
-      color: #1e293b;
-      border-bottom: 2px dashed #94a3b8;
-      display: inline-block;
-    }
-    .btn-analyser {
-      background: linear-gradient(95deg, #2563eb, #1d4ed8);
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-      border-radius: 3rem;
-      color: white;
-      cursor: pointer;
+    .login-container h2 { font-size: 2rem; color: #0f172a; margin-bottom: 0.5rem; }
+    .login-container p { color: #475569; margin-bottom: 1.5rem; }
+    .login-container input {
       width: 100%;
-      margin: 1.5rem 0;
-      transition: all 0.2s;
-      box-shadow: 0 8px 16px -6px #1e3a8a50;
-    }
-    .btn-analyser:hover {
-      transform: scale(0.98);
-      background: linear-gradient(95deg, #1d4ed8, #1e40af);
-    }
-    .save-bar {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-bottom: 1rem;
-    }
-    .save-btn {
-      background: #334155;
-      border: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 2rem;
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .save-btn:hover {
-      background: #1e293b;
-    }
-
-    /* résultats */
-    .results-panel {
-      background: white;
-      border-radius: 2rem;
-      padding: 1.8rem;
-      margin-top: 1.5rem;
-      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
-    }
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin: 1.5rem 0 1rem 0;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: #0f172a;
-    }
-    .badge-proba {
-      background: #eef2ff;
-      border-radius: 2rem;
-      padding: 0.2rem 0.8rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .flex-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: space-between;
-    }
-    .prob-card {
-      background: #f8fafc;
+      padding: 14px 16px;
+      margin: 10px 0;
       border-radius: 1.5rem;
-      padding: 1rem;
-      flex: 1;
-      min-width: 180px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border: 1.5px solid #e2e8f0;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
     }
-    .big-number {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #2563eb;
-    }
-    .grid-2cols {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .insight-box {
-      background: #f1f5f9;
-      border-radius: 1.2rem;
-      padding: 1.2rem;
-      margin: 1rem 0;
-    }
-    .whatsapp-copy {
-      background: #dcfce7;
-      border-left: 6px solid #22c55e;
-      padding: 1rem;
-      border-radius: 1rem;
+    .login-container input:focus { border-color: #2563eb; }
+    .login-container button {
+      background: linear-gradient(95deg, #2563eb, #1d4ed8);
+      color: white;
+      padding: 14px;
+      width: 100%;
+      border: none;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 1.1rem;
       cursor: pointer;
-      transition: 0.1s;
+      margin-top: 0.5rem;
+      transition: transform 0.1s, box-shadow 0.2s;
     }
-    .whatsapp-copy:hover {
-      background: #bbf7d0;
-    }
-    canvas {
-      max-height: 280px;
-      margin: 0 auto;
-    }
-    hr {
-      margin: 1rem 0;
-    }
-    @media (max-width: 780px) {
-      body { padding: 1rem; }
-      .team-card { min-width: 100%; }
-    }
-    .footer-note {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.75rem;
-      color: #475569;
-    }
-    button {
-      font-family: inherit;
-    }
+    .login-container button:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(37,99,235,0.3); }
+    .error { color: #dc2626; margin-top: 12px; font-size: 0.9rem; min-height: 24px; }
+
+    /* ----- APPLICATION STYLES (ADAPTÉS POUR FOND SOMBRE) ----- */
+    .app-wrapper { background: #f0f4fa; border-radius: 2.5rem; padding: 2rem 1.5rem; box-shadow: 0 30px 50px -20px black; }
+    .header { text-align: center; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #1e2a3a, #0f172a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logout-btn { background: #ef4444; border: none; padding: 0.5rem 1.2rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .stats-grid { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; margin-bottom: 2rem; }
+    .team-card { flex: 1; min-width: 300px; background: rgba(255,255,255,0.9); backdrop-filter: blur(2px); border-radius: 2rem; padding: 1.5rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1); }
+    .team-title { font-size: 1.6rem; font-weight: 700; display: flex; gap: 10px; margin-bottom: 1rem; border-left: 5px solid #3b82f6; padding-left: 1rem; }
+    .team-name-input { margin-bottom: 1.5rem; display: flex; gap: 0.5rem; align-items: center; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 2rem; }
+    .team-name-input input { flex: 1; border: none; background: transparent; font-weight: 600; font-size: 1rem; outline: none; border-bottom: 1px dashed #94a3b8; }
+    .input-group { margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: space-between; }
+    .input-group label { font-weight: 600; color: #0f172a; width: 48%; font-size: 0.85rem; }
+    .input-group input { width: 48%; padding: 6px 10px; border-radius: 1.2rem; border: 1px solid #cbd5e1; background: white; }
+    .subtitle { font-weight: 700; margin: 1rem 0 0.5rem 0; color: #1e293b; border-bottom: 2px dashed #94a3b8; display: inline-block; }
+    .btn-analyser { background: linear-gradient(95deg, #2563eb, #1d4ed8); border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 3rem; color: white; cursor: pointer; width: 100%; margin: 1.5rem 0; }
+    .save-bar { display: flex; gap: 1rem; justify-content: flex-end; margin-bottom: 1rem; flex-wrap: wrap; }
+    .save-btn { background: #334155; border: none; padding: 0.5rem 1.2rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.8rem; }
+    
+    /* ----- HISTORIQUE STYLES ----- */
+    .history-section { background: white; border-radius: 2rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 15px 25px -10px rgba(0,0,0,0.1); }
+    .history-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    .history-title { font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .success-rate { background: #22c55e; color: white; padding: 0.4rem 1.2rem; border-radius: 2rem; font-weight: 700; font-size: 1.1rem; }
+    .history-actions { display: flex; gap: 0.5rem; }
+    .history-btn { background: #e2e8f0; border: none; padding: 0.5rem 1rem; border-radius: 1.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+    .history-table-container { overflow-x: auto; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .history-table th { text-align: left; padding: 10px 5px; border-bottom: 2px solid #cbd5e1; color: #475569; font-weight: 600; }
+    .history-table td { padding: 8px 5px; border-bottom: 1px solid #e2e8f0; }
+    .history-table input { width: 60px; padding: 4px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center; }
+    .action-btns { display: flex; gap: 5px; }
+    .action-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 2px 5px; border-radius: 8px; transition: 0.1s; }
+    .action-btn.valid:hover { background: #22c55e30; }
+    .action-btn.invalid:hover { background: #ef444430; }
+    .action-btn.delete:hover { background: #6b728030; }
+    .add-history-btn { margin-top: 1rem; background: #2563eb; color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 2rem; font-weight: 600; cursor: pointer; }
+
+    .results-panel { background: white; border-radius: 2rem; padding: 1.8rem; margin-top: 1.5rem; box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1); }
+    .section-title { font-size: 1.4rem; font-weight: 800; margin: 1.5rem 0 1rem 0; display: flex; align-items: center; gap: 0.6rem; }
+    .flex-stats { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; }
+    .prob-card { background: #f8fafc; border-radius: 1.5rem; padding: 0.8rem; flex: 1; min-width: 160px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .big-number { font-size: 1.8rem; font-weight: 800; color: #2563eb; }
+    .grid-2cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    .insight-box { background: #f1f5f9; border-radius: 1.2rem; padding: 1.2rem; margin: 1rem 0; }
+    .whatsapp-copy { background: #dcfce7; border-left: 6px solid #22c55e; padding: 1rem; border-radius: 1rem; cursor: pointer; transition: 0.1s; text-align: center; font-weight: bold; }
+    .whatsapp-copy:hover { background: #bbf7d0; }
+    canvas { max-height: 240px; margin: 0 auto; }
+    @media (max-width: 780px) { .app-wrapper { padding: 1rem; } .team-card { min-width: 100%; } }
+    .footer-note { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: #64748b; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1><i class="fas fa-futbol"></i> PrédictFoot Pro</h1>
-    <p>Analyse avancée • Pronostics IA • Double chance • BTTS • Over/Under</p>
-  </div>
-
-  <!-- Sauvegarde + chargement -->
-  <div class="save-bar">
-    <button class="save-btn" id="saveDataBtn"><i class="fas fa-save"></i> Sauvegarder stats</button>
-    <button class="save-btn" id="loadDataBtn"><i class="fas fa-upload"></i> Charger dernières stats</button>
-    <button class="save-btn" id="resetDefaultBtn"><i class="fas fa-undo-alt"></i> Réinitialiser</button>
-  </div>
-
-  <div class="stats-grid">
-    <!-- EQUIPE A -->
-    <div class="team-card">
-      <div class="team-title"><i class="fas fa-shield-alt"></i> Équipe A</div>
-      <div><span class="subtitle">📊 OFFENSIF</span></div>
-      <div class="input-group"><label>Tirs :</label><input type="number" id="a_tirs" value="12.4" step="0.1"></div>
-      <div class="input-group"><label>Tirs cadrés :</label><input type="number" id="a_tc" value="5.2" step="0.1"></div>
-      <div class="input-group"><label>xG :</label><input type="number" id="a_xg" value="1.6" step="0.1"></div>
-      <div class="input-group"><label>Ratio xG/tirs :</label><input type="number" id="a_ratio_xg" value="0.13" step="0.01"></div>
-      <div class="input-group"><label>Corners :</label><input type="number" id="a_corners" value="5.8" step="0.1"></div>
-      <div><span class="subtitle">🛡️ DÉFENSIF (concédés)</span></div>
-      <div class="input-group"><label>Tirs concédés :</label><input type="number" id="a_tirs_con" value="10.2" step="0.1"></div>
-      <div class="input-group"><label>Tirs cadrés conc. :</label><input type="number" id="a_tc_con" value="4.1" step="0.1"></div>
-      <div class="input-group"><label>xGA :</label><input type="number" id="a_xga" value="1.2" step="0.1"></div>
-      <div class="input-group"><label>Corners concédés :</label><input type="number" id="a_corners_con" value="4.9" step="0.1"></div>
-    </div>
-
-    <!-- EQUIPE B -->
-    <div class="team-card">
-      <div class="team-title"><i class="fas fa-futbol"></i> Équipe B</div>
-      <div><span class="subtitle">📊 OFFENSIF</span></div>
-      <div class="input-group"><label>Tirs :</label><input type="number" id="b_tirs" value="10.8" step="0.1"></div>
-      <div class="input-group"><label>Tirs cadrés :</label><input type="number" id="b_tc" value="4.5" step="0.1"></div>
-      <div class="input-group"><label>xG :</label><input type="number" id="b_xg" value="1.3" step="0.1"></div>
-      <div class="input-group"><label>Ratio xG/tirs :</label><input type="number" id="b_ratio_xg" value="0.12" step="0.01"></div>
-      <div class="input-group"><label>Corners :</label><input type="number" id="b_corners" value="5.1" step="0.1"></div>
-      <div><span class="subtitle">🛡️ DÉFENSIF (concédés)</span></div>
-      <div class="input-group"><label>Tirs concédés :</label><input type="number" id="b_tirs_con" value="11.5" step="0.1"></div>
-      <div class="input-group"><label>Tirs cadrés conc. :</label><input type="number" id="b_tc_con" value="4.7" step="0.1"></div>
-      <div class="input-group"><label>xGA :</label><input type="number" id="b_xga" value="1.5" step="0.1"></div>
-      <div class="input-group"><label>Corners concédés :</label><input type="number" id="b_corners_con" value="5.3" step="0.1"></div>
-    </div>
-  </div>
-  <button class="btn-analyser" id="analyserBtn"><i class="fas fa-chart-line"></i> ANALYSER LE MATCH</button>
-
-  <!-- ZONE RÉSULTATS -->
-  <div id="resultsArea" class="results-panel" style="display: none;">
-    <!-- Graphique proba victoire -->
-    <div style="max-width: 500px; margin: 0 auto;">
-      <canvas id="victoryChart" width="400" height="200" style="max-height: 220px;"></canvas>
-    </div>
-    <div class="section-title"><i class="fas fa-percent"></i> Pronostics & Probabilités</div>
-    <div class="flex-stats" id="probasContainer"></div>
-    
-    <div class="section-title"><i class="fas fa-chart-simple"></i> Corners, Tirs cadrés & Scores suggérés</div>
-    <div class="grid-2cols" id="cornersShotsContainer"></div>
-    
-    <div class="section-title"><i class="fas fa-microphone-alt"></i> Analyse Tactique & Dynamique</div>
-    <div id="tacticalAnalysis" class="insight-box"></div>
-    
-    <div class="section-title"><i class="fas fa-star-of-life"></i> Meilleures prédictions (les plus sûres)</div>
-    <div id="bestTips" class="insight-box" style="background: #e6f7ff;"></div>
-    
-    <div class="section-title"><i class="fab fa-whatsapp"></i> Résumé pronostics WhatsApp</div>
-    <div id="whatsappSummary" class="whatsapp-copy" onclick="copyWhatsappText()">
-      ⚡ Cliquez ici pour copier le pronostic condensé ➕
-    </div>
-  </div>
-  <div class="footer-note">* Statistiques saisies (moyennes par match récent). Algorithme propriétaire (Attaque 30% / Défense 30% / Domination 20% / Pression 20%)</div>
-</div>
+<div id="app"></div>
 
 <script>
-  // Helper: récupérer valeurs
+  // ==================== CONFIGURATION ====================
+  // Mot de passe obfusqué (base64 de "1111")
+  const _k = "TVRFeE1RPT0";  // "1111" encodé deux fois pour dissuader
+  const _verify = (p) => p === atob(atob(_k));
+  
+  // ==================== ÉTAT DE L'APPLICATION ====================
+  let currentPrediction = null;
+  let historyData = [];
+  
+  // ==================== INITIALISATION ====================
+  function init() {
+    loadHistoryFromStorage();
+    checkAuth();
+  }
+  
+  // ==================== AUTHENTIFICATION ====================
+  function checkAuth() {
+    const storedAuth = sessionStorage.getItem('_pf_auth');
+    if (storedAuth === '1') {
+      renderApp();
+    } else {
+      renderLogin();
+    }
+  }
+  
+  function renderLogin() {
+    document.getElementById('app').innerHTML = `
+      <div class="login-container">
+        <h2><i class="fas fa-lock"></i> Accès privé</h2>
+        <p>Site réservé à l'utilisateur autorisé</p>
+        <input type="password" id="passwordInput" placeholder="Mot de passe" autofocus>
+        <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Se connecter</button>
+        <div id="errorMsg" class="error"></div>
+      </div>
+    `;
+    
+    document.getElementById('loginBtn').addEventListener('click', verifyPassword);
+    document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') verifyPassword();
+    });
+  }
+  
+  function verifyPassword() {
+    const pwd = document.getElementById('passwordInput').value;
+    if (_verify(pwd)) {
+      sessionStorage.setItem('_pf_auth', '1');
+      renderApp();
+    } else {
+      document.getElementById('errorMsg').innerText = '❌ Mot de passe incorrect';
+      document.getElementById('passwordInput').value = '';
+    }
+  }
+  
+  function logout() {
+    sessionStorage.removeItem('_pf_auth');
+    renderLogin();
+  }
+  
+  // ==================== RENDU PRINCIPAL ====================
+  function renderApp() {
+    document.getElementById('app').innerHTML = `
+      <div class="app-wrapper">
+        <div class="header">
+          <h1><i class="fas fa-futbol"></i> PrédictFoot Pro</h1>
+          <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
+        </div>
+        <p style="margin-bottom:0.5rem; color:#1e293b;">Saisissez les noms des équipes et leurs statistiques moyennes (par match)</p>
+        
+        <!-- HISTORIQUE -->
+        <div class="history-section" id="historySection">
+          <div class="history-header">
+            <div class="history-title"><i class="fas fa-history"></i> Historique des pronostics</div>
+            <div class="success-rate" id="successRateDisplay">0%</div>
+            <div class="history-actions">
+              <button class="history-btn" id="exportHistoryBtn"><i class="fas fa-download"></i> Export</button>
+              <button class="history-btn" id="importHistoryBtn"><i class="fas fa-upload"></i> Import</button>
+              <input type="file" id="importFileInput" accept=".json" style="display:none;">
+              <button class="history-btn" id="clearHistoryBtn"><i class="fas fa-trash"></i> Tout effacer</button>
+            </div>
+          </div>
+          <div class="history-table-container">
+            <table class="history-table" id="historyTable">
+              <thead>
+                <tr><th>Date</th><th>Match</th><th>Pronostic</th><th>Score réel</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+          <button class="add-history-btn" id="addToHistoryBtn"><i class="fas fa-plus-circle"></i> Ajouter ce pronostic à l'historique</button>
+        </div>
+        
+        <div class="save-bar">
+          <button class="save-btn" id="saveDataBtn"><i class="fas fa-save"></i> Sauvegarder stats</button>
+          <button class="save-btn" id="loadDataBtn"><i class="fas fa-upload"></i> Charger stats</button>
+          <button class="save-btn" id="resetDefaultBtn"><i class="fas fa-undo-alt"></i> Réinitialiser</button>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="team-card">
+            <div class="team-title"><i class="fas fa-shield-alt"></i> <span id="teamATitle">Équipe A</span></div>
+            <div class="team-name-input"><i class="fas fa-pen"></i><input type="text" id="teamAName" placeholder="Nom équipe A" value="Paris SG"></div>
+            <div><span class="subtitle">📊 OFFENSIF</span></div>
+            <div class="input-group"><label>Tirs :</label><input type="number" id="a_tirs" value="12.4" step="0.1"></div>
+            <div class="input-group"><label>Tirs cadrés :</label><input type="number" id="a_tc" value="5.2" step="0.1"></div>
+            <div class="input-group"><label>xG :</label><input type="number" id="a_xg" value="1.6" step="0.1"></div>
+            <div class="input-group"><label>Corners :</label><input type="number" id="a_corners" value="5.8" step="0.1"></div>
+            <div><span class="subtitle">🛡️ DÉFENSIF (concédés)</span></div>
+            <div class="input-group"><label>Tirs concédés :</label><input type="number" id="a_tirs_con" value="10.2" step="0.1"></div>
+            <div class="input-group"><label>Tirs cadrés conc. :</label><input type="number" id="a_tc_con" value="4.1" step="0.1"></div>
+            <div class="input-group"><label>xGA :</label><input type="number" id="a_xga" value="1.2" step="0.1"></div>
+            <div class="input-group"><label>Corners concédés :</label><input type="number" id="a_corners_con" value="4.9" step="0.1"></div>
+          </div>
+          <div class="team-card">
+            <div class="team-title"><i class="fas fa-futbol"></i> <span id="teamBTitle">Équipe B</span></div>
+            <div class="team-name-input"><i class="fas fa-pen"></i><input type="text" id="teamBName" placeholder="Nom équipe B" value="Olympique Marseille"></div>
+            <div><span class="subtitle">📊 OFFENSIF</span></div>
+            <div class="input-group"><label>Tirs :</label><input type="number" id="b_tirs" value="10.8" step="0.1"></div>
+            <div class="input-group"><label>Tirs cadrés :</label><input type="number" id="b_tc" value="4.5" step="0.1"></div>
+            <div class="input-group"><label>xG :</label><input type="number" id="b_xg" value="1.3" step="0.1"></div>
+            <div class="input-group"><label>Corners :</label><input type="number" id="b_corners" value="5.1" step="0.1"></div>
+            <div><span class="subtitle">🛡️ DÉFENSIF (concédés)</span></div>
+            <div class="input-group"><label>Tirs concédés :</label><input type="number" id="b_tirs_con" value="11.5" step="0.1"></div>
+            <div class="input-group"><label>Tirs cadrés conc. :</label><input type="number" id="b_tc_con" value="4.7" step="0.1"></div>
+            <div class="input-group"><label>xGA :</label><input type="number" id="b_xga" value="1.5" step="0.1"></div>
+            <div class="input-group"><label>Corners concédés :</label><input type="number" id="b_corners_con" value="5.3" step="0.1"></div>
+          </div>
+        </div>
+        
+        <button class="btn-analyser" id="analyserBtn"><i class="fas fa-chart-line"></i> ANALYSER LE MATCH</button>
+        
+        <div id="resultsArea" class="results-panel" style="display: none;">
+          <div style="max-width: 500px; margin: 0 auto;"><canvas id="victoryChart"></canvas></div>
+          <div class="section-title"><i class="fas fa-percent"></i> Probabilités & pronostics</div>
+          <div class="flex-stats" id="probasContainer"></div>
+          <div class="section-title"><i class="fas fa-chart-simple"></i> Corners, tirs cadrés & scores probables</div>
+          <div class="grid-2cols" id="cornersShotsContainer"></div>
+          <div class="section-title"><i class="fas fa-microphone-alt"></i> Analyse tactique & dynamique</div>
+          <div id="tacticalAnalysis" class="insight-box"></div>
+          <div class="section-title"><i class="fas fa-star-of-life"></i> Meilleures prédictions</div>
+          <div id="bestTips" class="insight-box" style="background: #e6f7ff;"></div>
+          <div class="section-title"><i class="fab fa-whatsapp"></i> Résumé pronostics WhatsApp</div>
+          <div id="whatsappSummary" class="whatsapp-copy">📋 Cliquez ici pour copier le pronostic condensé ➕</div>
+        </div>
+        <div class="footer-note">* Ratio xG/tirs calculé automatiquement. Algorithme (Attaque 30% / Défense 30% / Domination 20% / Pression 20%)</div>
+      </div>
+    `;
+    
+    bindAppEvents();
+    updateTeamNamesDisplay();
+    renderHistoryTable();
+    setTimeout(() => updateUI(), 100);
+  }
+  
+  // ==================== GESTION DE L'HISTORIQUE ====================
+  function loadHistoryFromStorage() {
+    const saved = localStorage.getItem('_pf_history');
+    if (saved) {
+      try { historyData = JSON.parse(saved); } catch(e) { historyData = []; }
+    } else {
+      historyData = [];
+    }
+  }
+  
+  function saveHistoryToStorage() {
+    localStorage.setItem('_pf_history', JSON.stringify(historyData));
+  }
+  
+  function calculateSuccessRate() {
+    if (historyData.length === 0) return 0;
+    const validated = historyData.filter(h => h.validated === true).length;
+    const invalidated = historyData.filter(h => h.validated === false).length;
+    const total = validated + invalidated;
+    if (total === 0) return 0;
+    return Math.round((validated / total) * 100);
+  }
+  
+  function renderHistoryTable() {
+    const tbody = document.getElementById('historyTableBody');
+    if (!tbody) return;
+    
+    const successRate = calculateSuccessRate();
+    const validCount = historyData.filter(h => h.validated === true).length;
+    const invalidCount = historyData.filter(h => h.validated === false).length;
+    document.getElementById('successRateDisplay').innerHTML = `
+      <i class="fas fa-check-circle"></i> ${validCount}/${validCount + invalidCount} (${successRate}%)
+    `;
+    
+    if (historyData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">Aucun pronostic dans l'historique</td></tr>`;
+      return;
+    }
+    
+    tbody.innerHTML = historyData.map((item, index) => `
+      <tr>
+        <td>${item.date}</td>
+        <td><strong>${item.teamA} - ${item.teamB}</strong></td>
+        <td>${item.prediction}</td>
+        <td><input type="text" id="score_${index}" value="${item.realScore || ''}" placeholder="ex: 2-1" style="width:70px;"></td>
+        <td class="action-btns">
+          <button class="action-btn valid" data-index="${index}" data-action="valid" title="Pronostic correct">✅</button>
+          <button class="action-btn invalid" data-index="${index}" data-action="invalid" title="Pronostic incorrect">❌</button>
+          <button class="action-btn delete" data-index="${index}" data-action="delete" title="Supprimer">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+    
+    document.querySelectorAll('.action-btn[data-action="valid"]').forEach(btn => {
+      btn.addEventListener('click', (e) => validateHistoryItem(parseInt(btn.dataset.index), true));
+    });
+    document.querySelectorAll('.action-btn[data-action="invalid"]').forEach(btn => {
+      btn.addEventListener('click', (e) => validateHistoryItem(parseInt(btn.dataset.index), false));
+    });
+    document.querySelectorAll('.action-btn[data-action="delete"]').forEach(btn => {
+      btn.addEventListener('click', (e) => deleteHistoryItem(parseInt(btn.dataset.index)));
+    });
+    
+    historyData.forEach((_, index) => {
+      const scoreInput = document.getElementById(`score_${index}`);
+      if (scoreInput) {
+        scoreInput.addEventListener('change', (e) => {
+          historyData[index].realScore = e.target.value;
+          saveHistoryToStorage();
+        });
+      }
+    });
+  }
+  
+  function validateHistoryItem(index, isValid) {
+    historyData[index].validated = isValid;
+    saveHistoryToStorage();
+    renderHistoryTable();
+  }
+  
+  function deleteHistoryItem(index) {
+    historyData.splice(index, 1);
+    saveHistoryToStorage();
+    renderHistoryTable();
+  }
+  
+  function addCurrentPredictionToHistory() {
+    if (!currentPrediction) {
+      alert("Générez d'abord une analyse !");
+      return;
+    }
+    
+    const now = new Date();
+    const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    
+    let mainPrediction = '';
+    if (currentPrediction.probA > currentPrediction.probB && currentPrediction.probA > currentPrediction.probNul) {
+      mainPrediction = `${currentPrediction.teamAName} gagne (${currentPrediction.probA.toFixed(1)}%)`;
+    } else if (currentPrediction.probB > currentPrediction.probA && currentPrediction.probB > currentPrediction.probNul) {
+      mainPrediction = `${currentPrediction.teamBName} gagne (${currentPrediction.probB.toFixed(1)}%)`;
+    } else {
+      mainPrediction = `Nul (${currentPrediction.probNul.toFixed(1)}%)`;
+    }
+    
+    historyData.push({
+      date: dateStr,
+      teamA: currentPrediction.teamAName,
+      teamB: currentPrediction.teamBName,
+      prediction: mainPrediction,
+      realScore: '',
+      validated: null
+    });
+    
+    saveHistoryToStorage();
+    renderHistoryTable();
+  }
+  
+  function exportHistory() {
+    const dataStr = JSON.stringify(historyData, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `historique_pronostics_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  
+  function importHistory(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (Array.isArray(imported)) {
+          historyData = imported;
+          saveHistoryToStorage();
+          renderHistoryTable();
+          alert('Historique importé avec succès !');
+        } else {
+          alert('Fichier invalide');
+        }
+      } catch (err) {
+        alert('Erreur lors de l\'import : fichier corrompu');
+      }
+    };
+    reader.readAsText(file);
+  }
+  
+  function clearAllHistory() {
+    if (confirm('Effacer TOUT l\'historique ? Cette action est irréversible.')) {
+      historyData = [];
+      saveHistoryToStorage();
+      renderHistoryTable();
+    }
+  }
+  
+  // ==================== FONCTIONS ORIGINALES DE L'APPLICATION ====================
+  function updateTeamNamesDisplay() {
+    let nameA = document.getElementById('teamAName')?.value.trim();
+    let nameB = document.getElementById('teamBName')?.value.trim();
+    if (!nameA && !nameB) return { nameA: 'Équipe A', nameB: 'Équipe B' };
+    if (nameA === "") nameA = "Équipe A";
+    if (nameB === "") nameB = "Équipe B";
+    const titleA = document.getElementById('teamATitle');
+    const titleB = document.getElementById('teamBTitle');
+    if (titleA) titleA.innerText = nameA;
+    if (titleB) titleB.innerText = nameB;
+    return { nameA, nameB };
+  }
+
   function getTeamStats(prefix) {
+    let tirs = parseFloat(document.getElementById(`${prefix}_tirs`)?.value) || 0;
+    let xg = parseFloat(document.getElementById(`${prefix}_xg`)?.value) || 0;
+    let ratioXg = (tirs > 0) ? xg / tirs : 0;
     return {
-      tirs: parseFloat(document.getElementById(`${prefix}_tirs`).value) || 0,
-      tc: parseFloat(document.getElementById(`${prefix}_tc`).value) || 0,
-      xg: parseFloat(document.getElementById(`${prefix}_xg`).value) || 0,
-      ratioXg: parseFloat(document.getElementById(`${prefix}_ratio_xg`).value) || 0,
-      corners: parseFloat(document.getElementById(`${prefix}_corners`).value) || 0,
-      tirs_con: parseFloat(document.getElementById(`${prefix}_tirs_con`).value) || 0,
-      tc_con: parseFloat(document.getElementById(`${prefix}_tc_con`).value) || 0,
-      xga: parseFloat(document.getElementById(`${prefix}_xga`).value) || 0,
-      corners_con: parseFloat(document.getElementById(`${prefix}_corners_con`).value) || 0,
+      tirs: tirs,
+      tc: parseFloat(document.getElementById(`${prefix}_tc`)?.value) || 0,
+      xg: xg,
+      ratioXg: ratioXg,
+      corners: parseFloat(document.getElementById(`${prefix}_corners`)?.value) || 0,
+      tirs_con: parseFloat(document.getElementById(`${prefix}_tirs_con`)?.value) || 0,
+      tc_con: parseFloat(document.getElementById(`${prefix}_tc_con`)?.value) || 0,
+      xga: parseFloat(document.getElementById(`${prefix}_xga`)?.value) || 0,
+      corners_con: parseFloat(document.getElementById(`${prefix}_corners_con`)?.value) || 0,
     };
   }
 
-  // Normalisation entre 0 et 100 sur base de références football (valeurs typiques)
   function normalize(value, maxRef, reverse = false) {
     let norm = Math.min(100, (value / maxRef) * 100);
     norm = Math.max(0, norm);
     return reverse ? 100 - norm : norm;
   }
 
-  // Calcul des indices par équipe
-  function computeIndices(stats, isTeamA = true, opponentStats = null) {
-    // Attaque (30%) : tirs, tc, xG, ratio, corners
+  function computeIndices(stats) {
     let attScore = (
       normalize(stats.tirs, 18, false) * 0.2 +
       normalize(stats.tc, 7, false) * 0.25 +
@@ -346,38 +460,36 @@
       normalize(stats.ratioXg, 0.22, false) * 0.1 +
       normalize(stats.corners, 9, false) * 0.2
     );
-    // Défense (30%) : moins on concède mieux c'est (inverse)
     let defScore = (
       normalize(stats.tirs_con, 16, true) * 0.25 +
       normalize(stats.tc_con, 6, true) * 0.25 +
       normalize(stats.xga, 2.2, true) * 0.3 +
       normalize(stats.corners_con, 8, true) * 0.2
     );
-    // Domination (20%) : rapport tirs + corners off/def combinés
     let totalOff = stats.tirs + stats.corners;
     let totalDef = stats.tirs_con + stats.corners_con;
     let dominationRaw = (totalOff / (totalDef + 0.1)) * 30;
     let domination = Math.min(100, dominationRaw);
-    // Pression (20%) : corners off + tirs cadrés offensifs / match
     let pressionRaw = (stats.corners * 0.6 + stats.tc * 0.4) / 1.2;
     let pression = normalize(pressionRaw, 12, false);
     return { attaque: attScore, defense: defScore, domination, pression };
   }
 
-  function globalPower(teamIdx) {
-    return (teamIdx.attaque * 0.3 + teamIdx.defense * 0.3 + teamIdx.domination * 0.2 + teamIdx.pression * 0.2);
+  function globalPower(idx) {
+    return idx.attaque * 0.3 + idx.defense * 0.3 + idx.domination * 0.2 + idx.pression * 0.2;
   }
 
-  function predictMatch() {
+  function factorial(n) { return n <= 1 ? 1 : n * factorial(n-1); }
+
+  function predictMatch(teamAName, teamBName) {
     const statsA = getTeamStats('a');
     const statsB = getTeamStats('b');
-    const idxA = computeIndices(statsA, true, statsB);
-    const idxB = computeIndices(statsB, false, statsA);
+    const idxA = computeIndices(statsA);
+    const idxB = computeIndices(statsB);
     const powerA = globalPower(idxA);
     const powerB = globalPower(idxB);
     const totalPower = powerA + powerB;
     
-    // Probabilité brute avec prise en compte du nul (facteur d'écart)
     let rawProbA = totalPower > 0 ? powerA / totalPower : 0.5;
     let rawProbB = totalPower > 0 ? powerB / totalPower : 0.5;
     let ecart = Math.abs(powerA - powerB) / 100;
@@ -391,12 +503,10 @@
     probBNet = probBNet / sum;
     probNul = probNul / sum;
     
-    // Double chance
     let doubleChance1X = probANet + probNul;
     let doubleChanceX2 = probBNet + probNul;
     let doubleChance12 = probANet + probBNet;
     
-    // Expected goals pour Over/Under
     let expGolA = (statsA.xg + statsB.xga) / 2;
     let expGolB = (statsB.xg + statsA.xga) / 2;
     let totalExp = expGolA + expGolB;
@@ -406,23 +516,18 @@
     let probUnder25 = 1 - probOver25;
     let probUnder35 = 1 - probOver35;
     
-    // BTTS
     let bttsProb = ( (statsA.xg / (statsA.xg + statsA.xga + 0.5)) * 0.6 + (statsB.xg / (statsB.xg + statsB.xga + 0.5)) * 0.4 );
     bttsProb = Math.min(0.88, Math.max(0.2, bttsProb));
     
-    // Equipe marque 2 buts ou 3 buts
     let teamA_2plus = Math.min(0.75, (expGolA / 1.4) * 0.65);
     let teamA_3plus = teamA_2plus * 0.55;
     let teamB_2plus = Math.min(0.75, (expGolB / 1.4) * 0.65);
     let teamB_3plus = teamB_2plus * 0.55;
     
-    // Corners totaux prédits
     let totalCorners = (statsA.corners + statsB.corners_con + statsB.corners + statsA.corners_con) / 2;
     let probOverCorners = Math.min(0.85, totalCorners / 12.5);
     let totalTirsCadres = (statsA.tc + statsB.tc_con + statsB.tc + statsA.tc_con) / 2;
     
-    // Scores probables (simplifié par xG)
-    let scores = [];
     let possibleScores = [[1,0],[1,1],[2,1],[2,0],[0,1],[1,2],[0,0],[2,2]];
     let scoreProbs = possibleScores.map(sc => {
       let poissonA = Math.exp(-expGolA) * Math.pow(expGolA, sc[0]) / (factorial(sc[0]));
@@ -432,27 +537,22 @@
     scoreProbs.sort((a,b)=>b.prob - a.prob);
     let topScores = scoreProbs.slice(0,2).map(s=>s.score);
     
-    // Meilleurs tips (seuils >65%)
     let bestTipsList = [];
-    if (probANet > 0.62) bestTipsList.push(`Victoire Équipe A : ${(probANet*100).toFixed(1)}%`);
-    else if (probBNet > 0.62) bestTipsList.push(`Victoire Équipe B : ${(probBNet*100).toFixed(1)}%`);
+    if (probANet > 0.62) bestTipsList.push(`Victoire ${teamAName} : ${(probANet*100).toFixed(1)}%`);
+    else if (probBNet > 0.62) bestTipsList.push(`Victoire ${teamBName} : ${(probBNet*100).toFixed(1)}%`);
     if (bttsProb > 0.62) bestTipsList.push(`BTTS OUI : ${(bttsProb*100).toFixed(1)}%`);
     if (probOver25 > 0.68) bestTipsList.push(`Over 2.5 buts : ${(probOver25*100).toFixed(1)}%`);
     if (probUnder25 > 0.68) bestTipsList.push(`Under 2.5 buts : ${(probUnder25*100).toFixed(1)}%`);
-    if (doubleChance1X > 0.72) bestTipsList.push(`Double chance 1X : ${(doubleChance1X*100).toFixed(1)}%`);
-    if (doubleChanceX2 > 0.72) bestTipsList.push(`Double chance X2 : ${(doubleChanceX2*100).toFixed(1)}%`);
+    if (doubleChance1X > 0.72) bestTipsList.push(`Double chance 1X (${teamAName} ou nul) : ${(doubleChance1X*100).toFixed(1)}%`);
+    if (doubleChanceX2 > 0.72) bestTipsList.push(`Double chance X2 (${teamBName} ou nul) : ${(doubleChanceX2*100).toFixed(1)}%`);
     if (totalCorners > 8.5 && probOverCorners > 0.65) bestTipsList.push(`Total Corners > 8.5 (${totalCorners.toFixed(1)} attendus)`);
     if (bestTipsList.length === 0) bestTipsList.push("Match équilibré, peu de certitudes absolues.");
     
-    // Analyse textuelle intelligente (style / dynamique)
     let styleA = (idxA.attaque > 70) ? "très offensif" : (idxA.attaque > 50) ? "offensif équilibré" : "plutôt défensif";
     let styleB = (idxB.attaque > 70) ? "très offensif" : (idxB.attaque > 50) ? "offensif équilibré" : "plutôt défensif";
-    let pressingA = (idxA.pression > 70) ? "pression haute efficace" : (idxA.pression > 45) ? "pression moyenne" : "pression faible";
-    let pressingB = (idxB.pression > 70) ? "pression haute efficace" : (idxB.pression > 45) ? "pression moyenne" : "pression faible";
-    let dynamique = `Match attendu avec une opposition de styles : Équipe A joue un jeu ${styleA} (${pressingA}), tandis que l'Équipe B est ${styleB} (${pressingB}). `;
-    dynamique += `Les xG suggèrent ${totalExp.toFixed(2)} buts attendus. L'équipe A domine la possession attendue (${(powerA/(powerA+powerB)*100).toFixed(0)}% de puissance globale). `;
-    dynamique += `Le secteur défensif de l'Équipe A concède ${statsA.tc_con.toFixed(1)} tirs cadrés/match, celui de B ${statsB.tc_con.toFixed(1)}. `;
-    dynamique += `La bataille au milieu pourrait être intense, avec un volume de corners estimé à ${totalCorners.toFixed(1)}.`;
+    let pressingA = (idxA.pression > 70) ? "pression haute" : (idxA.pression > 45) ? "pression moyenne" : "pression faible";
+    let pressingB = (idxB.pression > 70) ? "pression haute" : (idxB.pression > 45) ? "pression moyenne" : "pression faible";
+    let dynamique = `${teamAName} (${styleA}, ${pressingA}) vs ${teamBName} (${styleB}, ${pressingB}). xG totaux: ${totalExp.toFixed(2)}. Puissance: ${powerA.toFixed(1)} contre ${powerB.toFixed(1)}. Corners estimés: ${totalCorners.toFixed(1)}.`;
     
     return {
       probA: probANet*100, probNul: probNul*100, probB: probBNet*100,
@@ -461,101 +561,154 @@
       btts: bttsProb*100, bttsTexte: bttsProb > 0.5 ? "OUI" : "NON",
       teamA_2plus: teamA_2plus*100, teamA_3plus: teamA_3plus*100,
       teamB_2plus: teamB_2plus*100, teamB_3plus: teamB_3plus*100,
-      totalCorners: totalCorners, probCornersOver: probOverCorners*100,
-      totalTirsCadres: totalTirsCadres,
-      topScores: topScores,
-      bestTips: bestTipsList,
-      tacticalText: dynamique,
-      statsA, statsB, idxA, idxB, powerA, powerB
+      totalCorners, probCornersOver: probOverCorners*100,
+      totalTirsCadres, topScores, bestTips: bestTipsList,
+      tacticalText: dynamique, teamAName, teamBName
     };
   }
 
-  function factorial(n) { return n <= 1 ? 1 : n * factorial(n-1); }
-
   let chartInstance = null;
   function updateUI() {
-    const pred = predictMatch();
+    const { nameA, nameB } = updateTeamNamesDisplay();
+    currentPrediction = predictMatch(nameA, nameB);
+    const pred = currentPrediction;
+    
     document.getElementById('resultsArea').style.display = 'block';
-    // Graphique
+    
     const ctx = document.getElementById('victoryChart').getContext('2d');
-    if(chartInstance) chartInstance.destroy();
+    if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx, {
       type: 'doughnut',
-      data: { labels: ['Équipe A', 'Nul', 'Équipe B'], datasets: [{ data: [pred.probA, pred.probNul, pred.probB], backgroundColor: ['#3b82f6', '#94a3b8', '#ef4444'], borderWidth: 0 }] },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(1)}%` } } } }
+      data: { labels: [nameA, 'Nul', nameB], datasets: [{ data: [pred.probA, pred.probNul, pred.probB], backgroundColor: ['#3b82f6', '#94a3b8', '#ef4444'] }] },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
-    // Conteneur probas générales
+    
     document.getElementById('probasContainer').innerHTML = `
-      <div class="prob-card"><span>🏆 Victoire A</span><div class="big-number">${pred.probA.toFixed(1)}%</div></div>
+      <div class="prob-card"><span>🏆 Victoire ${nameA}</span><div class="big-number">${pred.probA.toFixed(1)}%</div></div>
       <div class="prob-card"><span>🤝 Nul</span><div class="big-number">${pred.probNul.toFixed(1)}%</div></div>
-      <div class="prob-card"><span>🏆 Victoire B</span><div class="big-number">${pred.probB.toFixed(1)}%</div></div>
+      <div class="prob-card"><span>🏆 Victoire ${nameB}</span><div class="big-number">${pred.probB.toFixed(1)}%</div></div>
       <div class="prob-card"><span>🔄 Double chance 1X</span><div class="big-number">${pred.double1X.toFixed(1)}%</div></div>
       <div class="prob-card"><span>🔄 Double chance X2</span><div class="big-number">${pred.doubleX2.toFixed(1)}%</div></div>
       <div class="prob-card"><span>🔄 Double chance 12</span><div class="big-number">${pred.double12.toFixed(1)}%</div></div>
-      <div class="prob-card"><span>⚽ BTTS (Oui)</span><div class="big-number">${pred.btts.toFixed(1)}% (${pred.bttsTexte})</div></div>
-      <div class="prob-card"><span>📈 Over 2.5</span><div class="big-number">${pred.over25.toFixed(1)}%</div><span style="font-size:12px">Under 2.5: ${pred.under25.toFixed(1)}%</span></div>
+      <div class="prob-card"><span>⚽ BTTS</span><div class="big-number">${pred.btts.toFixed(1)}% (${pred.bttsTexte})</div></div>
+      <div class="prob-card"><span>📈 Over 2.5</span><div class="big-number">${pred.over25.toFixed(1)}%</div><span>Under 2.5: ${pred.under25.toFixed(1)}%</span></div>
       <div class="prob-card"><span>🔥 Over 3.5</span><div class="big-number">${pred.over35.toFixed(1)}%</div><span>Under 3.5: ${pred.under35.toFixed(1)}%</span></div>
-      <div class="prob-card"><span>🎯 A marque ≥2 buts</span><div class="big-number">${pred.teamA_2plus.toFixed(1)}%</div><span>≥3 buts: ${pred.teamA_3plus.toFixed(1)}%</span></div>
-      <div class="prob-card"><span>🎯 B marque ≥2 buts</span><div class="big-number">${pred.teamB_2plus.toFixed(1)}%</div><span>≥3 buts: ${pred.teamB_3plus.toFixed(1)}%</span></div>
+      <div class="prob-card"><span>🎯 ${nameA} ≥2 buts</span><div class="big-number">${pred.teamA_2plus.toFixed(1)}%</div><span>≥3: ${pred.teamA_3plus.toFixed(1)}%</span></div>
+      <div class="prob-card"><span>🎯 ${nameB} ≥2 buts</span><div class="big-number">${pred.teamB_2plus.toFixed(1)}%</div><span>≥3: ${pred.teamB_3plus.toFixed(1)}%</span></div>
     `;
-    // Corners + tirs + scores
+    
     document.getElementById('cornersShotsContainer').innerHTML = `
-      <div class="prob-card"><i class="fas fa-flag"></i> Total corners estimés<br><span class="big-number">${pred.totalCorners.toFixed(1)}</span><br>Prob >8.5 corners: ${pred.probCornersOver.toFixed(1)}%</div>
-      <div class="prob-card"><i class="fas fa-bullseye"></i> Tirs cadrés totaux<br><span class="big-number">${pred.totalTirsCadres.toFixed(1)}</span><br>Moyenne combinée</div>
-      <div class="prob-card"><i class="fas fa-dice-d6"></i> Scores probables<br><span class="badge-proba">⭐ ${pred.topScores[0]} ⭐</span><br><span class="badge-proba">${pred.topScores[1]}</span></div>
+      <div class="prob-card"><i class="fas fa-flag"></i> Corners estimés<br><span class="big-number">${pred.totalCorners.toFixed(1)}</span><br>Prob >8.5: ${pred.probCornersOver.toFixed(1)}%</div>
+      <div class="prob-card"><i class="fas fa-bullseye"></i> Tirs cadrés totaux<br><span class="big-number">${pred.totalTirsCadres.toFixed(1)}</span></div>
+      <div class="prob-card"><i class="fas fa-dice-d6"></i> Scores probables<br>⭐ ${pred.topScores[0]} ⭐<br>${pred.topScores[1]}</div>
     `;
+    
     document.getElementById('tacticalAnalysis').innerHTML = `<i class="fas fa-comment-dots"></i> ${pred.tacticalText}`;
-    let tipsHtml = `<ul style="margin-left:1rem;">${pred.bestTips.map(t=>`<li>✅ ${t}</li>`).join('')}</ul>`;
-    document.getElementById('bestTips').innerHTML = tipsHtml;
-    // Stocker texte whatsapp
-    window.whatsText = `⚽ PRONOSTICS PREDICTFOOT ⚽\n🔮 Victoire: A ${pred.probA.toFixed(1)}% | Nul ${pred.probNul.toFixed(1)}% | B ${pred.probB.toFixed(1)}%\n🔄 Double chance: 1X ${pred.double1X.toFixed(1)}% | X2 ${pred.doubleX2.toFixed(1)}%\n🎯 BTTS: ${pred.btts.toFixed(1)}% (${pred.bttsTexte})\n📊 Over 2.5: ${pred.over25.toFixed(1)}% | Under 2.5: ${pred.under25.toFixed(1)}%\n🏅 Meilleurs tips: ${pred.bestTips.slice(0,3).join(', ')}\n🎲 Scores suggérés: ${pred.topScores.join(' ou ')}\n📐 Corners ~ ${pred.totalCorners.toFixed(1)} | Tirs cadrés ~ ${pred.totalTirsCadres.toFixed(1)}`;
+    document.getElementById('bestTips').innerHTML = `<ul>${pred.bestTips.map(t=>`<li>✅ ${t}</li>`).join('')}</ul>`;
+    
+    const whatsText = `⚽ PRONOSTICS ${pred.teamAName} vs ${pred.teamBName} ⚽\n` +
+      `🔮 Victoire: ${pred.teamAName} ${pred.probA.toFixed(1)}% | Nul ${pred.probNul.toFixed(1)}% | ${pred.teamBName} ${pred.probB.toFixed(1)}%\n` +
+      `🔄 Double chance: 1X ${pred.double1X.toFixed(1)}% | X2 ${pred.doubleX2.toFixed(1)}%\n` +
+      `🎯 BTTS: ${pred.btts.toFixed(1)}% (${pred.bttsTexte})\n` +
+      `📊 Over 2.5: ${pred.over25.toFixed(1)}% | Under 2.5: ${pred.under25.toFixed(1)}%\n` +
+      `🏅 Meilleurs tips: ${pred.bestTips.slice(0,3).join(', ')}\n` +
+      `🎲 Scores suggérés: ${pred.topScores.join(' ou ')}\n` +
+      `📐 Corners ~ ${pred.totalCorners.toFixed(1)} | Tirs cadrés ~ ${pred.totalTirsCadres.toFixed(1)}`;
+    
+    document.getElementById('whatsappSummary').setAttribute('data-clipboard', whatsText);
   }
-  
-  window.copyWhatsappText = function() {
-    if(window.whatsText) {
-      navigator.clipboard.writeText(window.whatsText);
-      alert("✅ Résumé pronostics copié ! Collez-le dans votre groupe WhatsApp.");
-    } else { alert("Générez d'abord une analyse."); }
-  };
-  
-  // Sauvegarde/Load
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✅ Résumé copié ! Collez-le dans WhatsApp.");
+      }).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    let success = false;
+    try { success = document.execCommand('copy'); } catch (err) {}
+    document.body.removeChild(textarea);
+    if (success) alert("✅ Résumé copié !");
+    else alert("❌ Copie manuelle :\n\n" + text);
+  }
+
+  function onCopyClick() {
+    const elem = document.getElementById('whatsappSummary');
+    const text = elem?.getAttribute('data-clipboard');
+    if (text) copyToClipboard(text);
+  }
+
   function saveStatsToLocal() {
-    const ids = ['a_tirs','a_tc','a_xg','a_ratio_xg','a_corners','a_tirs_con','a_tc_con','a_xga','a_corners_con',
-                 'b_tirs','b_tc','b_xg','b_ratio_xg','b_corners','b_tirs_con','b_tc_con','b_xga','b_corners_con'];
+    const ids = ['teamAName','teamBName','a_tirs','a_tc','a_xg','a_corners','a_tirs_con','a_tc_con','a_xga','a_corners_con',
+                 'b_tirs','b_tc','b_xg','b_corners','b_tirs_con','b_tc_con','b_xga','b_corners_con'];
     let data = {};
-    ids.forEach(id => { data[id] = document.getElementById(id).value; });
+    ids.forEach(id => { data[id] = document.getElementById(id)?.value || ''; });
     localStorage.setItem('footPredStats', JSON.stringify(data));
     alert("Statistiques sauvegardées !");
   }
+
   function loadStatsFromLocal() {
     let saved = localStorage.getItem('footPredStats');
-    if(saved) {
+    if (saved) {
       let data = JSON.parse(saved);
-      for(let [id,val] of Object.entries(data)) {
+      for (let [id,val] of Object.entries(data)) {
         let el = document.getElementById(id);
-        if(el) el.value = val;
+        if (el) el.value = val;
       }
-      alert("Dernières stats chargées.");
+      updateTeamNamesDisplay();
+      alert("Chargement réussi.");
     } else alert("Aucune sauvegarde trouvée.");
   }
+
   function resetDefault() {
-    const defaults = { a_tirs:12.4, a_tc:5.2, a_xg:1.6, a_ratio_xg:0.13, a_corners:5.8, a_tirs_con:10.2, a_tc_con:4.1, a_xga:1.2, a_corners_con:4.9,
-                       b_tirs:10.8, b_tc:4.5, b_xg:1.3, b_ratio_xg:0.12, b_corners:5.1, b_tirs_con:11.5, b_tc_con:4.7, b_xga:1.5, b_corners_con:5.3 };
-    for(let [id,val] of Object.entries(defaults)) {
+    const defaults = { teamAName:"Paris SG", teamBName:"Olympique Marseille",
+      a_tirs:12.4, a_tc:5.2, a_xg:1.6, a_corners:5.8, a_tirs_con:10.2, a_tc_con:4.1, a_xga:1.2, a_corners_con:4.9,
+      b_tirs:10.8, b_tc:4.5, b_xg:1.3, b_corners:5.1, b_tirs_con:11.5, b_tc_con:4.7, b_xga:1.5, b_corners_con:5.3 };
+    for (let [id,val] of Object.entries(defaults)) {
       let el = document.getElementById(id);
-      if(el) el.value = val;
+      if (el) el.value = val;
     }
-    alert("Valeurs par défaut restaurées.");
+    updateTeamNamesDisplay();
+    alert("Réinitialisation effectuée.");
     updateUI();
   }
-  
-  document.getElementById('analyserBtn').addEventListener('click', updateUI);
-  document.getElementById('saveDataBtn').addEventListener('click', saveStatsToLocal);
-  document.getElementById('loadDataBtn').addEventListener('click', loadStatsFromLocal);
-  document.getElementById('resetDefaultBtn').addEventListener('click', resetDefault);
-  
-  // initial small preview
-  setTimeout(() => { updateUI(); }, 100);
+
+  function bindAppEvents() {
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('analyserBtn').addEventListener('click', updateUI);
+    document.getElementById('saveDataBtn').addEventListener('click', saveStatsToLocal);
+    document.getElementById('loadDataBtn').addEventListener('click', loadStatsFromLocal);
+    document.getElementById('resetDefaultBtn').addEventListener('click', resetDefault);
+    document.getElementById('whatsappSummary').addEventListener('click', onCopyClick);
+    document.getElementById('teamAName').addEventListener('input', updateTeamNamesDisplay);
+    document.getElementById('teamBName').addEventListener('input', updateTeamNamesDisplay);
+    
+    document.getElementById('addToHistoryBtn').addEventListener('click', addCurrentPredictionToHistory);
+    document.getElementById('exportHistoryBtn').addEventListener('click', exportHistory);
+    document.getElementById('importHistoryBtn').addEventListener('click', () => {
+      document.getElementById('importFileInput').click();
+    });
+    document.getElementById('importFileInput').addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        importHistory(e.target.files[0]);
+        e.target.value = '';
+      }
+    });
+    document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
+  }
+
+  // Lancer l'application
+  init();
 </script>
 </body>
 </html>
